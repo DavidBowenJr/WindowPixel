@@ -16,6 +16,18 @@ CustomRunner::CustomRunner()
 
 CustomRunner::~CustomRunner()
 {
+
+	if (VirtualFree(
+		BitmapMemory,       // Base address of block
+		0,             // Bytes of committed pages  // Decommit the pages <MEM_RELEASE>
+		MEM_RELEASE))
+	{
+		OutputDebugString(_T(" Virtual Free Bitmap MEMORY RELEASED"));
+}
+	
+	//;  
+
+
 	OutputDebugString(_T(" Class CustomRunner  ~ Called.\n"));
 }
 
