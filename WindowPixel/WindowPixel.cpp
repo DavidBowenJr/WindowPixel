@@ -4,8 +4,12 @@
 #include "framework.h"
 #include "WindowPixel.h"
 
+#include "QueryTimer.h"
+
 LARGE_INTEGER StartingTime, EndingTime, ElapsedMicrososeconds;
 LARGE_INTEGER Frequency;
+
+
 
 bool keys[256]; // Array used for the keyboard routine
 
@@ -69,8 +73,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
   
     // Initialize global strings
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_WINDOWPIXEL, szWindowClass, MAX_LOADSTRING);
+    LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    LoadString(hInstance, IDC_WINDOWPIXEL, szWindowClass, MAX_LOADSTRING);
    // MyRegisterClass(hInstance);
 
     if (RegisterClassEx(&wc))
@@ -79,14 +83,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             0,
             wc.lpszClassName,
             _T("Our Game ext"),
-            WS_EX_OVERLAPPEDWINDOW | WS_VISIBLE,
+            WS_OVERLAPPEDWINDOW | WS_VISIBLE,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             0, 0, hInstance, 0);
-        if (hWnd) {
-            OutputDebugString(L"Start up msg Pump\n");
+
+        if (hWnd)
+        {
+            OutputDebugString(_T("Start up msg Pump\n"));
 
 
             isRunning = true;
@@ -96,15 +102,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
 
-            while (isRunning) {
+            while (isRunning) 
+            {
 
                 while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
                 {
                     if (msg.message == WM_QUIT)
                     {
                         isRunning = false;
-                        OutputDebugString(L" WM_QUIT \n");
+                        OutputDebugString(_T(" WM_QUIT \n"));
                     }
+                    
                     TranslateMessage(&msg);
                     DispatchMessage(&msg);
                 }
@@ -137,14 +145,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
                 if (keys[VK_ESCAPE]) { DestroyWindow(hWnd); }
 
-                double em = 0;
-#ifdef _USE_Q_T
+              
+
                 QueryTimer qt = QueryTimer();
                 qt.StartCounter();
                 double em = qt.GetCounter();
-#endif
                 static double accum = 0;
                 accum += em;
+
+
 
                 static bool bforce = true;
 
@@ -166,6 +175,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                     GetClientRect(hWnd, &CR);
                     int RmL = CR.right - CR.left;
                     int Bmt = CR.bottom - CR.top;
+
+                    ReleaseDC(hWnd, DC);
+                    ++xOffset;
 #ifdef _USE_C_R_
 
 #endif
@@ -174,12 +186,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                     switch (switchCool)
                     {
                     case 0:
+                        OutputDebugString(_T(" case 0 \n"));
                         break;
                     case 1:
+                        OutputDebugString(_T(" case 1 \n"));
                         break;
                     case 2:
+                        OutputDebugString(_T(" case 2 \n"));
                         break;
                     case 3:
+                        OutputDebugString(_T(" case 3 \n"));
+                        break;
+                    default:
+                        OutputDebugString(_T(" case 4 \n"));
                         break;
                     }
                 }
@@ -300,7 +319,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     PAINTSTRUCT ps;
     HDC hdc;
     LRESULT Result = 0;
+
     DBG_UNREFERENCED_LOCAL_VARIABLE(ps);
+    UNREFERENCED_PARAMETER(hdc);
 
     switch (message)
     {
@@ -319,13 +340,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         else {
             // Program is InActive
         }
-
-    }break;
+    }
+    break;
 
     case WM_SIZE:
     {
         RECT CR;
-
         GetClientRect(hWnd, &CR);
         LONG W = CR.right - CR.left;
         LONG H = CR.bottom - CR.top;
@@ -369,18 +389,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
     {
         keys[wParam] = TRUE;
-        OutputDebugString(_T("KEYDOWN \n"));
+        OutputDebugString(_T(" KEYDOWN \n"));
     }break;
 
     case WM_KEYUP:
     {
         keys[wParam] = FALSE;
-        OutputDebugString(_T("KEYUP \n"));
+        OutputDebugString(_T(" KEYUP \n"));
     } break;
     //.......
     case WM_COMMAND:
         wmId = LOWORD(wParam);
         wmEvent = HIWORD(wParam);
+
         switch (wmId)
         {
         case IDM_ABOUT:
@@ -389,7 +410,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         case IDM_EXIT:
         {
-            OutputDebugString(_T("DestroyWindow(hWnd) at IDM_EXIT\n"));
+            OutputDebugString(_T(" DestroyWindow(hWnd) at IDM_EXIT\n"));
             DestroyWindow(hWnd);
         }
         break;

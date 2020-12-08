@@ -27,9 +27,21 @@
     <ClInclude Include="WindowPixel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="QueryTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomRunner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowPixel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomRunner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
