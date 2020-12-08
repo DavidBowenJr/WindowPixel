@@ -3,7 +3,8 @@
 
 #include "framework.h"
 #include "WindowPixel.h"
-
+#include "CustomRunner.h"
+#include "GraphicsDemonstration.h"
 #include "QueryTimer.h"
 
 LARGE_INTEGER StartingTime, EndingTime, ElapsedMicrososeconds;
@@ -18,6 +19,10 @@ bool btrue = true;
 
 using namespace std;
 
+CustomRunner* customRunner = new CustomRunner();
+GraphicsDemonstration* graphicsDemonstration = new GraphicsDemonstration();
+
+
 
 
 
@@ -31,7 +36,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
+//BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
@@ -59,7 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     wc.cbWndExtra = 0;
     wc.hInstance = hInstance;
     wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINDOWPIXEL));
-    wc.hCursor = LoadCursorW(NULL, IDC_ARROW);
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.lpszMenuName = MAKEINTRESOURCE(IDC_WINDOWPIXEL);
     wc.lpszClassName = szWindowClass;
@@ -167,38 +172,45 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
                 if (btrue)
                 {
-#ifdef _USE_C_R_
 
-#endif
+                    customRunner->RenderWeirdGradient((uint8)xOffset, (uint8)yOffset);
+                    customRunner->DrawRect();
+
                     HDC DC = GetDC(hWnd);
                     RECT CR;
                     GetClientRect(hWnd, &CR);
                     int RmL = CR.right - CR.left;
-                    int Bmt = CR.bottom - CR.top;
-
+                    int BmT = CR.bottom - CR.top;
+                    customRunner->Win32UpdateWindow(DC, &CR, 0, 0, RmL, BmT);
                     ReleaseDC(hWnd, DC);
                     ++xOffset;
-#ifdef _USE_C_R_
 
-#endif
                 }
                 else {
                     switch (switchCool)
                     {
                     case 0:
-                        OutputDebugString(_T(" case 0 \n"));
+                     //  OutputDebugString(_T(" case 0 \n"));
+                        graphicsDemonstration->ClearBackGround(hWnd);
+                        graphicsDemonstration->CoolStuff3(hWnd);
                         break;
                     case 1:
-                        OutputDebugString(_T(" case 1 \n"));
+                       // OutputDebugString(_T(" case 1 \n"));
+                        graphicsDemonstration->ClearBackGround(hWnd);
+                        graphicsDemonstration->CoolStuff(hWnd);
                         break;
                     case 2:
-                        OutputDebugString(_T(" case 2 \n"));
+                       // OutputDebugString(_T(" case 2 \n"));
+                        graphicsDemonstration->ClearBackGround(hWnd);
+                        graphicsDemonstration->CoolStuff2(hWnd);
                         break;
                     case 3:
-                        OutputDebugString(_T(" case 3 \n"));
+                       // OutputDebugString(_T(" case 3 \n"));
                         break;
                     default:
-                        OutputDebugString(_T(" case 4 \n"));
+                      //  OutputDebugString(_T(" default \n"));
+                        graphicsDemonstration->ClearBackGround(hWnd);
+                        graphicsDemonstration->CoolStuff3(hWnd);
                         break;
                     }
                 }
@@ -215,7 +227,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #ifndef _DO_CLEAN_UP_EXT__
 #define _DO_CLEAN_UP_EXT__
+    // No longer running.....
+    OutputDebugString(_T(" Class Pt Clean Up\n "));
 
+    if (graphicsDemonstration != NULL)
+        delete graphicsDemonstration;
+    graphicsDemonstration = NULL;
+
+    if (customRunner != NULL)
+        delete customRunner;
+    customRunner = NULL;
 
 #endif
 
@@ -327,7 +348,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
     {
-
+        graphicsDemonstration->WindowMessageCreate(hWnd);
     } break;
 
     case WM_ACTIVATE:
@@ -349,11 +370,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         GetClientRect(hWnd, &CR);
         LONG W = CR.right - CR.left;
         LONG H = CR.bottom - CR.top;
+        customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
+        customRunner->hWnd = hWnd;
+
 
     } break;
 
     case WM_DESTROY:
     {
+        if (graphicsDemonstration != NULL)
+        {
+            graphicsDemonstration->destroy(hWnd);
+        }
 
         isRunning = false;
         OutputDebugString(_T(" WM_DESTROY\n"));
@@ -378,11 +406,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         if (btrue)
         {
-
+            hWnd = customRunner->myPaint(hWnd);
         }
         else
         {
-
+            {
+            graphicsDemonstration->Paint(hWnd);
+            }
         }
     } break;
 

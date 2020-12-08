@@ -30,6 +30,7 @@ void CustomRunner::Win32ResizeDibSection(uint32_t Width, uint32_t Height)
 	BitmapHeight = Height;
 
 	BitmapInfo.bmiHeader.biSize = sizeof(BitmapInfo.bmiHeader);
+	BitmapInfo.bmiHeader.biWidth = (LONG)BitmapWidth;
 	BitmapInfo.bmiHeader.biHeight = -(signed int)BitmapHeight;
 	BitmapInfo.bmiHeader.biPlanes = 1;
 	BitmapInfo.bmiHeader.biBitCount = 32;
