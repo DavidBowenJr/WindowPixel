@@ -14,6 +14,7 @@
 #include <memory.h>
 #include <tchar.h>
 
+#include <stdio.h>
 #include <string>
 #include <math.h>
 #include <limits>

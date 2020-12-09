@@ -26,7 +26,6 @@ GraphicsDemonstration* graphicsDemonstration = new GraphicsDemonstration();
 
 
 
-
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -51,24 +50,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: Place code here.
 
-    WNDCLASSEXW wc = {};
+    WNDCLASSEX wc = {};
+    ZeroMemory(&wc, sizeof(WNDCLASSEX));
+
     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
-    wc.lpszClassName = _T("WindowPixel");
+  //  wc.lpszClassName = _T("WindowPixel");
 
     wc.cbSize = sizeof(WNDCLASSEXW);
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = WndProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = szWindowClass;
+
+
+#ifndef _DEMO_OUT_
+    #define    _DEMO_OUT_
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
-    wc.hInstance = hInstance;
     wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINDOWPIXEL));
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.lpszMenuName = MAKEINTRESOURCE(IDC_WINDOWPIXEL);
-    wc.lpszClassName = szWindowClass;
     wc.hIconSm = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+#endif
+
 
     //Ready for our Message Pump....
     MSG msg;
@@ -88,7 +95,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             0,
             wc.lpszClassName,
             _T("Our Game ext"),
+         //   WS_EX_OVERLAPPEDWINDOW | WS_VISIBLE,
             WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+           // WS_OVERLAPPED | WS_VISIBLE,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
@@ -107,20 +116,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
 
+
+            //
+
+           
             while (isRunning) 
             {
 
+
+
                 while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+
                 {
+                   
+                    /*
                     if (msg.message == WM_QUIT)
                     {
                         isRunning = false;
-                        OutputDebugString(_T(" WM_QUIT \n"));
+                        OutputDebugString(_T("xxx WM_QUIT \n"));
                     }
-                    
+                    */
+                   
+
                     TranslateMessage(&msg);
                     DispatchMessage(&msg);
                 }
+
+              
+
+
+
 
                 // lock button lb lock B key
                 // Dirty.
@@ -149,7 +174,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 }
 
                 if (keys[VK_ESCAPE]) { DestroyWindow(hWnd); }
-
+               
               
 
                 QueryTimer qt = QueryTimer();
@@ -160,7 +185,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
 
-                static bool bforce = true;
+               // static bool bforce = true;
 
                 if (double(0.010000) <= accum)
                 {
@@ -220,13 +245,41 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             }
         }
-    }
-
-    // FIN... NO LONGER RUNNING!!!
-    // Clean House Before Windows gose out... completely 
 
 #ifndef _DO_CLEAN_UP_EXT__
 #define _DO_CLEAN_UP_EXT__
+        // No longer running.....
+        OutputDebugString(_T(" Class Pt Clean Up\n "));
+
+        if (graphicsDemonstration != NULL)
+            delete graphicsDemonstration;
+        graphicsDemonstration = NULL;
+
+        if (customRunner != NULL)
+            delete customRunner;
+        customRunner = NULL;
+
+#endif
+      
+      
+       
+       std::wstring ws; 
+       ws = std::to_wstring(msg.message);
+        OutputDebugString( ws.c_str());
+        GetMessage(&msg, hWnd, 0, 0);
+      //  PeekMessage(&msg, 0, 0, 0, PM_REMOVE);
+        OutputDebugString(_T(" : "));
+        ws = std::to_wstring(msg.message);
+        OutputDebugString(ws.c_str());
+
+        OutputDebugString(_T("\n RegisterClassEx finnished \n"));
+    }
+
+
+
+  
+
+
     // No longer running.....
     OutputDebugString(_T(" Class Pt Clean Up\n "));
 
@@ -238,29 +291,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         delete customRunner;
     customRunner = NULL;
 
-#endif
-
-    /*
-    // Perform application initialization:
-    if (!InitInstance (hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
-    
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
-
-    MSG msg;
-
-    // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
-    */
     return (int) msg.wParam;
 }
 
@@ -346,11 +376,39 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
-    case WM_CREATE:
+
+
+    case WM_PAINT:
     {
-        graphicsDemonstration->WindowMessageCreate(hWnd);
+        if (btrue)
+        {
+            hWnd = customRunner->myPaint(hWnd);
+        }
+        else
+        {
+            {
+                graphicsDemonstration->Paint(hWnd);
+            }
+        }
     } break;
 
+
+
+    case WM_KEYDOWN:
+    {
+        keys[wParam] = TRUE;
+        OutputDebugString(_T(" KEYDOWN \n"));
+    }break;
+
+    case WM_KEYUP:
+    {
+        keys[wParam] = FALSE;
+        OutputDebugString(_T(" KEYUP \n"));
+    } break;
+
+
+
+  
     case WM_ACTIVATE:
     {
         wmEvent = HIWORD(wParam);
@@ -364,6 +422,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
 
+
+  
+
+
+
     case WM_SIZE:
     {
         RECT CR;
@@ -372,10 +435,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         LONG H = CR.bottom - CR.top;
         customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
         customRunner->hWnd = hWnd;
-
-
     } break;
 
+
+    case WM_CREATE:
+    {
+        graphicsDemonstration->WindowMessageCreate(hWnd);
+    } break;
+
+   
+
+    // Priority very low but needed.
     case WM_DESTROY:
     {
         if (graphicsDemonstration != NULL)
@@ -397,36 +467,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
     } break;
 
-    case WM_QUIT:
-    {
-        OutputDebugString(_T(" WM_QUIT \n"));
-    } break;
-
-    case WM_PAINT:
-    {
-        if (btrue)
-        {
-            hWnd = customRunner->myPaint(hWnd);
-        }
-        else
-        {
-            {
-            graphicsDemonstration->Paint(hWnd);
-            }
-        }
-    } break;
-
-    case WM_KEYDOWN:
-    {
-        keys[wParam] = TRUE;
-        OutputDebugString(_T(" KEYDOWN \n"));
-    }break;
-
-    case WM_KEYUP:
-    {
-        keys[wParam] = FALSE;
-        OutputDebugString(_T(" KEYUP \n"));
-    } break;
     //.......
     case WM_COMMAND:
         wmId = LOWORD(wParam);
@@ -451,6 +491,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break; // case WM_COMMAND:
   //.....
 
+    /// <summary>
+    /// NEED TO TURN ON SCREEN SAVER AND TEST THIS
+    /// to see if it is reached.
+    /// </summary>
+    /// <param name="hWnd"></param>
+    /// <param name="message"></param>
+    /// <param name="wParam"></param>
+    /// <param name="lParam"></param>
+    /// <returns></returns>
     case SC_SCREENSAVE: // Screensave trying to start?
     case SC_MONITORPOWER: // Monitor trying to enter power save
         break;
@@ -462,47 +511,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (Result);
 }
-
-
-/*
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    switch (message)
-    {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
-        }
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
-}
-*/
 
 
 // Message handler for about box.

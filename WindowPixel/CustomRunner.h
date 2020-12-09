@@ -23,11 +23,15 @@ public:
 private:
 	int BytesPerPixel;  // = 4;
 public:
+
+
 	void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
 
 	void Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width, int Height);
 
 	HWND myPaint(HWND hWnd);
+
+	void ClearBuffer();
 
 	void RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset);
 

@@ -29,7 +29,7 @@ QueryTimer::QueryTimer()
 
 QueryTimer::~QueryTimer()
 {
-	OutputDebugString(_T("Class QueryTimer ~Called.\n"));
+//	OutputDebugString(_T("Class QueryTimer ~Called.\n"));
 }
 
 void QueryTimer::StartCounter()

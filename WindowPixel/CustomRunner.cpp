@@ -99,6 +99,13 @@ HWND CustomRunner::myPaint(HWND hWnd)
 	return hWnd;
 }
 
+void CustomRunner::ClearBuffer()
+{
+	uint8_t* row = (uint8_t*)BitmapMemory; // get the first 8 bits from a 32 bit buffer in memory
+
+
+}
+
 /* more or less from HMH but it's very usefull */
 void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset)
 {
