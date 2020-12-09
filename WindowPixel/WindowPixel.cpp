@@ -22,7 +22,7 @@ using namespace std;
 CustomRunner* customRunner = new CustomRunner();
 GraphicsDemonstration* graphicsDemonstration = new GraphicsDemonstration();
 
-
+static bool Stop_create = false;
 
 
 
@@ -124,7 +124,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             {
 
 
-
+              
                 while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 
                 {
@@ -141,6 +141,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                     TranslateMessage(&msg);
                     DispatchMessage(&msg);
                 }
+
+                if (msg.message == WM_QUIT)
+                {
+                      OutputDebugString(_T(" WM_QUIT AND BREAK"));   Stop_create = true;  break; 
+                }
+             
+                                      
 
               
 
@@ -176,7 +183,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 if (keys[VK_ESCAPE]) { DestroyWindow(hWnd); }
                
               
-
+                
                 QueryTimer qt = QueryTimer();
                 qt.StartCounter();
                 double em = qt.GetCounter();
@@ -194,22 +201,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                     accum = fmod(accum, 0.01000);
                     btrue = !btrue;
                 }
+                
 
                 if (btrue)
                 {
+                   
+                        customRunner->RenderWeirdGradient((uint8)xOffset, (uint8)yOffset);
+                        customRunner->DrawRect();
 
-                    customRunner->RenderWeirdGradient((uint8)xOffset, (uint8)yOffset);
-                    customRunner->DrawRect();
-
-                    HDC DC = GetDC(hWnd);
-                    RECT CR;
-                    GetClientRect(hWnd, &CR);
-                    int RmL = CR.right - CR.left;
-                    int BmT = CR.bottom - CR.top;
-                    customRunner->Win32UpdateWindow(DC, &CR, 0, 0, RmL, BmT);
-                    ReleaseDC(hWnd, DC);
-                    ++xOffset;
-
+                        HDC DC = GetDC(hWnd);
+                        RECT CR;
+                        GetClientRect(hWnd, &CR);
+                        int RmL = CR.right - CR.left;
+                        int BmT = CR.bottom - CR.top;
+                        customRunner->Win32UpdateWindow(DC, &CR, 0, 0, RmL, BmT);
+                        ReleaseDC(hWnd, DC);
+                        ++xOffset;
+                    
                 }
                 else {
                     switch (switchCool)
@@ -262,12 +270,33 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #endif
       
       
+
+  
        
        std::wstring ws; 
        ws = std::to_wstring(msg.message);
         OutputDebugString( ws.c_str());
+
+#ifdef __DEBUG_EXTRA_INSPECTION_
+//#define __DEBUG_EXTRA_INSPECTION_
+
+        int messagenumber = (int)msg.message; // 275;
+        const TCHAR* translatedMessage = wmTranslation[messagenumber];
+        if (translatedMessage == NULL)
+        {
+            translatedMessage = _T("UnknownMessage");
+        }
+        OutputDebugString(translatedMessage);
+#endif
+
+
+
+
+
         GetMessage(&msg, hWnd, 0, 0);
-      //  PeekMessage(&msg, 0, 0, 0, PM_REMOVE);
+
+     //   PeekMessage(&msg, hWnd, 0, 0, PM_REMOVE);
+     //  PeekMessage(&msg, hWnd, 0, 0, PM_NOREMOVE);
         OutputDebugString(_T(" : "));
         ws = std::to_wstring(msg.message);
         OutputDebugString(ws.c_str());
@@ -423,8 +452,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
 
 
-  
-
+    case WM_TIMER:
+        break;
 
 
     case WM_SIZE:
@@ -433,6 +462,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         GetClientRect(hWnd, &CR);
         LONG W = CR.right - CR.left;
         LONG H = CR.bottom - CR.top;
+
+       
         customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
         customRunner->hWnd = hWnd;
     } break;
@@ -440,6 +471,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_CREATE:
     {
+        
         graphicsDemonstration->WindowMessageCreate(hWnd);
     } break;
 
