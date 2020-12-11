@@ -1,5 +1,5 @@
 #include "CustomRunner.h"
-
+#include "Scratch.h"
 
 
 CustomRunner::CustomRunner()
@@ -12,10 +12,18 @@ CustomRunner::CustomRunner()
 	UNREFERENCED_PARAMETER(hWnd);
 	UNREFERENCED_PARAMETER(Result);
 	UNREFERENCED_PARAMETER(hdc);
+
+	scratch =  new Scratch();
+
 }
 
 CustomRunner::~CustomRunner()
 {
+
+	if (scratch != nullptr)
+	{
+		delete scratch; scratch = nullptr;
+	}
 
 	if (VirtualFree(
 		BitmapMemory,       // Base address of block
@@ -68,7 +76,8 @@ void CustomRunner::Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width,
 	{
 		/* set mapping mode, window and viewport extents */
 		// LOTS CAN BE DONE  HERE...
-		SetMapMode(hdc, MM_ANISOTROPIC);
+		
+		 SetMapMode(hdc, MM_ANISOTROPIC);
 		SetWindowExtEx(hdc, 50, 50, NULL);
 		SetViewportExtEx(hdc, 100, 100, NULL);
 		SetViewportOrgEx(hdc, 50, 10, NULL);
@@ -104,6 +113,11 @@ void CustomRunner::ClearBuffer()
 	uint8_t* row = (uint8_t*)BitmapMemory; // get the first 8 bits from a 32 bit buffer in memory
 
 
+}
+
+void CustomRunner::Render()
+{
+	this->scratch->APP( *this);
 }
 
 /* more or less from HMH but it's very usefull */

@@ -1,12 +1,16 @@
 #pragma once
 #include "framework.h"
 
+
+class Scratch;
+
 class CustomRunner
 {
 
 public:
 	CustomRunner();
 	~CustomRunner();
+
 
 	int wmId;
 	int wmEvent;
@@ -20,6 +24,7 @@ public:
 	uint32_t BitmapWidth;
 	uint32_t BitmapHeight;
 
+	Scratch* scratch;
 private:
 	int BytesPerPixel;  // = 4;
 public:
@@ -32,6 +37,8 @@ public:
 	HWND myPaint(HWND hWnd);
 
 	void ClearBuffer();
+
+	void Render();
 
 	void RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset);
 

@@ -36,6 +36,9 @@
     <ClInclude Include="GraphicsDemonstration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scratch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowPixel.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsDemonstration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scratch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

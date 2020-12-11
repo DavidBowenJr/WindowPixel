@@ -20,7 +20,10 @@ bool btrue = true;
 using namespace std;
 
 CustomRunner* customRunner = new CustomRunner();
+
+#ifdef __USE_OLD_GRAPHICS_
 GraphicsDemonstration* graphicsDemonstration = new GraphicsDemonstration();
+#endif
 
 static bool Stop_create = false;
 
@@ -36,7 +39,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 //BOOL                InitInstance(HINSTANCE, int);
-LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+  LRESULT  CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -53,7 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     WNDCLASSEX wc = {};
     ZeroMemory(&wc, sizeof(WNDCLASSEX));
 
-    wc.lpfnWndProc = WndProc;
+    wc.lpfnWndProc =WndProc;
     wc.hInstance = hInstance;
   //  wc.lpszClassName = _T("WindowPixel");
 
@@ -206,7 +209,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 if (btrue)
                 {
                    
-                        customRunner->RenderWeirdGradient((uint8)xOffset, (uint8)yOffset);
+                    customRunner->Render();
+
+                     //   customRunner->RenderWeirdGradient((uint8)xOffset, (uint8)yOffset);
                         customRunner->DrawRect();
 
                         HDC DC = GetDC(hWnd);
@@ -220,6 +225,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                     
                 }
                 else {
+
+#ifdef __USE_OLD_GRAPHICS_
                     switch (switchCool)
                     {
                     case 0:
@@ -246,6 +253,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                         graphicsDemonstration->CoolStuff3(hWnd);
                         break;
                     }
+#endif
                 }
 
 
@@ -259,9 +267,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         // No longer running.....
         OutputDebugString(_T(" Class Pt Clean Up\n "));
 
+#ifdef __USE_OLD_GRAPHICS_
         if (graphicsDemonstration != NULL)
             delete graphicsDemonstration;
         graphicsDemonstration = NULL;
+#endif
 
         if (customRunner != NULL)
             delete customRunner;
@@ -312,9 +322,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // No longer running.....
     OutputDebugString(_T(" Class Pt Clean Up\n "));
 
+#ifdef __USE_OLD_GRAPHICS_
     if (graphicsDemonstration != NULL)
         delete graphicsDemonstration;
     graphicsDemonstration = NULL;
+#endif
 
     if (customRunner != NULL)
         delete customRunner;
@@ -337,7 +349,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbSize = sizeof(WNDCLASSEX);
 
     wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
+    wcex.lpfnWndProc    =  WndProc;
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
@@ -393,12 +405,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT 
+ CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    int wmId, wmEvent;
+    int wmId , wmEvent;
     PAINTSTRUCT ps;
-    HDC hdc;
-    LRESULT Result = 0;
+    
+      HDC hdc;
+    LRESULT  Result = 0;
 
     DBG_UNREFERENCED_LOCAL_VARIABLE(ps);
     UNREFERENCED_PARAMETER(hdc);
@@ -416,7 +430,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         else
         {
             {
+#ifdef __USE_OLD_GRAPHICS_
                 graphicsDemonstration->Paint(hWnd);
+#endif
+
             }
         }
     } break;
@@ -471,8 +488,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_CREATE:
     {
-        
+#ifdef __USE_OLD_GRAPHICS_
         graphicsDemonstration->WindowMessageCreate(hWnd);
+#endif
+
     } break;
 
    
@@ -480,10 +499,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     // Priority very low but needed.
     case WM_DESTROY:
     {
+#ifdef __USE_OLD_GRAPHICS_
         if (graphicsDemonstration != NULL)
         {
             graphicsDemonstration->destroy(hWnd);
         }
+#endif
 
         isRunning = false;
         OutputDebugString(_T(" WM_DESTROY\n"));
