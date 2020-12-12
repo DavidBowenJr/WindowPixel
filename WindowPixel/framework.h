@@ -23,6 +23,12 @@
 
 #include <map>
 
+#include <functional>
+#include <algorithm>
+#include <utility>
+
+#include <wtypes.h>
+
 
 
 typedef uint8_t  uint8;

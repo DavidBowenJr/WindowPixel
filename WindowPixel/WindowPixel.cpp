@@ -7,6 +7,12 @@
 #include "GraphicsDemonstration.h"
 #include "QueryTimer.h"
 
+
+
+static win32_offscreen_buffer GlobalWorkBuffer;
+static win32_offscreen_buffer GlobalTextureBuffer[4];  // ? how we get resource raw. ext
+
+
 LARGE_INTEGER StartingTime, EndingTime, ElapsedMicrososeconds;
 LARGE_INTEGER Frequency;
 
@@ -211,15 +217,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                    
                     customRunner->Render();
 
+                 //   customRunner->dud();
+
                      //   customRunner->RenderWeirdGradient((uint8)xOffset, (uint8)yOffset);
-                        customRunner->DrawRect();
+             //           customRunner->DrawRect();
 
                         HDC DC = GetDC(hWnd);
                         RECT CR;
                         GetClientRect(hWnd, &CR);
-                        int RmL = CR.right - CR.left;
-                        int BmT = CR.bottom - CR.top;
-                        customRunner->Win32UpdateWindow(DC, &CR, 0, 0, RmL, BmT);
+                        uint32_t WindowWidth = CR.right - CR.left;
+                        uint32_t WindowHeight = CR.bottom - CR.top;
+
+                       
+                        customRunner->Win32UpdateWindow(DC, WindowWidth, WindowHeight, &GlobalWorkBuffer); // win32_offscreen_buffer);
+                      //  customRunner->Win32UpdateWindow(DC, &CR, 0, 0, WindowWidth, WindowHeight);
                         ReleaseDC(hWnd, DC);
                         ++xOffset;
                     
@@ -480,9 +491,12 @@ LRESULT
         LONG W = CR.right - CR.left;
         LONG H = CR.bottom - CR.top;
 
-       
+       // COULD PASS IN GLOBAL
+        customRunner->Buffer = GlobalWorkBuffer;
         customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
         customRunner->hWnd = hWnd;
+        GlobalWorkBuffer = customRunner->Buffer;
+
     } break;
 
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "framework.h"
-
+#include "share.h"
 
 class Scratch;
 
@@ -19,20 +19,26 @@ public:
 	LRESULT Result; // = 0;
 	HWND hWnd;
 
+
+	win32_offscreen_buffer Buffer;
+	/*
 	void* BitmapMemory;
 	BITMAPINFO BitmapInfo;
 	uint32_t BitmapWidth;
 	uint32_t BitmapHeight;
-
+	*/
 	Scratch* scratch;
 private:
-	int BytesPerPixel;  // = 4;
+	//int BytesPerPixel;  // = 4;
 public:
 
 
 	void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
 
-	void Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width, int Height);
+	void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer);
+
+
+	// void Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width, int Height);
 
 	HWND myPaint(HWND hWnd);
 
@@ -44,13 +50,33 @@ public:
 
 	void PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF bgr);
 
+
+
+
 	void PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, int x, int y, COLORREF bgr);
+
+
+	
+	void WuDrawLine(void* bm, uint32_t bw, uint32_t bh, float x0, float y0, float x1, float y1);
+
+	void DrawRect(void* bm, uint32_t bw, uint32_t bh);
 
 	void DrawRect();
 	
 	void PutPixelBackOrder(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF gbr);
 
 	COLORREF GetPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y);
+
+
+	
+	
+	
+	
+	
+
+
+
+
 
 };
 

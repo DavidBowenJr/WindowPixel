@@ -147,9 +147,11 @@
     <ClInclude Include="CustomRunner.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsDemonstration.h" />
+    <ClInclude Include="ImageHeader.h" />
     <ClInclude Include="QueryTimer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scratch.h" />
+    <ClInclude Include="share.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowPixel.h" />
   </ItemGroup>

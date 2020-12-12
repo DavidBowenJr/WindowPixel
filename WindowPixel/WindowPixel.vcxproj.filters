@@ -39,6 +39,12 @@
     <ClInclude Include="Scratch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="share.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowPixel.cpp">
