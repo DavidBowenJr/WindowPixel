@@ -215,13 +215,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 if (btrue)
                 {
                    
-                    customRunner->Render();
+                  //  customRunner->Render();
 
                  //   customRunner->dud();
 
                      //   customRunner->RenderWeirdGradient((uint8)xOffset, (uint8)yOffset);
              //           customRunner->DrawRect();
 
+                    customRunner->Render();
+
+                    
                         HDC DC = GetDC(hWnd);
                         RECT CR;
                         GetClientRect(hWnd, &CR);
@@ -229,9 +232,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                         uint32_t WindowHeight = CR.bottom - CR.top;
 
                        
-                        customRunner->Win32UpdateWindow(DC, WindowWidth, WindowHeight, &GlobalWorkBuffer); // win32_offscreen_buffer);
+                        customRunner->Win32UpdateWindow(DC, WindowWidth, WindowHeight, GlobalWorkBuffer); // win32_offscreen_buffer);
                       //  customRunner->Win32UpdateWindow(DC, &CR, 0, 0, WindowWidth, WindowHeight);
+                        
+                    
                         ReleaseDC(hWnd, DC);
+                        
+                       
+
+
+
                         ++xOffset;
                     
                 }
@@ -436,7 +446,9 @@ LRESULT
     {
         if (btrue)
         {
+        
             hWnd = customRunner->myPaint(hWnd);
+          
         }
         else
         {
@@ -486,18 +498,26 @@ LRESULT
 
     case WM_SIZE:
     {
+
+      
+        /*
         RECT CR;
         GetClientRect(hWnd, &CR);
         LONG W = CR.right - CR.left;
         LONG H = CR.bottom - CR.top;
 
        // COULD PASS IN GLOBAL
-        customRunner->Buffer = GlobalWorkBuffer;
+     
         customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
         customRunner->hWnd = hWnd;
         GlobalWorkBuffer = customRunner->Buffer;
+        */
 
+     
     } break;
+
+    case WM_ERASEBKGND:
+        break;
 
 
     case WM_CREATE:
@@ -505,6 +525,25 @@ LRESULT
 #ifdef __USE_OLD_GRAPHICS_
         graphicsDemonstration->WindowMessageCreate(hWnd);
 #endif
+        // Time 2:37 PM
+        // 12/12/2020 Now it will scale 
+        
+        RECT CR;
+        GetClientRect(hWnd, &CR);
+        LONG W = CR.right - CR.left;
+        LONG H = CR.bottom - CR.top;
+
+        // COULD PASS IN GLOBAL
+
+        customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
+        customRunner->hWnd = hWnd;
+        GlobalWorkBuffer = customRunner->Buffer;
+
+
+
+
+
+
 
     } break;
 

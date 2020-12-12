@@ -32,10 +32,13 @@ private:
 	//int BytesPerPixel;  // = 4;
 public:
 
-
+	//void  Win32ResizeDibSection(win32_offscreen_buffer* Buffer, uint32_t Width, uint32_t Height);
 	void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
 
-	void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer);
+
+	void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);
+
+	//void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer);
 
 
 	// void Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width, int Height);

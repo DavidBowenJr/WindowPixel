@@ -43,6 +43,8 @@ CustomRunner::~CustomRunner()
 	OutputDebugString(_T(" Class CustomRunner  ~ Called.\n"));
 }
 
+
+
 void CustomRunner::Win32ResizeDibSection(uint32_t Width, uint32_t Height)
 {
 	if (Buffer.Memory)
@@ -67,28 +69,35 @@ void CustomRunner::Win32ResizeDibSection(uint32_t Width, uint32_t Height)
 }
 
 
-void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer)
-{
 
-	if (Buffer->Memory == NULL) _ASSERTE(L"Bad");
-	// 
+
+
+
+//void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer)
+void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer)
+{
+	// should be &Buffer.Info and -> but i placed in as & ref
+
+	if (Buffer.Memory == NULL) _ASSERTE(L"Bad");
+	 
 	int previousmode = SetStretchBltMode(hdc, MAXSTRETCHBLTMODE); // COLORONCOLOR
 	int wh = SetICMMode(hdc, ICM_ON);
 	if (wh == wh) {};
 	if (previousmode == previousmode) {};
-	StretchDIBits(hdc, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer->Width, Buffer->Height, Buffer->Memory,(const BITMAPINFO*) &Buffer->Info,(UINT) DIB_RGB_COLORS, (DWORD) SRCCOPY);
+	StretchDIBits(hdc, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory,(const BITMAPINFO*) &Buffer.Info,(UINT) DIB_RGB_COLORS, (DWORD) SRCCOPY);
 	
 	
 
-	this->Buffer.BytesPerPixel = Buffer->BytesPerPixel;
-	this->Buffer.Height = Buffer->Height;
-	memcpy( &this->Buffer.Info, &Buffer->Info, sizeof(BITMAPINFO));
+	this->Buffer.BytesPerPixel = Buffer.BytesPerPixel;
+	this->Buffer.Height = Buffer.Height;
+	memcpy( &this->Buffer.Info, &Buffer.Info, sizeof(BITMAPINFO));
 	
 
-	if (this->Buffer.Memory == NULL && Buffer->Memory != NULL)
-	this->Buffer.Memory = Buffer->Memory;
-	this->Buffer.Pitch = Buffer->Pitch;
-	this->Buffer.Width = Buffer->Width;
+	if (this->Buffer.Memory == NULL && Buffer.Memory != NULL)
+	this->Buffer.Memory = Buffer.Memory;
+	this->Buffer.Pitch = Buffer.Pitch;
+	this->Buffer.Width = Buffer.Width;
+	this->Buffer.Height = Buffer.Height;
 	
 
 }
@@ -131,6 +140,9 @@ HWND CustomRunner::myPaint(HWND hWnd)
 {
 	RECT CR;
 	GetClientRect(hWnd, &CR);
+
+	this->hWnd = hWnd;
+
 	// PAINTSTRUCT ps;
 	HDC hDC = BeginPaint(hWnd, &this->ps);
 
@@ -140,7 +152,7 @@ HWND CustomRunner::myPaint(HWND hWnd)
 	uint32_t WindowHeight = this->ps.rcPaint.bottom - this->ps.rcPaint.top;
 
 	//if(Buffer.Memory != NULL)
-	this->Win32UpdateWindow(hDC, WindowWidth, WindowHeight, &Buffer);
+	this->Win32UpdateWindow(hDC, WindowWidth, WindowHeight, Buffer);
 	
 	
 	//this->Win32UpdateWindow(hDC, &CR, x, y, Wt, Ht);
