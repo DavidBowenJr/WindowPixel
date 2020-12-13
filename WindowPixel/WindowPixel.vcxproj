@@ -148,6 +148,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsDemonstration.h" />
     <ClInclude Include="ImageHeader.h" />
+    <ClInclude Include="ImageSource.h" />
     <ClInclude Include="QueryTimer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scratch.h" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="CustomRunner.cpp" />
     <ClCompile Include="GraphicsDemonstration.cpp" />
+    <ClCompile Include="ImageSource.cpp" />
     <ClCompile Include="QueryTimer.cpp" />
     <ClCompile Include="Scratch.cpp" />
     <ClCompile Include="WindowPixel.cpp" />

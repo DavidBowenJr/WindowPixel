@@ -1,6 +1,7 @@
 #pragma once
 #include "framework.h"
 #include "share.h"
+#include "ImageSource.h"
 
 class Scratch;
 
@@ -21,6 +22,10 @@ public:
 
 
 	win32_offscreen_buffer Buffer;
+
+	win32_offscreen_buffer TextureBuffer[4];
+
+
 	/*
 	void* BitmapMemory;
 	BITMAPINFO BitmapInfo;
@@ -51,6 +56,10 @@ public:
 
 	void RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset);
 
+	// This is just a test
+	void RenderWeirdGradient(uint32_t x, uint32_t y, win32_offscreen_buffer &TextureBuffer ,win32_offscreen_buffer  &GardBuffer);
+
+
 	void PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF bgr);
 
 
@@ -73,10 +82,16 @@ public:
 
 	
 	
+	void AnotherWrap(CustomRunner& custRun);
 	
 	
-	
+	void CopyImage(win32_offscreen_buffer& destBuffer, win32_offscreen_buffer& sourceBuffer);
 
+	void FlipHorizontal(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source);
+
+	void FlipVertical(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source);
+
+	
 
 
 

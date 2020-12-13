@@ -18,16 +18,65 @@ CustomRunner::CustomRunner()
 
 	scratch =  new Scratch();
 
+	{
+		BITMAPINFOHEADER bitmapInfoHeader;
+		uint8_t* bitmapData;
+		
+		// Should add error handling here it pass so far.
+
+
+		// There are ways to post build and get our image data into our debug or ext
+		// but for now compile then place into the debug or release...
+		// VERY SIMPLE TEST.....
+		// Will Place else where but for now simple test.
+		bitmapData = LoadBitmapFile( (char*)("photo3.bmp") , &bitmapInfoHeader);
+		bitmapInfoHeader.biBitCount = 32;
+		memcpy(&TextureBuffer[0].Info, &bitmapInfoHeader, sizeof(BITMAPINFO));
+		TextureBuffer[0].Memory = bitmapData;
+		TextureBuffer[0].Width = bitmapInfoHeader.biWidth;
+		TextureBuffer[0].Height = bitmapInfoHeader.biHeight;
+		TextureBuffer[0].BytesPerPixel = bitmapInfoHeader.biBitCount / 8;
+		TextureBuffer[0].Pitch = bitmapInfoHeader.biWidth * (bitmapInfoHeader.biBitCount / 8);
+		TextureBuffer[0].Pitch = TextureBuffer[0].Pitch;
+
+		if (TextureBuffer[0].Width > 0)
+		{
+		OutputDebugString( std::to_wstring(TextureBuffer[0].Width).c_str() );
+			
+		}
+
+		// Our other texture memory surface ext.
+		// free(GlobalTextureBuffer[1].Memory);
+		// free(TextureBuffer[0].Memory);
+
+
+
+	}
+
+
+
 }
 
 CustomRunner::~CustomRunner()
 {
+
+	
+
 
 	if (scratch != nullptr)
 	{
 		delete scratch; scratch = nullptr;
 	}
 
+
+if (TextureBuffer[0].Memory != NULL)
+	{
+	free(TextureBuffer[0].Memory); 
+	}
+
+	/// <summary>
+	/// buffer that will be sent to the stretch blit function.
+	/// </summary>
 	if(Buffer.Memory != NULL)
 	if (VirtualFree(
 		Buffer.Memory,       // Base address of block
@@ -76,7 +125,7 @@ void CustomRunner::Win32ResizeDibSection(uint32_t Width, uint32_t Height)
 //void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer)
 void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer)
 {
-	// should be &Buffer.Info and -> but i placed in as & ref
+	
 
 	if (Buffer.Memory == NULL) _ASSERTE(L"Bad");
 	 
@@ -198,6 +247,132 @@ void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset)
 	}
 }
 
+/// <summary>
+/// Serves no particular purpose just a test.
+/// </summary>
+/// <param name="custRun"></param>
+void CustomRunner::AnotherWrap(CustomRunner& custRun)
+{
+	/*
+	win32_offscreen_buffer* Bf = &custRun.Buffer;
+	win32_offscreen_buffer* Gd = &custRun.TextureBuffer[0];
+	
+	 RenderWeirdGradient(0, 0,  *Bf, *Gd);
+	 */
+
+	/*
+	win32_offscreen_buffer Bf = custRun.Buffer;
+	win32_offscreen_buffer Gd = custRun.TextureBuffer[0];
+
+	RenderWeirdGradient(0, 0, Bf, Gd);
+	*/
+
+
+	RenderWeirdGradient(0, 0, custRun.Buffer, custRun.TextureBuffer[0]);
+
+}
+
+/// <summary>
+///  Just a test more param needed PutPixel keeps us in bounds.
+/// </summary>
+/// <param name="destBuffer"></param>
+/// <param name="sourceBuffer"></param>
+void CustomRunner::CopyImage(win32_offscreen_buffer& destBuffer, win32_offscreen_buffer& sourceBuffer)
+{
+
+	for( uint32_t j = 0; j < sourceBuffer.Width; j++)
+		for ( uint32_t i = 0; i < sourceBuffer.Height; i++)
+		{
+			COLORREF color = CustomRunner::GetPixel(sourceBuffer.Memory, sourceBuffer.Width, sourceBuffer.Height, j, i);
+			PutPixel(destBuffer.Memory, destBuffer.Width, destBuffer.Height, j, i, color);
+
+		}
+
+}
+
+void CustomRunner::FlipHorizontal(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source)
+{
+	uint32_t sy = 0; // y and pitch for Source
+	uint32_t dy = 0; // y and pitch for Destination
+
+	uint32_t* gps = (uint32*)Source.Memory; // Base Address  for our source memory region
+	uint32_t* gpd = (uint32*)Destination.Memory; // Base Address for our destination memory region
+
+	for (uint32_t Y = 0; Y < Source.Height; Y++)
+	{
+		// Compute Row...
+		sy = (Source.Width * Y);
+		dy = (Destination.Width * Y);
+		for (uint32_t X = 0; X < Source.Width; X++)
+		{
+			// Compute Row Times Column
+			// On the Source we would like to read from it's end to it's start to flip horizontal
+			uint32* ps = gps;
+			ps += (sy + (Source.Width - X));
+
+			// Now calculate the destination in forward order
+			uint32* pd = gpd;
+			pd += dy + X;
+
+			// We have our address at the new possition we dereference our pointers.
+			// Pass by value. from our souce cell to our destination cell
+			*pd = *ps;
+		}
+	}
+
+}
+
+void CustomRunner::FlipVertical(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source)
+{
+	uint32 sy = 0;
+	uint32 dy = 0;
+	uint32* gps = (uint32*)Source.Memory;
+	uint32* gpd = (uint32*)Destination.Memory;
+
+	for (uint32_t Y = 0; Y < Source.Height; ++Y)
+	{
+		sy = (Source.Width * (Source.Height - Y));
+		dy = (Destination.Width * Y);
+		for (uint32_t X = 0; X < Source.Width; ++X)
+		{
+			uint32* ps = gps;
+			uint32* pd = gpd;
+			ps += (sy + X);
+			pd += (dy + X);
+			*pd = *ps;
+		}
+
+	}
+}
+
+
+// This is just a test
+void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset, win32_offscreen_buffer& TextureBuffer, win32_offscreen_buffer& GardBuffer)
+{
+	if (TextureBuffer.Memory == NULL) return;
+	win32_offscreen_buffer *B = &TextureBuffer;
+	uint32_t w = B->Width;
+	uint32_t h = B->Height;
+
+	UNREFERENCED_PARAMETER(GardBuffer);
+		
+			uint32_t Pitch = w * B->BytesPerPixel;
+			uint8_t* Row = (uint8_t*)B->Memory;
+			for (uint32_t Y = 0; Y < B->Height; ++Y)
+			{
+				uint32* Pixel = (uint32*)Row;
+				for (uint32_t X = 0; X < B->Width; ++X)
+				{
+					uint8_t Blue =  (BYTE)(YOffset + X);
+					uint8_t Green = (BYTE)(XOffset + YOffset + X + Y);
+					uint8_t Red =   (BYTE)(XOffset + Y);
+					*Pixel++ = (uint32_t)  (Red << 16) | (Green << 8) | (Blue) ;
+				}
+				Row += Pitch;
+			}
+
+}
+
 void CustomRunner::PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF bgr)
 {
 	if (BitmapMemory == NULL) return;
@@ -307,5 +482,7 @@ COLORREF CustomRunner::GetPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32
 
 	return COLORREF(0);
 }
+
+
 
 

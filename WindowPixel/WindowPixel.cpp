@@ -499,7 +499,7 @@ LRESULT
     case WM_SIZE:
     {
 
-      
+       
         /*
         RECT CR;
         GetClientRect(hWnd, &CR);
