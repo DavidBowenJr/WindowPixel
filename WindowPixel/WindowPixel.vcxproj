@@ -145,6 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CustomRunner.h" />
+    <ClInclude Include="ErrorExit.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsDemonstration.h" />
     <ClInclude Include="ImageHeader.h" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CustomRunner.cpp" />
+    <ClCompile Include="ErrorExit.cpp" />
     <ClCompile Include="GraphicsDemonstration.cpp" />
     <ClCompile Include="ImageSource.cpp" />
     <ClCompile Include="QueryTimer.cpp" />

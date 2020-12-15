@@ -23,19 +23,28 @@ void Scratch::APP(CustomRunner& customRunner)
 
 	/* Get the current cursor position */
 	b = GetCursorPos(&p);
+	//GetMouseMovePointsEx();
+	// b = FALSE;
+	if (!b) {
+		ReleaseDC(customRunner.hWnd, customRunner.hdc); //GetDesktopWindow(), customRunner.hdc);
+	return;
+	}
+
 	
-	if (!b) return;
 	y =  -p.x;
 	x =  -p.y;
 	//GetPixel(customRunner.hdc, p.y, p.x); // wingdi
 
 	
 
-	ReleaseDC(GetDesktopWindow(), customRunner.hdc); // wingdi
+	ReleaseDC(customRunner.hWnd, customRunner.hdc); //GetDesktopWindow(), customRunner.hdc); // wingdi
+	
 
- 
-
-
+	/*
+	LONG st = 0;
+	LONG lg = ~0;
+	OutputDebugString(std::to_wstring( lg   ).c_str());
+	*/
 
 
 

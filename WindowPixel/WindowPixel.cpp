@@ -2,10 +2,16 @@
 //
 
 #include "framework.h"
+
+#include <WinUser.h>
+
 #include "WindowPixel.h"
 #include "CustomRunner.h"
 #include "GraphicsDemonstration.h"
 #include "QueryTimer.h"
+
+#include <Stringapiset.h> // MultiByteToWideChar
+#include "ErrorExit.h"
 
 
 
@@ -52,6 +58,13 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
   LRESULT  CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+
+
+
+
+
+
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -68,14 +81,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     wc.lpfnWndProc =WndProc;
     wc.hInstance = hInstance;
-  //  wc.lpszClassName = _T("WindowPixel");
+    wc.lpszClassName = _T("WindowPixel");
 
     wc.cbSize = sizeof(WNDCLASSEXW);
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
-    wc.lpszClassName = szWindowClass;
+ //   wc.lpszClassName = szWindowClass;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.hIconSm = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 
 #ifndef _DEMO_OUT_
@@ -102,15 +118,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadString(hInstance, IDC_WINDOWPIXEL, szWindowClass, MAX_LOADSTRING);
    // MyRegisterClass(hInstance);
 
+ 
+
     if (RegisterClassEx(&wc))
     {
         HWND hWnd = CreateWindowEx(
             0,
             wc.lpszClassName,
             _T("Our Game ext"),
-         //   WS_EX_OVERLAPPEDWINDOW | WS_VISIBLE,
+        //WS_EX_OVERLAPPEDWINDOW | WS_VISIBLE,
+            
             WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-           // WS_OVERLAPPED | WS_VISIBLE,
+          //WS_OVERLAPPED | WS_VISIBLE,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
@@ -127,11 +146,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
             if (MessageAndGameLoop(&msg, hWnd)) {};
 
-
-
-           
-
-           
 
          
 #if 0
@@ -314,9 +328,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 #endif
       
-      
-
-  
        
        std::wstring ws; 
        ws = std::to_wstring(msg.message);
@@ -333,9 +344,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         OutputDebugString(translatedMessage);
 #endif
-
-
-
 
 
         GetMessage(&msg, hWnd, 0, 0);
@@ -393,6 +401,13 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             DestroyWindow(hWnd);
         }
 
+        if (GetAsyncKeyState(VK_SPACE) & 0X8000) {
+            {
+                string errorcheck = "An Error Check quit";
+                    ErrorExit((LPTSTR) errorcheck.c_str());
+            }
+        }
+
         {
             if(customRunner)
             customRunner->Render();
@@ -408,7 +423,6 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
             ReleaseDC(hWnd, deviceContext);
         }
-
 
     }
 
@@ -518,6 +532,7 @@ LRESULT
 #endif
 
             }
+
         }
     } break;
 
