@@ -12,20 +12,58 @@ Scratch::~Scratch()
 void Scratch::APP(CustomRunner& customRunner)
 {
 
-static	int x = 0;
+	int x = 0;
 	int y = 0;
+	POINT p;
+	BOOL  b;
+
+	
+	if(customRunner.hdc == NULL) customRunner.hdc  = GetDC(customRunner.hWnd);
+	if (customRunner.hdc == NULL) return; 
+
+	/* Get the current cursor position */
+	b = GetCursorPos(&p);
+	
+	if (!b) return;
+	y =  -p.x;
+	x =  -p.y;
+	//GetPixel(customRunner.hdc, p.y, p.x); // wingdi
+
+	
+
+	ReleaseDC(GetDesktopWindow(), customRunner.hdc); // wingdi
+
+ 
 
 
-	x += 5;
 
-	customRunner.RenderWeirdGradient(x, y);
-	// Bind Texture[0] with our main Render Image.
-//	static bool doOnce = false;
-//	if (!doOnce)
+
+
+customRunner.
+RenderWeirdGradient(x, y);
+
 	{
-		customRunner.CopyImage(customRunner.Buffer, customRunner.TextureBuffer[0]);
-		customRunner.FlipHorizontal(customRunner.Buffer, customRunner.TextureBuffer[0]);
-		customRunner.FlipVertical(customRunner.Buffer, customRunner.TextureBuffer[0]);
+	
+	customRunner.
+	CopyImage(
+		customRunner.
+		Buffer,
+		customRunner.
+		TextureBuffer[0]);
+
+	customRunner.
+		FlipHorizontal(
+			customRunner.
+			Buffer,
+			customRunner.
+			TextureBuffer[0]);
+
+	customRunner.
+	FlipVertical(
+		customRunner.
+		Buffer, 
+		customRunner.
+		TextureBuffer[0]);
 	//	doOnce = false;
 	}
 

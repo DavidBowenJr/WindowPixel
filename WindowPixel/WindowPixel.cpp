@@ -17,6 +17,10 @@ LARGE_INTEGER StartingTime, EndingTime, ElapsedMicrososeconds;
 LARGE_INTEGER Frequency;
 
 
+WPARAM MessageAndGameLoop(PMSG msg, HWND hWnd);
+
+
+
 
 bool keys[256]; // Array used for the keyboard routine
 
@@ -112,30 +116,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             0, 0, hInstance, 0);
+        
+        
+        hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
+ 
 
         if (hWnd)
         {
             OutputDebugString(_T("Start up msg Pump\n"));
 
+            if (MessageAndGameLoop(&msg, hWnd)) {};
 
-            isRunning = true;
 
+
+           
+
+           
+
+         
+#if 0
+            
             int xOffset = 0;
             int yOffset = 0;
 
-            hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
-
-
-            //
-
-           
+            isRunning = true;
+ 
             while (isRunning) 
             {
 
-
-              
                 while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-
                 {
                    
                     /*
@@ -155,14 +164,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 {
                       OutputDebugString(_T(" WM_QUIT AND BREAK"));   Stop_create = true;  break; 
                 }
+
              
-                                      
-
-              
-
-
-
-
+             
+  
                 // lock button lb lock B key
                 // Dirty.
                 static bool lb = false;
@@ -189,7 +194,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                     lc = false; // if so , the lock becomes false
                 }
 
-                if (keys[VK_ESCAPE]) { DestroyWindow(hWnd); }
+            // Using AsynkKeyState
+            //    if (keys[VK_ESCAPE]) { DestroyWindow(hWnd); }
                
               
                 
@@ -275,13 +281,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                         break;
                     }
 #endif
+
+
+                   
+
+
                 }
 
-
+              
 
 
             }
-        }
+#endif
+
+        } // end of procedure pump
+
 
 #ifndef _DO_CLEAN_UP_EXT__
 #define _DO_CLEAN_UP_EXT__
@@ -325,9 +339,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
         GetMessage(&msg, hWnd, 0, 0);
-
-     //   PeekMessage(&msg, hWnd, 0, 0, PM_REMOVE);
-     //  PeekMessage(&msg, hWnd, 0, 0, PM_NOREMOVE);
         OutputDebugString(_T(" : "));
         ws = std::to_wstring(msg.message);
         OutputDebugString(ws.c_str());
@@ -357,6 +368,55 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 
+
+WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
+{
+    isRunning = true;
+    while (isRunning)
+    {
+        while (PeekMessage(pMsg, 0, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(pMsg);
+            DispatchMessage(pMsg);
+        }
+
+        if (pMsg->message == WM_QUIT) {
+            isRunning = false;
+        }
+
+        if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+            SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
+            return pMsg->wParam;
+        }
+
+        if (GetAsyncKeyState(VK_F1) & 0X8000) {
+            DestroyWindow(hWnd);
+        }
+
+        {
+            if(customRunner)
+            customRunner->Render();
+        }
+
+        {
+            HDC deviceContext = GetDC(hWnd);
+            RECT rt;
+            GetClientRect(hWnd, &rt);
+            uint32_t canvasWidth  = rt.right  - rt.left;
+            uint32_t canvasHeight = rt.bottom - rt.top;
+            if(customRunner)
+            customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
+            ReleaseDC(hWnd, deviceContext);
+        }
+
+
+    }
+
+
+
+
+    return pMsg->wParam;
+}
 
 //
 //  FUNCTION: MyRegisterClass()
