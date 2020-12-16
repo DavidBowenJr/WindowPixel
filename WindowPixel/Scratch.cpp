@@ -3,10 +3,11 @@
 
 Scratch::Scratch()
 {
-
+	OutputDebugString(TEXT("CONSTRUCTOR CALLED FOR SCRATCH SURFACE ....."));
 }
 Scratch::~Scratch()
 {
+	OutputDebugString(TEXT("DECONSTRUCTOR CALLED FOR SCRATCH SURFACE ...."));
 }
 
 void Scratch::APP(CustomRunner& customRunner)
@@ -73,7 +74,19 @@ RenderWeirdGradient(x, y);
 		Buffer, 
 		customRunner.
 		TextureBuffer[0]);
-	//	doOnce = false;
+	
+
+
+#ifdef __USE_TEST_PLASMA
+#define __USE_TEST_PLASMA
+	Plasma plasma(scr);
+	plasma.SomeFunction5(hWnd, GlobalBackBuffer);
+
+#endif;
+
+
+
+
 	}
 
 

@@ -1,8 +1,9 @@
 #include "CustomRunner.h"
 #include "Scratch.h"
+#include "Plasma.h"
 
 
-
+//static Plasma plasma; // = Plasma((SDL_Surface*)plasma.scr);
 
 	 
 	//extern COLORREF _stdcall GetPixel;
@@ -10,8 +11,8 @@
 	CustomRunner::CustomRunner()
 	{
 
-
-
+		//plasma = Plasma((SDL_Surface*)plasma.scr);
+	
 
 		Buffer.Memory = NULL;
 
@@ -58,8 +59,10 @@
 			// free(GlobalTextureBuffer[1].Memory);
 			// free(TextureBuffer[0].Memory);
 
-
-
+#ifdef __XFIND_A_RESOLUTION
+			plasma = new Plasma();
+#endif
+			
 		}
 
 
@@ -68,7 +71,12 @@
 	CustomRunner::~CustomRunner()
 	{
 
-
+#ifdef __XFIND_A_RESOLUTION
+		if (plasma != nullptr)
+		{
+			delete plasma; plasma = nullptr;
+		}
+#endif
 
 		if (scratch != nullptr)
 		{
@@ -128,6 +136,13 @@
 
 
 
+
+	void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer, Plasma &plasma)
+	{
+		this->pplasma = &plasma;
+		//this->plasma->scr = plasma.scr;
+		this->Win32UpdateWindow(hdc, WindowWidth, WindowHeight, Buffer);
+	}
 
 	//void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer)
 	void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer)
@@ -227,6 +242,17 @@
 	void CustomRunner::Render()
 	{
 		this->scratch->APP(*this);
+#ifdef __FIND_A_RESOLUTION
+		//this->plasma.SomeFunction5(this->hWnd,this)
+	//	this->plasma->SomeFunction5(this->hWnd, this->Buffer);
+	//	this->plasma->Foo();
+		pplasma->Foo();
+
+		//if(this->pplasma->palette)
+		this->pplasma->SomeFunction5(hWnd, Buffer);
+		
+#endif
+
 	}
 
 	/* more or less from HMH but it's very usefull */

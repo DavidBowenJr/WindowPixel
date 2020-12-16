@@ -4,7 +4,7 @@
 #include "ImageSource.h"
 
 class Scratch;
-
+class Plasma;
 
 
 
@@ -28,7 +28,13 @@ class Scratch;
 		win32_offscreen_buffer Buffer;
 
 		win32_offscreen_buffer TextureBuffer[4];
-
+	   
+	///FINDING A RESOLVE
+#ifdef __FIND_A_RESOLUTION
+		Plasma* pplasma;
+	//	Plasma plasma;
+#endif
+		
 
 		/*
 		void* BitmapMemory;
@@ -43,6 +49,10 @@ class Scratch;
 
 		//void  Win32ResizeDibSection(win32_offscreen_buffer* Buffer, uint32_t Width, uint32_t Height);
 		void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
+
+
+
+		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer, Plasma& plasma);
 
 
 		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);

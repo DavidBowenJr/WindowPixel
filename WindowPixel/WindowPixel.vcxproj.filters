@@ -16,6 +16,15 @@
     <Filter Include="Source Files\ErrorHandling">
       <UniqueIdentifier>{0c898861-c5af-476c-923a-97dca39a5dcf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\DLParts">
+      <UniqueIdentifier>{de2b0fc8-42fa-4491-bae2-92eccad414fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Plasma">
+      <UniqueIdentifier>{7afef5a1-dcb6-4775-b714-b5f50364f66c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ColorStructs">
+      <UniqueIdentifier>{3c257c38-efd0-4bd5-9172-a73ff864cf9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,6 +63,15 @@
     <ClInclude Include="ErrorExit.h">
       <Filter>Source Files\ErrorHandling</Filter>
     </ClInclude>
+    <ClInclude Include="PartsOfSDL.h">
+      <Filter>Header Files\DLParts</Filter>
+    </ClInclude>
+    <ClInclude Include="Plasma.h">
+      <Filter>Source Files\Plasma</Filter>
+    </ClInclude>
+    <ClInclude Include="colorstruct.h">
+      <Filter>Source Files\ColorStructs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowPixel.cpp">
@@ -76,6 +94,12 @@
     </ClCompile>
     <ClCompile Include="ErrorExit.cpp">
       <Filter>Source Files\ErrorHandling</Filter>
+    </ClCompile>
+    <ClCompile Include="Plasma.cpp">
+      <Filter>Source Files\Plasma</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorStructs.cpp">
+      <Filter>Source Files\ColorStructs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

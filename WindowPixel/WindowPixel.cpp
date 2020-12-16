@@ -12,18 +12,25 @@
 
 #include <Stringapiset.h> // MultiByteToWideChar
 #include "ErrorExit.h"
+#include "Plasma.h"
+
+//SDL_Surface* scr;
 
 
 
-static win32_offscreen_buffer GlobalWorkBuffer;
-static win32_offscreen_buffer GlobalTextureBuffer[4];  // ? how we get resource raw. ext
+  static win32_offscreen_buffer GlobalWorkBuffer;
+  static win32_offscreen_buffer GlobalTextureBuffer[4];  // ? how we get resource raw. ext
+  
 
+  Plasma pplasma = Plasma();
 
 LARGE_INTEGER StartingTime, EndingTime, ElapsedMicrososeconds;
 LARGE_INTEGER Frequency;
 
 
 WPARAM MessageAndGameLoop(PMSG msg, HWND hWnd);
+
+
 
 
 
@@ -36,6 +43,7 @@ bool btrue = true;
 using namespace std;
 
 CustomRunner* customRunner = new CustomRunner();
+
 
 #ifdef __USE_OLD_GRAPHICS_
 GraphicsDemonstration* graphicsDemonstration = new GraphicsDemonstration();
@@ -57,11 +65,6 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 //BOOL                InitInstance(HINSTANCE, int);
   LRESULT  CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
-
-
-
-
 
 
 
@@ -355,10 +358,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
 
-
-  
-
-
     // No longer running.....
     OutputDebugString(_T(" Class Pt Clean Up\n "));
 
@@ -417,17 +416,23 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             HDC deviceContext = GetDC(hWnd);
             RECT rt;
             GetClientRect(hWnd, &rt);
-            uint32_t canvasWidth  = rt.right  - rt.left;
+            uint32_t canvasWidth = rt.right - rt.left;
             uint32_t canvasHeight = rt.bottom - rt.top;
-            if(customRunner)
-            customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
+            if (customRunner)
+            {
+
+
+              //  customRunner->plasma->scr = plasma.scr;
+             //   customRunner->plasma.scr = plasma.scr;
+
+             //   customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
+                customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer, pplasma);
+            }
+            
             ReleaseDC(hWnd, deviceContext);
         }
 
     }
-
-
-
 
     return pMsg->wParam;
 }
@@ -519,10 +524,8 @@ LRESULT
     case WM_PAINT:
     {
         if (btrue)
-        {
-        
+        {   
             hWnd = customRunner->myPaint(hWnd);
-          
         }
         else
         {
@@ -535,8 +538,6 @@ LRESULT
 
         }
     } break;
-
-
 
     case WM_KEYDOWN:
     {
@@ -551,8 +552,6 @@ LRESULT
     } break;
 
 
-
-  
     case WM_ACTIVATE:
     {
         wmEvent = HIWORD(wParam);
@@ -566,10 +565,8 @@ LRESULT
     }
     break;
 
-
     case WM_TIMER:
         break;
-
 
     case WM_SIZE:
     {
@@ -594,9 +591,9 @@ LRESULT
     case WM_ERASEBKGND:
         break;
 
-
     case WM_CREATE:
     {
+
 #ifdef __USE_OLD_GRAPHICS_
         graphicsDemonstration->WindowMessageCreate(hWnd);
 #endif
@@ -614,17 +611,9 @@ LRESULT
         customRunner->hWnd = hWnd;
         GlobalWorkBuffer = customRunner->Buffer;
 
-
-
-
-
-
-
     } break;
 
-   
 
-    // Priority very low but needed.
     case WM_DESTROY:
     {
 #ifdef __USE_OLD_GRAPHICS_
@@ -672,15 +661,6 @@ LRESULT
         break; // case WM_COMMAND:
   //.....
 
-    /// <summary>
-    /// NEED TO TURN ON SCREEN SAVER AND TEST THIS
-    /// to see if it is reached.
-    /// </summary>
-    /// <param name="hWnd"></param>
-    /// <param name="message"></param>
-    /// <param name="wParam"></param>
-    /// <param name="lParam"></param>
-    /// <returns></returns>
     case SC_SCREENSAVE: // Screensave trying to start?
     case SC_MONITORPOWER: // Monitor trying to enter power save
         break;
@@ -702,7 +682,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_INITDIALOG:
         return (INT_PTR)TRUE;
-
+    
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
         {
