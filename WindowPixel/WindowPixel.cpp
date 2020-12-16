@@ -22,7 +22,11 @@
   static win32_offscreen_buffer GlobalTextureBuffer[4];  // ? how we get resource raw. ext
   
 
-  Plasma pplasma = Plasma();
+  static olved__buffer plasmaBuffer;
+  
+ 
+
+ // Plasma pplasma = Plasma(plasmaBuffer);
 
 LARGE_INTEGER StartingTime, EndingTime, ElapsedMicrososeconds;
 LARGE_INTEGER Frequency;
@@ -43,6 +47,10 @@ bool btrue = true;
 using namespace std;
 
 CustomRunner* customRunner = new CustomRunner();
+
+//customRunner;
+//Plasma* pplasma = new Plasma(plasmaBuffer);
+
 
 
 #ifdef __USE_OLD_GRAPHICS_
@@ -329,6 +337,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             delete customRunner;
         customRunner = NULL;
 
+
+        /*
+        if (pplasma != NULL)
+            delete pplasma;
+            pplasma = NULL;
+            */
+
 #endif
       
        
@@ -370,6 +385,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     if (customRunner != NULL)
         delete customRunner;
     customRunner = NULL;
+
+    /*
+    if (pplasma != NULL)
+        delete pplasma;
+    pplasma = NULL;
+    */
+
 
     return (int) msg.wParam;
 }
@@ -426,7 +448,7 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
              //   customRunner->plasma.scr = plasma.scr;
 
              //   customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
-                customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer, pplasma);
+                customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
             }
             
             ReleaseDC(hWnd, deviceContext);
@@ -606,6 +628,15 @@ LRESULT
         LONG H = CR.bottom - CR.top;
 
         // COULD PASS IN GLOBAL
+
+
+        // Inject into class
+        customRunner->pplasma = new Plasma(plasmaBuffer);
+        plasmaBuffer = customRunner->pplasma->olvedBuffer; // ?
+        //Plasma* pplasma = new Plasma(plasmaBuffer);
+
+
+
 
         customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
         customRunner->hWnd = hWnd;

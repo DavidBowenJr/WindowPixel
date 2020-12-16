@@ -15,6 +15,8 @@ class Plasma;
 		CustomRunner();
 		~CustomRunner();
 
+		
+
 
 		int wmId;
 		int wmEvent;
@@ -28,12 +30,8 @@ class Plasma;
 		win32_offscreen_buffer Buffer;
 
 		win32_offscreen_buffer TextureBuffer[4];
-	   
-	///FINDING A RESOLVE
-#ifdef __FIND_A_RESOLUTION
+		
 		Plasma* pplasma;
-	//	Plasma plasma;
-#endif
 		
 
 		/*
@@ -52,7 +50,7 @@ class Plasma;
 
 
 
-		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer, Plasma& plasma);
+	//	void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);
 
 
 		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);

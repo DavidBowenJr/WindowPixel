@@ -15,11 +15,29 @@
 //static SDL_Surface* scr;
 
 
+Plasma::Plasma(olved__buffer& olvedBuffer) {
+
+#define plasma_screenWidth  256
+#define plasma_screenHeight 256
+
+
+	uint32* palette = new uint32[256];
+	uint32** plasma = new uint32 * [plasma_screenHeight];
+	for (uint32 i(0); i < plasma_screenHeight; i++) plasma[i] = new uint32[plasma_screenWidth];
+
+	uint32** buffer = new uint32 * [plasma_screenHeight];
+	for (uint32 i(0); i < plasma_screenHeight; i++) buffer[i] = new uint32[plasma_screenWidth];
+
+this->olvedBuffer.buffer  =	olvedBuffer.buffer = buffer;
+this->olvedBuffer.palette =	olvedBuffer.palette = palette;
+this->olvedBuffer.plasma  =	olvedBuffer.plasma = plasma;
+this->olvedBuffer.Width   =	olvedBuffer.Width = plasma_screenWidth;
+this->olvedBuffer.Height  =	olvedBuffer.Height = plasma_screenHeight;
+
+}
+
 Plasma::Plasma() {
 	OutputDebugString(TEXT("Plasma CC "));
-
-
-
 }
 
 void Plasma::BuildMem()
@@ -33,16 +51,26 @@ void Plasma::ReleaseMem()
 }
 
 
-
-
-Plasma::Plasma(SDL_Surface* Scr) : scr(Scr) {
-	OutputDebugString(TEXT("Plasma CC<------------------>Initializer list "));
-};
-
-
 Plasma::~Plasma()
 {
 	OutputDebugString(TEXT("Plasma De Con ........................................... "));
+
+	/*
+	olvedBuffer.buffer;
+	olvedBuffer.palette;
+	olvedBuffer.plasma;
+	olvedBuffer.Width;
+	olvedBuffer.Height;
+	*/
+
+	for (uint32 i(0); i < plasma_screenHeight; i++) delete[] olvedBuffer.buffer[i];    //buffer[i];
+	delete[]  olvedBuffer.buffer;                //buffer;
+
+	for (uint32 i(0); i < plasma_screenHeight; i++) delete[] olvedBuffer.plasma[i];                     // plasma[i];
+	delete[] olvedBuffer.plasma;                  //plasma;
+
+	delete[] olvedBuffer.palette;                  ///palette;
+
 
 
 	//ReleaseMem();
@@ -50,29 +78,45 @@ Plasma::~Plasma()
 }
 
 // Any way sorta got this going from LODEV
-// But I need to move the allocator outside somewhres and pass it in through parameters 
-// that would include the destruction of the memory...
-// OtherWise it call a constructor and deconstructor every time...
-// Not sure how to go abouth this problem.... 
-// Other than that..... Has been modifyed just a touch.
+// Pass initalization of Plasma to  WM_CREATE 
+//  // Inject into class CustomRunner
+// .... customRunner->pplasma = new Plasma(plasmaBuffer);
+// The Plasma class for now will fill out the  olved__buffer& olvedBuffer
+// lodev ol ved  loved solved.
+// And when the program terminates will Call Plasma deconstructor at the end of the program and do clean up
+// olvedBuffer is somewhat probed for the moment ....
+
 void Plasma::SomeFunction5(HWND hwnd, win32_offscreen_buffer& surfdata)
 {
  #define plasma_screenWidth  256
  #define plasma_screenHeight 256
 
 
+
+
+
 	
 	{
+		/*
 		uint32* palette = new uint32[256];
 		uint32** plasma = new uint32 * [plasma_screenHeight];
 		for (uint32 i(0); i < plasma_screenHeight; i++) plasma[i] = new uint32[plasma_screenWidth];
 
 		uint32** buffer = new uint32 * [plasma_screenHeight];
 		for (uint32 i(0); i < plasma_screenHeight; i++) buffer[i] = new uint32[plasma_screenWidth];
+		*/
+
+	this->olvedBuffer.Width =	this->olvedBuffer.Width;
+
+    uint32*  palette =  olvedBuffer.palette;
+	uint32** plasma  =  olvedBuffer.plasma;
+	uint32** buffer  =	olvedBuffer.buffer;
+		
+		
+	int h =	olvedBuffer.Width;
+	int w =	olvedBuffer.Height;
 
 
-		int h = 256;
-		int w = 256;
 
 #define TIME_WRAP_VALUE (~(DWORD)0)
 
@@ -138,6 +182,7 @@ void Plasma::SomeFunction5(HWND hwnd, win32_offscreen_buffer& surfdata)
 				}
 		}
 
+		/*
 		for (uint32 i(0); i < plasma_screenHeight; i++) delete[] buffer[i];
 		delete[] buffer;
 
@@ -145,7 +190,7 @@ void Plasma::SomeFunction5(HWND hwnd, win32_offscreen_buffer& surfdata)
 		delete[] plasma;
 
 		delete[] palette;
-
+		*/
 	} 
 
 }
