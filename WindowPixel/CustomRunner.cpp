@@ -3,6 +3,7 @@
 #include "CustomRunner.h"
 #include "Scratch.h"
 #include "Plasma.h"
+#include "ImageSource.h"
 
 	CustomRunner::CustomRunner()
 	{
@@ -11,15 +12,17 @@
 		Buffer.Memory = NULL;
 
 		LRESULT Result = 0;
+		
 		wmId = 0;
-		HDC hdc = NULL;
-		HWND hWnd = NULL;
+		
+		//HDC hdc = NULL;
+		//HWND hWnd = NULL;
+		
 		Buffer.BytesPerPixel = 4;
+		
 		UNREFERENCED_PARAMETER(hWnd);
 		UNREFERENCED_PARAMETER(Result);
 		UNREFERENCED_PARAMETER(hdc);
-
-	//	scratch = new Scratch();
 
 		{
 			BITMAPINFOHEADER bitmapInfoHeader;
@@ -47,12 +50,6 @@
 				OutputDebugString(std::to_wstring(TextureBuffer[0].Width).c_str());
 
 			}
-
-			// Our other texture memory surface ext.
-			// free(GlobalTextureBuffer[1].Memory);
-			// free(TextureBuffer[0].Memory);
-
-			
 		}
 
 
@@ -90,14 +87,8 @@
 			{
 				OutputDebugString(_T("\n Virtual Free Bitmap MEMORY RELEASED"));
 			}
-
-		//;  
-
-
 		OutputDebugString(_T("\n Class CustomRunner  ~ Called.\n"));
 	}
-
-
 
 	void CustomRunner::Win32ResizeDibSection(uint32_t Width, uint32_t Height)
 	{
@@ -121,9 +112,6 @@
 		Buffer.Memory = VirtualAlloc(0, BitmapMemorySize, MEM_COMMIT, PAGE_READWRITE);
 		Buffer.Pitch = Width * Buffer.BytesPerPixel;
 	}
-
-
-
 
 	void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight)
 	{
@@ -234,19 +222,7 @@
 
 	}
 
-	void CustomRunner::Render()
-	{
-		  this->scratch->APP(*this);
-
-		pplasma->Foo();
-
-		//NOTE: now SomeFunction5 dosn't invoke a call to CustomRunner Directly it is pass by reff or pt.
-		// Thus no unwildly scoped constructor deconstructor. 
-		                           //   pplasma->SomeFunction5(&hWnd, &Buffer, this);
-		pplasma->SomeFunction5(hWnd, Buffer, *this);
-
-		
-	}
+	void CustomRunner::Render() { this->scratch->APP(*this); }
 
 	/* more or less from HMH but it's very usefull */
 	void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset)
@@ -292,10 +268,7 @@
 
 		 RenderWeirdGradient(0, 0, Bf, Gd);
 		 */
-
-
 		RenderWeirdGradient(0, 0, custRun.Buffer, custRun.TextureBuffer[0]);
-
 	}
 
 	/// <summary>
@@ -313,9 +286,7 @@
 					// PutPixel(destBuffer.Memory, destBuffer.Width, destBuffer.Height, j, i, color);
 				COLORREF color = CustomRunner::mGetPixel(this->Buffer, j, i);
 				PutPixel(this->Buffer, j, i, color);
-
 			}
-
 	}
 
 	void CustomRunner::FlipHorizontal(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source)
@@ -347,7 +318,6 @@
 				*pd = *ps;
 			}
 		}
-
 	}
 
 	void CustomRunner::FlipVertical(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source)
@@ -369,11 +339,8 @@
 				pd += (dy + X);
 				*pd = *ps;
 			}
-
 		}
 	}
-
-	
 
 	// This is just a test
 	void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset, win32_offscreen_buffer& TextureBuffer, win32_offscreen_buffer& GardBuffer)
@@ -399,13 +366,7 @@
 			}
 			Row += Pitch;
 		}
-
 	}
-
-
-
-
-
 
 	void CustomRunner::PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF bgr)
 	{
@@ -449,8 +410,57 @@
 			}
 	}
 
+	void CustomRunner::SetPixel(uint32_t x, uint32_t y, COLORREF color)
+	{
+		this->PutPixel(this->Buffer, x, y, color);
+	}
 
+	// Rosettacode.org line. Bresenham's line
+	void CustomRunner::Line(float x1, float y1, float x2, float y2, const const COLORREF& color)
+	{
+		// Bresenham's line algorithm
+		const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+		if (steep)
+		{
+			std::swap(x1, y1);
+			std::swap(x2, y2);
+		}
 
+		if (x1 > x2)
+		{
+			std::swap(x1, x2);
+			std::swap(y1, y2);
+		}
+
+		const float dx = x2 - x1;
+		const float dy = fabs(y2 - y1);
+
+		float error = dx / 2.0f;
+		const int ystep = (y1 < y2) ? 1 : -1;
+		int y = (int)y1;
+
+		const int maxX = (int)x2;
+
+		for (int x = (int)x1; x <= maxX; x++)
+		{
+			if (steep)
+			{
+				SetPixel(y, x, color);
+			}
+			else
+			{
+				SetPixel(x, y, color);
+			}
+
+			error -= dy;
+			if (error < 0)
+			{
+				y += ystep;
+				error += dx;
+			}
+		}
+
+	}
 
 
 
@@ -462,15 +472,7 @@
 		for (uint32_t i = (uint32_t)y0; i < y0 + y1; i++)
 			for (uint32_t j = (uint32_t)x0; j < (uint32_t)x0 + x1; j++)
 				this->PutPixel(bm, bw, bh, j, i, (0xFFFFFFFF));
-
-
 	}
-
-
-
-
-
-
 
 	void CustomRunner::DrawRect(void* bm, uint32_t bw, uint32_t bh)
 	{
@@ -495,8 +497,6 @@
 
 			}
 	}
-
-
 
 	void CustomRunner::PutPixelBackOrder(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF gbr)
 	{
@@ -548,8 +548,6 @@
 		return COLORREF(0);
 	}
 
-
-
 	/////////////////////////////////////////////////////////////////////////
 
 	// Had to change My GetPixel to mGetPixel as to not conflict with Windows.
@@ -561,8 +559,7 @@
 
 		/* Get the device context for the screen */
 		hDC = GetDC(NULL);
-		if (hDC == NULL)
-			return CLR_INVALID;
+		if (hDC == NULL) return CLR_INVALID;
 
 		/* Get the current cursor position */
 		b = GetCursorPos(&p);
@@ -588,13 +585,6 @@
 		return p;
 	}
 
-
-
-
-
-
-
-
-
-
+	// Just a test
+	void CustomRunner::PlasmaXXXX() { this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this); }
 

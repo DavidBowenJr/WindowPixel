@@ -1,12 +1,9 @@
 #pragma once
 #include "framework.h"
-#include "share.h"
-#include "ImageSource.h"
+  #include "share.h"
 
 class Scratch;
 class Plasma;
-
-
 
 	class CustomRunner
 	{
@@ -36,8 +33,6 @@ class Plasma;
 		//void  Win32ResizeDibSection(win32_offscreen_buffer* Buffer, uint32_t Width, uint32_t Height);
 		void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
 
-
-
 	//	void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);
 
 
@@ -63,17 +58,17 @@ class Plasma;
 		// This is just a test
 		void RenderWeirdGradient(uint32_t x, uint32_t y, win32_offscreen_buffer& TextureBuffer, win32_offscreen_buffer& GardBuffer);
 
-
 		void PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF bgr);
-
-
-
 
 		void PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, int x, int y, COLORREF bgr);
 
 		void PutPixel(win32_offscreen_buffer& Destination, uint32_t x, uint32_t y, COLORREF bgr);
 
+		// RGB(r, g, b);
+		void SetPixel(uint32_t x, uint32_t y, COLORREF color);
 
+		// http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C.2B.2B
+		void Line(float x1, float y1, float x2, float y2, const const COLORREF& color);
 
 		void WuDrawLine(void* bm, uint32_t bw, uint32_t bh, float x0, float y0, float x1, float y1);
 
@@ -81,17 +76,16 @@ class Plasma;
 
 		void DrawRect();
 
+
+
+
 		void PutPixelBackOrder(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF gbr);
 
 		COLORREF mGetPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y);
 
 		COLORREF mGetPixel(win32_offscreen_buffer& sourceBuffer, uint32_t x, uint32_t y);
 
-
-
-
 		void AnotherWrap(CustomRunner& custRun);
-
 
 		void CopyImage(win32_offscreen_buffer& destBuffer, win32_offscreen_buffer& sourceBuffer);
 
@@ -99,13 +93,12 @@ class Plasma;
 
 		void FlipVertical(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source);
 
-
 		COLORREF getColorAtCursor();
 
 		POINT getLocalCursor();
 
-
-
+		// Just a test
+		void PlasmaXXXX();
 
 	};
 

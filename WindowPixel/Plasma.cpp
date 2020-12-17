@@ -28,11 +28,11 @@ Plasma::Plasma(olved__buffer& olvedBuffer) {
 	uint32** buffer = new uint32 * [plasma_screenHeight];
 	for (uint32 i(0); i < plasma_screenHeight; i++) buffer[i] = new uint32[plasma_screenWidth];
 
-this->olvedBuffer.buffer  =	olvedBuffer.buffer = buffer;
+this->olvedBuffer.buffer  =	olvedBuffer.buffer  = buffer;
 this->olvedBuffer.palette =	olvedBuffer.palette = palette;
-this->olvedBuffer.plasma  =	olvedBuffer.plasma = plasma;
-this->olvedBuffer.Width   =	olvedBuffer.Width = plasma_screenWidth;
-this->olvedBuffer.Height  =	olvedBuffer.Height = plasma_screenHeight;
+this->olvedBuffer.plasma  =	olvedBuffer.plasma  = plasma;
+this->olvedBuffer.Width   =	olvedBuffer.Width   = plasma_screenWidth;
+this->olvedBuffer.Height  =	olvedBuffer.Height  = plasma_screenHeight;
 
 }
 
@@ -258,8 +258,6 @@ void Plasma::SomeFunction5(HWND* pHWnd, win32_offscreen_buffer* surfdata)
 }
 
 #endif
-
-
 
 
 #if 0
