@@ -13,30 +13,18 @@
 #include <Stringapiset.h> // MultiByteToWideChar
 #include "ErrorExit.h"
 #include "Plasma.h"
-
-//SDL_Surface* scr;
-
+#include "Scratch.h"
 
 
-  static win32_offscreen_buffer GlobalWorkBuffer;
-  static win32_offscreen_buffer GlobalTextureBuffer[4];  // ? how we get resource raw. ext
-  
-
+ // static win32_offscreen_buffer GlobalWorkBuffer;
+ // static win32_offscreen_buffer GlobalTextureBuffer[4];  // ? how we get resource raw. ext
   static olved__buffer plasmaBuffer;
-  
- 
-
- // Plasma pplasma = Plasma(plasmaBuffer);
 
 LARGE_INTEGER StartingTime, EndingTime, ElapsedMicrososeconds;
 LARGE_INTEGER Frequency;
 
 
 WPARAM MessageAndGameLoop(PMSG msg, HWND hWnd);
-
-
-
-
 
 
 bool keys[256]; // Array used for the keyboard routine
@@ -46,11 +34,12 @@ bool btrue = true;
 
 using namespace std;
 
-CustomRunner* customRunner = new CustomRunner();
+static CustomRunner* customRunner; // = new CustomRunner();
 
 //customRunner;
 //Plasma* pplasma = new Plasma(plasmaBuffer);
-
+//customRunner;
+//Scratch* scratch = new Scratch(); ?
 
 
 #ifdef __USE_OLD_GRAPHICS_
@@ -58,8 +47,6 @@ GraphicsDemonstration* graphicsDemonstration = new GraphicsDemonstration();
 #endif
 
 static bool Stop_create = false;
-
-
 
 #define MAX_LOADSTRING 100
 
@@ -73,7 +60,6 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 //BOOL                InitInstance(HINSTANCE, int);
   LRESULT  CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -429,11 +415,14 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             }
         }
 
+
+#if 1
         {
             if(customRunner)
             customRunner->Render();
         }
-
+#endif
+#if 1
         {
             HDC deviceContext = GetDC(hWnd);
             RECT rt;
@@ -448,13 +437,16 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
              //   customRunner->plasma.scr = plasma.scr;
 
              //   customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
-                customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
+             //   customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer)
+                    customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight);
             }
             
             ReleaseDC(hWnd, deviceContext);
         }
+#endif
 
     }
+
 
     return pMsg->wParam;
 }
@@ -628,19 +620,20 @@ LRESULT
         LONG H = CR.bottom - CR.top;
 
         // COULD PASS IN GLOBAL
-
-
+        customRunner = new CustomRunner();
+        customRunner->Win32ResizeDibSection((uint32)W, (uint32)H);
+        customRunner->hWnd = hWnd;
+      //  GlobalWorkBuffer = customRunner->Buffer;
         // Inject into class
         customRunner->pplasma = new Plasma(plasmaBuffer);
         plasmaBuffer = customRunner->pplasma->olvedBuffer; // ?
-        //Plasma* pplasma = new Plasma(plasmaBuffer);
+        customRunner->scratch = new Scratch();
+        
 
 
-
-
-        customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
-        customRunner->hWnd = hWnd;
-        GlobalWorkBuffer = customRunner->Buffer;
+       // customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
+     //   customRunner->hWnd = hWnd;
+     //   GlobalWorkBuffer = customRunner->Buffer;
 
     } break;
 
@@ -689,8 +682,7 @@ LRESULT
         default:
             Result = DefWindowProc(hWnd, message, wParam, lParam);
         }
-        break; // case WM_COMMAND:
-  //.....
+        break;
 
     case SC_SCREENSAVE: // Screensave trying to start?
     case SC_MONITORPOWER: // Monitor trying to enter power save

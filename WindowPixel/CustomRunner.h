@@ -10,36 +10,24 @@ class Plasma;
 
 	class CustomRunner
 	{
-
+	
 	public:
 		CustomRunner();
 		~CustomRunner();
-
 		
-
-
 		int wmId;
 		int wmEvent;
 		PAINTSTRUCT ps;
 		HDC hdc;
-		LRESULT Result; // = 0;
+		LRESULT Result;
 		HWND hWnd;
 		HDC hdDesktopSpook;
-
-
+		
 		win32_offscreen_buffer Buffer;
-
+		
 		win32_offscreen_buffer TextureBuffer[4];
 		
-		Plasma* pplasma;
-		
-
-		/*
-		void* BitmapMemory;
-		BITMAPINFO BitmapInfo;
-		uint32_t BitmapWidth;
-		uint32_t BitmapHeight;
-		*/
+		Plasma*  pplasma;
 		Scratch* scratch;
 	private:
 		//int BytesPerPixel;  // = 4;
@@ -53,7 +41,11 @@ class Plasma;
 	//	void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);
 
 
+		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight);
+
+#if 0
 		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);
+#endif
 
 		//void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer);
 

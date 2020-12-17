@@ -86,15 +86,185 @@ Plasma::~Plasma()
 // And when the program terminates will Call Plasma deconstructor at the end of the program and do clean up
 // olvedBuffer is somewhat probed for the moment ....
 
+
+
+
+
+
+
+void Plasma::SomeFunction5(HWND& rHWnd, win32_offscreen_buffer& rSurfdata, CustomRunner& rDraw )
+{
+#define plasma_screenWidth  256
+#define plasma_screenHeight 256
+
+	this->olvedBuffer.Width = this->olvedBuffer.Width;
+	uint32* palette = olvedBuffer.palette;
+	uint32** plasma = olvedBuffer.plasma;
+	uint32** buffer = olvedBuffer.buffer;
+
+	int h = olvedBuffer.Width;
+	int w = olvedBuffer.Height;
+
+#define TIME_WRAP_VALUE (~(DWORD)0)
+	static DWORD start = timeGetTime();
+	DWORD now; DWORD ticks;
+	now = timeGetTime();
+	if (now < start) { ticks = (TIME_WRAP_VALUE - start) + now; }
+	else { ticks = (now - start); }
+
+	bool doOnce = false;
+	if (!doOnce)
+	{
+		doOnce = !doOnce;
+		ColorRGB colorRGB;
+
+		for (int x = 0; x < 256; x++)
+		{
+			colorRGB.r = int(128.0 + 128 * sin(3.1415 * x / 16.0));
+			colorRGB.g = int(128.0 + 128 * sin(3.1415 * x / 128.0));
+			colorRGB.b = 0;
+			palette[x] = RGBtoINT(colorRGB);
+		}
+
+		// Generate the plasma once
+		for (int y = 0; y < h; y++)
+			for (int x = 0; x < w; x++)
+			{
+				int color = int(
+					128.0 + (128.0 * sin(x / 16.0)) +
+					128.0 + (128.0 * sin(y / 32.0)) +
+					128.0 + (128.0 * sin(sqrt(double((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0))) / 8.0)) +
+					128.0 + (128.0 * sin(sqrt(double(x * x + x * y)) / 8.0))) / 4;
+				plasma[y][x] = color;
+			}
+	}
+
+	// Once everything is generated, the main loop starts. There isn't much math involved anymore
+	int paletteShift;
+
+	// What Happens When we place in CustomRunner <---- Prehaps pass thought by paramters ....
+	// Now it is passed by parameters.
+	// CustomRunner draw;
+	// start the animation loop, it rotates the palette
+	{
+		paletteShift = int(ticks * 10);
+
+		// draw every pixel again, with the shifted palette color
+		for (int y = 0; y < h; y++)
+			for (int x = 0; x < w; x++)
+			{
+				buffer[y][x] = palette[(plasma[y][x] + paletteShift) % 256];
+			}
+
+		// Draw the result buffer to the screen
+		for (int y = 0; y < h; y++)
+			for (int x = 0; x < w; x++)
+			{
+				ColorRGB cRGB = INTtoRGB((int)buffer[y][x]);
+				COLORREF rgbref = RGB(cRGB.r, cRGB.g, cRGB.b);
+				//draw.PutPixel(*surfdata, x, y, rgbref);
+				//draw->PutPixel(draw->Buffer , x, y, rgbref);
+				rDraw.PutPixel(rDraw.Buffer, x, y, rgbref);
+			}
+	}
+
+
+}
+
+
+
+
+
+
+
+
+#if 0
+void Plasma::SomeFunction5(HWND* pHWnd, win32_offscreen_buffer* surfdata)
+{
+#define plasma_screenWidth  256
+#define plasma_screenHeight 256
+
+	this->olvedBuffer.Width = this->olvedBuffer.Width;
+	uint32*  palette = olvedBuffer.palette;
+	uint32** plasma = olvedBuffer.plasma;
+	uint32** buffer = olvedBuffer.buffer;
+
+	int h = olvedBuffer.Width;
+	int w = olvedBuffer.Height;
+
+#define TIME_WRAP_VALUE (~(DWORD)0)
+	static DWORD start = timeGetTime();
+	DWORD now; DWORD ticks;
+	now = timeGetTime();
+	if (now < start) { ticks = (TIME_WRAP_VALUE - start) + now; }
+	else { ticks = (now - start); }
+
+	bool doOnce = false;
+	if (!doOnce)
+	{
+		doOnce = !doOnce;
+		ColorRGB colorRGB;
+
+		for (int x = 0; x < 256; x++)
+		{
+			colorRGB.r = int(128.0 + 128 * sin(3.1415 * x / 16.0));
+			colorRGB.g = int(128.0 + 128 * sin(3.1415 * x / 128.0));
+			colorRGB.b = 0;
+			palette[x] = RGBtoINT(colorRGB);
+		}
+
+		// Generate the plasma once
+		for (int y = 0; y < h; y++)
+			for (int x = 0; x < w; x++)
+			{
+				int color = int(
+					128.0 + (128.0 * sin(x / 16.0)) +
+					128.0 + (128.0 * sin(y / 32.0)) +
+					128.0 + (128.0 * sin(sqrt(double((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0))) / 8.0)) +
+					128.0 + (128.0 * sin(sqrt(double(x * x + x * y)) / 8.0))) / 4;
+				plasma[y][x] = color;
+			}
+	}
+
+	// Once everything is generated, the main loop starts. There isn't much math involved anymore
+	int paletteShift;
+
+	// What Happens When we place in CustomRunner <---- Prehaps pass thought by paramters ....
+	CustomRunner draw;
+	// start the animation loop, it rotates the palette
+	{
+		paletteShift = int(ticks * 10);
+
+		// draw every pixel again, with the shifted palette color
+		for (int y = 0; y < h; y++)
+			for (int x = 0; x < w; x++)
+			{
+				buffer[y][x] = palette[(plasma[y][x] + paletteShift) % 256];
+			}
+
+		// Draw the result buffer to the screen
+		for (int y = 0; y < h; y++)
+			for (int x = 0; x < w; x++)
+			{
+				ColorRGB cRGB = INTtoRGB((int)buffer[y][x]);
+				COLORREF rgbref = RGB(cRGB.r, cRGB.g, cRGB.b);
+				draw.PutPixel(*surfdata, x, y, rgbref);
+			}
+	}
+
+
+}
+
+#endif
+
+
+
+
+#if 0
 void Plasma::SomeFunction5(HWND hwnd, win32_offscreen_buffer& surfdata)
 {
  #define plasma_screenWidth  256
  #define plasma_screenHeight 256
-
-
-
-
-
 	
 	{
 		/*
@@ -194,6 +364,8 @@ void Plasma::SomeFunction5(HWND hwnd, win32_offscreen_buffer& surfdata)
 	} 
 
 }
+#endif
+
 
 void Plasma::Foo()
 {

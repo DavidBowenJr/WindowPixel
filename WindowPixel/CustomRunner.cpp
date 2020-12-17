@@ -6,6 +6,8 @@
 
 	CustomRunner::CustomRunner()
 	{
+		OutputDebugString(TEXT("\n ..CR..Con.. \n"));
+
 		Buffer.Memory = NULL;
 
 		LRESULT Result = 0;
@@ -17,7 +19,7 @@
 		UNREFERENCED_PARAMETER(Result);
 		UNREFERENCED_PARAMETER(hdc);
 
-		scratch = new Scratch();
+	//	scratch = new Scratch();
 
 		{
 			BITMAPINFOHEADER bitmapInfoHeader;
@@ -86,13 +88,13 @@
 				0,             // Bytes of committed pages  // Decommit the pages <MEM_RELEASE>
 				MEM_RELEASE))
 			{
-				OutputDebugString(_T(" Virtual Free Bitmap MEMORY RELEASED"));
+				OutputDebugString(_T("\n Virtual Free Bitmap MEMORY RELEASED"));
 			}
 
 		//;  
 
 
-		OutputDebugString(_T(" Class CustomRunner  ~ Called.\n"));
+		OutputDebugString(_T("\n Class CustomRunner  ~ Called.\n"));
 	}
 
 
@@ -121,6 +123,19 @@
 	}
 
 
+
+
+	void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight)
+	{
+		if (Buffer.Memory == NULL) _ASSERT(L"Bad");
+		int previousmode = SetStretchBltMode(hdc, MAXSTRETCHBLTMODE);
+		int wh = SetICMMode(hdc, ICM_ON); if (wh == wh) {};
+		if (previousmode == previousmode) {};
+		StretchDIBits(hdc, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+
+	}
+
+#if 0
 	void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer)
 	{
 
@@ -148,6 +163,8 @@
 
 
 	}
+#endif
+
 
 	/*
 	void CustomRunner::Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width, int Height)
@@ -199,7 +216,9 @@
 		uint32_t WindowHeight = this->ps.rcPaint.bottom - this->ps.rcPaint.top;
 
 		//if(Buffer.Memory != NULL)
-		this->Win32UpdateWindow(hDC, WindowWidth, WindowHeight, Buffer);
+		//Try to get contained.
+		this->Win32UpdateWindow(hDC, WindowWidth, WindowHeight);
+	//	this->Win32UpdateWindow(hDC, WindowWidth, WindowHeight, Buffer);
 
 
 		//this->Win32UpdateWindow(hDC, &CR, x, y, Wt, Ht);
@@ -217,15 +236,16 @@
 
 	void CustomRunner::Render()
 	{
-		//  this->scratch->APP(*this);
+		  this->scratch->APP(*this);
 
 		pplasma->Foo();
 
-		//if(this->pplasma->palette)
-		this->pplasma->SomeFunction5(hWnd, Buffer);
+		//NOTE: now SomeFunction5 dosn't invoke a call to CustomRunner Directly it is pass by reff or pt.
+		// Thus no unwildly scoped constructor deconstructor. 
+		                           //   pplasma->SomeFunction5(&hWnd, &Buffer, this);
+		pplasma->SomeFunction5(hWnd, Buffer, *this);
+
 		
-
-
 	}
 
 	/* more or less from HMH but it's very usefull */
