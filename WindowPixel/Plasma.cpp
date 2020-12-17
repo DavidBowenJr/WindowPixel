@@ -164,7 +164,9 @@ void Plasma::SomeFunction5(HWND& rHWnd, win32_offscreen_buffer& rSurfdata, Custo
 				COLORREF rgbref = RGB(cRGB.r, cRGB.g, cRGB.b);
 				//draw.PutPixel(*surfdata, x, y, rgbref);
 				//draw->PutPixel(draw->Buffer , x, y, rgbref);
-				rDraw.PutPixel(rDraw.Buffer, x, y, rgbref);
+			//	rDraw.PutPixel(rDraw.Buffer, x, y, rgbref);
+				
+				rDraw.PutPixel(rSurfdata, x, y, rgbref);
 			}
 	}
 
