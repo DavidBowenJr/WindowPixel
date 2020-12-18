@@ -101,6 +101,9 @@
     <ClCompile Include="ColorStructs.cpp">
       <Filter>Source Files\ColorStructs</Filter>
     </ClCompile>
+    <ClCompile Include="colorstruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WindowPixel.rc">

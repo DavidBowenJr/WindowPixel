@@ -1,6 +1,8 @@
 #pragma once
 #include "framework.h"
   #include "share.h"
+#pragma comment(lib, "WinMM.lib")
+
 
 class Scratch;
 class Plasma;
@@ -68,7 +70,7 @@ class Plasma;
 		void SetPixel(uint32_t x, uint32_t y, COLORREF color);
 
 		// http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C.2B.2B
-		void Line(float x1, float y1, float x2, float y2, const const COLORREF& color);
+		void Line(float x1, float y1, float x2, float y2,  const COLORREF& color);
 
 		void WuDrawLine(void* bm, uint32_t bw, uint32_t bh, float x0, float y0, float x1, float y1);
 
@@ -76,7 +78,9 @@ class Plasma;
 
 		void DrawRect();
 
+		void Foo();
 
+		//  float result = (255.0f-alpha)*value1+alpha*value2; return (int)result;
 
 
 		void PutPixelBackOrder(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF gbr);

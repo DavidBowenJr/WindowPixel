@@ -48,7 +48,10 @@ void Scratch::APP(CustomRunner& customRunner) {
 
 		customRunner.PlasmaXXXX();
 
-		customRunner.Line(0, 0, 300, 300, RGB(255, 0, 255));
+		customRunner.Line(0, 0, 300, 300, RGB(0, 255, 0));
+
+		customRunner.Foo();
+
 
 	}
 }

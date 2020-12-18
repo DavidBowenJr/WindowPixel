@@ -161,6 +161,7 @@
     <ClInclude Include="WindowPixel.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="colorstruct.cpp" />
     <ClCompile Include="ColorStructs.cpp" />
     <ClCompile Include="CustomRunner.cpp" />
     <ClCompile Include="ErrorExit.cpp" />

@@ -4,6 +4,8 @@
 #include "Scratch.h"
 #include "Plasma.h"
 #include "ImageSource.h"
+#include "colorstruct.h"
+#include <mmsystem.h> // timeGetTime
 
 	CustomRunner::CustomRunner()
 	{
@@ -416,7 +418,7 @@
 	}
 
 	// Rosettacode.org line. Bresenham's line
-	void CustomRunner::Line(float x1, float y1, float x2, float y2, const const COLORREF& color)
+	void CustomRunner::Line(float x1, float y1, float x2, float y2,  const COLORREF& color)
 	{
 		// Bresenham's line algorithm
 		const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
@@ -462,8 +464,6 @@
 
 	}
 
-
-
 	void CustomRunner::WuDrawLine(void* bm, uint32_t bw, uint32_t bh, float x0, float y0, float x1, float y1)
 	{
 		//this->DrawRect(bm, bw, bh);
@@ -496,6 +496,86 @@
 				this->PutPixel(this->Buffer, i, j, (COLORREF)0Xffff0000);
 
 			}
+	}
+
+	void CustomRunner::Foo()
+	{
+		uint32_t w = this->Buffer.Width;
+		uint32_t h = this->Buffer.Height;
+#if 0
+		for(int y = 0; y < h; y++)
+			for (int x = 256; x < w; x++)
+			{
+				// int color = int(128.0 + (128.0 * sin(x / 8.0)));
+				// int color = int(128.0 + (128.0 * sin((x + y) / 8.0)));
+				// int color = int(128.0 + (128.0 * sin(sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0)) / 8.0)));
+				int color = int(128.0 + (128.0 * sin(x / 8.0))+ 128.0 + (128.0 * sin(y / 8.0))) / 2;
+
+				SetPixel(x, y, RGB(color, color, color));
+			}
+#endif
+
+#if 1
+
+	//	https://lodev.org/cgtutor/plasma.html
+
+#define screenWidth  256
+#define screenHeight 256
+
+		w = screenWidth;
+		h = screenHeight;
+
+
+
+		// Y-ccordinate first because we use horizontal scanlines
+static		uint32 xplasma[screenHeight][screenWidth];
+static		uint32 xlbuffer[screenHeight][screenWidth];
+static		uint32 xpalette[256];
+
+// generate the palette
+ColorRGB colorRGB;
+for (int x = 0; x < 256; x++)
+{
+	//use HSVtoRGB to vary the Hue of the color through the palette
+	colorRGB = HSVtoRGB(ColorHSV(static_cast<uint8>(x), 255, 255));
+	xpalette[x] = RGBtoINT(colorRGB);
+}
+
+// generate the plasma once
+for (size_t y = 0; y < h; y++)
+	for (size_t x = 0; x < w; x++)
+	{
+		// the plasma buffer is a sum of sines
+		int color = int( 128.0 + (128.0 * sin(static_cast<int>(x) / 16.0)) + 128.0 + (128.0 * sin(static_cast<int>(y) / 16.0)) ) / 2;
+		xplasma[y][x] = (uint32) color;
+	}
+
+int paletteShift;
+
+//start the animation loop, it rotates the palette
+// the parameter to shif the palette varies with time
+paletteShift = int( timeGetTime() / 10.0);
+
+//draw every pixel again with the shifted palette color
+for (size_t y = 0; y < h; y++)
+	for (size_t x = 0; x < w; x++)
+	{
+		xlbuffer[y][x] = xpalette[(xplasma[y][x] + paletteShift) % 256];
+	}
+
+//make everything visibe
+for (size_t y = 0; y < h; y++)
+	for (size_t x = 0; x < w; x++)
+	{
+		SetPixel(static_cast<uint32_t>(x), static_cast<uint32_t>(y),(COLORREF) xlbuffer[y][x]);
+	}
+
+
+
+#endif
+
+
+
 	}
 
 	void CustomRunner::PutPixelBackOrder(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF gbr)
