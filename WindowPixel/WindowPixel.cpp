@@ -1,9 +1,18 @@
 // WindowPixel.cpp : Defines the entry point for the application.
-//
+// The very old gl libs
+//https://onedrive.live.com/?id=E38F9FC6490B29D9!1065&cid=E38F9FC6490B29D9&group=0&parId=E38F9FC6490B29D9!977&action=locate
+////http://nehe.gamedev.net/tutorial/texture_filters,_lighting_&_keyboard_control/15002/
+
 
 #include "framework.h"
 
+
+
 #include <WinUser.h>
+
+#include <system_error>
+#include <memory>
+#include <processthreadsapi.h>
 
 #include "WindowPixel.h"
 #include "CustomRunner.h"
@@ -16,44 +25,29 @@
 #include "Scratch.h"
 
 
- // static win32_offscreen_buffer GlobalWorkBuffer;
- // static win32_offscreen_buffer GlobalTextureBuffer[4];  // ? how we get resource raw. ext
-  static olved__buffer plasmaBuffer;
+ static olved__buffer plasmaBuffer;
 
 LARGE_INTEGER StartingTime, EndingTime, ElapsedMicrososeconds;
 LARGE_INTEGER Frequency;
-
-
 WPARAM MessageAndGameLoop(PMSG msg, HWND hWnd);
 
 
 bool keys[256]; // Array used for the keyboard routine
 
 static bool isRunning;
+
 bool btrue = true;
 
-using namespace std;
-
-static CustomRunner* customRunner; // = new CustomRunner();
-
-//customRunner;
-//Plasma* pplasma = new Plasma(plasmaBuffer);
-//customRunner;
-//Scratch* scratch = new Scratch(); ?
-
-
-#ifdef __USE_OLD_GRAPHICS_
-GraphicsDemonstration* graphicsDemonstration = new GraphicsDemonstration();
-#endif
+static CustomRunner* customRunner; 
 
 static bool Stop_create = false;
 
 #define MAX_LOADSTRING 100
 
 // Global Variables:
-HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+HINSTANCE hInst;                               
+WCHAR szTitle[MAX_LOADSTRING];                  
+WCHAR szWindowClass[MAX_LOADSTRING];    
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -71,12 +65,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
-
     WNDCLASSEX wc = {};
     ZeroMemory(&wc, sizeof(WNDCLASSEX));
 
-    wc.lpfnWndProc =WndProc;
+   
     wc.hInstance = hInstance;
     wc.lpszClassName = _T("WindowPixel");
 
@@ -90,7 +82,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.hIconSm = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-
 #ifndef _DEMO_OUT_
     #define    _DEMO_OUT_
     wc.cbClsExtra = 0;
@@ -102,283 +93,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     wc.hIconSm = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 #endif
 
-
-    //Ready for our Message Pump....
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
 
     HACCEL hAccelTable;
 
-  
-    // Initialize global strings
     LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadString(hInstance, IDC_WINDOWPIXEL, szWindowClass, MAX_LOADSTRING);
-   // MyRegisterClass(hInstance);
-
  
-
     if (RegisterClassEx(&wc))
     {
-        HWND hWnd = CreateWindowEx(
-            0,
-            wc.lpszClassName,
-            _T("Our Game ext"),
-        //WS_EX_OVERLAPPEDWINDOW | WS_VISIBLE,
-            
-            WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-          //WS_OVERLAPPED | WS_VISIBLE,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            0, 0, hInstance, 0);
-        
+        HWND hWnd = CreateWindowEx( 0,  wc.lpszClassName, _T("Our Game ext"),  WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, 0);
         
         hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
  
-
-        if (hWnd)
-        {
-            OutputDebugString(_T("Start up msg Pump\n"));
-
-            if (MessageAndGameLoop(&msg, hWnd)) {};
-
-
-         
-#if 0
-            
-            int xOffset = 0;
-            int yOffset = 0;
-
-            isRunning = true;
- 
-            while (isRunning) 
-            {
-
-                while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
-                {
-                   
-                    /*
-                    if (msg.message == WM_QUIT)
-                    {
-                        isRunning = false;
-                        OutputDebugString(_T("xxx WM_QUIT \n"));
-                    }
-                    */
-                   
-
-                    TranslateMessage(&msg);
-                    DispatchMessage(&msg);
-                }
-
-                if (msg.message == WM_QUIT)
-                {
-                      OutputDebugString(_T(" WM_QUIT AND BREAK"));   Stop_create = true;  break; 
-                }
-
-             
-             
-  
-                // lock button lb lock B key
-                // Dirty.
-                static bool lb = false;
-                if (keys['B'] && !lb) // B key being pressed and not held toggle
-                {
-                    lb = true;
-                    btrue = !btrue; // Toggle
-                }
-                if (!keys['B']) // has B key been released?
-                {
-                    lb = false;  // if so, lock button becomes false
-                }
-
-                static bool lc = false; // a lock for c key
-                static int switchCool = 1;
-                if (keys['C'] && !lc) // C key being pressed and not held? toggle
-                {
-                    switchCool++;
-                    lc = true;
-                    switchCool = switchCool % 3;
-                }
-                if (!keys['C']) // has C key been released?
-                {
-                    lc = false; // if so , the lock becomes false
-                }
-
-            // Using AsynkKeyState
-            //    if (keys[VK_ESCAPE]) { DestroyWindow(hWnd); }
-               
-              
-                
-                QueryTimer qt = QueryTimer();
-                qt.StartCounter();
-                double em = qt.GetCounter();
-                static double accum = 0;
-                accum += em;
+        if (hWnd) { if (MessageAndGameLoop(&msg, hWnd)) {}; } 
 
 
 
-               // static bool bforce = true;
-
-                if (double(0.010000) <= accum)
-                {
-                    switchCool++;
-                    switchCool = switchCool % 3;
-                    accum = fmod(accum, 0.01000);
-                    btrue = !btrue;
-                }
-                
-
-                if (btrue)
-                {
-                   
-                  //  customRunner->Render();
-
-                 //   customRunner->dud();
-
-                     //   customRunner->RenderWeirdGradient((uint8)xOffset, (uint8)yOffset);
-             //           customRunner->DrawRect();
-
-                    customRunner->Render();
-
-                    
-                        HDC DC = GetDC(hWnd);
-                        RECT CR;
-                        GetClientRect(hWnd, &CR);
-                        uint32_t WindowWidth = CR.right - CR.left;
-                        uint32_t WindowHeight = CR.bottom - CR.top;
-
-                       
-                        customRunner->Win32UpdateWindow(DC, WindowWidth, WindowHeight, GlobalWorkBuffer); // win32_offscreen_buffer);
-                      //  customRunner->Win32UpdateWindow(DC, &CR, 0, 0, WindowWidth, WindowHeight);
-                        
-                    
-                        ReleaseDC(hWnd, DC);
-                        
-                       
-
-
-
-                        ++xOffset;
-                    
-                }
-                else {
-
-#ifdef __USE_OLD_GRAPHICS_
-                    switch (switchCool)
-                    {
-                    case 0:
-                     //  OutputDebugString(_T(" case 0 \n"));
-                        graphicsDemonstration->ClearBackGround(hWnd);
-                        graphicsDemonstration->CoolStuff3(hWnd);
-                        break;
-                    case 1:
-                       // OutputDebugString(_T(" case 1 \n"));
-                        graphicsDemonstration->ClearBackGround(hWnd);
-                        graphicsDemonstration->CoolStuff(hWnd);
-                        break;
-                    case 2:
-                       // OutputDebugString(_T(" case 2 \n"));
-                        graphicsDemonstration->ClearBackGround(hWnd);
-                        graphicsDemonstration->CoolStuff2(hWnd);
-                        break;
-                    case 3:
-                       // OutputDebugString(_T(" case 3 \n"));
-                        break;
-                    default:
-                      //  OutputDebugString(_T(" default \n"));
-                        graphicsDemonstration->ClearBackGround(hWnd);
-                        graphicsDemonstration->CoolStuff3(hWnd);
-                        break;
-                    }
-#endif
-
-
-                   
-
-
-                }
-
-              
-
-
-            }
-#endif
-
-        } // end of procedure pump
-
-
-#ifndef _DO_CLEAN_UP_EXT__
-#define _DO_CLEAN_UP_EXT__
         // No longer running.....
         OutputDebugString(_T(" Class Pt Clean Up\n "));
 
-#ifdef __USE_OLD_GRAPHICS_
-        if (graphicsDemonstration != NULL)
-            delete graphicsDemonstration;
-        graphicsDemonstration = NULL;
-#endif
-
-        if (customRunner != NULL)
-            delete customRunner;
-        customRunner = NULL;
-
-
-        /*
-        if (pplasma != NULL)
-            delete pplasma;
-            pplasma = NULL;
-            */
-
-#endif
-      
-       
-       std::wstring ws; 
-       ws = std::to_wstring(msg.message);
-        OutputDebugString( ws.c_str());
-
-#ifdef __DEBUG_EXTRA_INSPECTION_
-//#define __DEBUG_EXTRA_INSPECTION_
-
-        int messagenumber = (int)msg.message; // 275;
-        const TCHAR* translatedMessage = wmTranslation[messagenumber];
-        if (translatedMessage == NULL)
-        {
-            translatedMessage = _T("UnknownMessage");
-        }
-        OutputDebugString(translatedMessage);
-#endif
-
-
-        GetMessage(&msg, hWnd, 0, 0);
-        OutputDebugString(_T(" : "));
-        ws = std::to_wstring(msg.message);
-        OutputDebugString(ws.c_str());
-
+        SAFE_DELETE(customRunner);
+    
         OutputDebugString(_T("\n RegisterClassEx finnished \n"));
+
     }
 
-
-    // No longer running.....
     OutputDebugString(_T(" Class Pt Clean Up\n "));
 
-#ifdef __USE_OLD_GRAPHICS_
-    if (graphicsDemonstration != NULL)
-        delete graphicsDemonstration;
-    graphicsDemonstration = NULL;
-#endif
+    SAFE_DELETE(customRunner);
 
-    if (customRunner != NULL)
-        delete customRunner;
-    customRunner = NULL;
-
-    /*
-    if (pplasma != NULL)
-        delete pplasma;
-    pplasma = NULL;
-    */
-
-
+  
     return (int) msg.wParam;
 }
 
@@ -410,8 +156,8 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 
         if (GetAsyncKeyState(VK_SPACE) & 0X8000) {
             {
-                string errorcheck = "An Error Check quit";
-                    ErrorExit((LPTSTR) errorcheck.c_str());
+                std::string errorcheck = "An Error Check quit";
+                ErrorExit((LPTSTR)errorcheck.c_str());
             }
         }
 
@@ -431,16 +177,8 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             uint32_t canvasHeight = rt.bottom - rt.top;
             if (customRunner)
             {
-
-
-              //  customRunner->plasma->scr = plasma.scr;
-             //   customRunner->plasma.scr = plasma.scr;
-
-             //   customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer);
-             //   customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight, GlobalWorkBuffer)
-                    customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight);
+                customRunner->Win32UpdateWindow(deviceContext, canvasWidth, canvasHeight);
             }
-            
             ReleaseDC(hWnd, deviceContext);
         }
 #endif
@@ -534,23 +272,9 @@ LRESULT
     switch (message)
     {
 
-
     case WM_PAINT:
     {
-        if (btrue)
-        {   
-            hWnd = customRunner->myPaint(hWnd);
-        }
-        else
-        {
-            {
-#ifdef __USE_OLD_GRAPHICS_
-                graphicsDemonstration->Paint(hWnd);
-#endif
-
-            }
-
-        }
+        hWnd = customRunner->myPaint(hWnd);
     } break;
 
     case WM_KEYDOWN:

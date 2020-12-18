@@ -1,5 +1,7 @@
 //#include <windows.h>
 #include "ErrorExit.h"
+#include <system_error>
+#include <memory>
 #include <strsafe.h>
 
 
@@ -10,17 +12,26 @@ void ErrorExit(LPTSTR lpszFunction)
 	// Retrieve the system error message for the last-error code
 	LPVOID lpMsgBuf;
 	LPVOID lpDisplayBuf;
-	DWORD dw = GetLastError();
+	DWORD dwErrorCode = GetLastError();
 
-	FormatMessage(
+
+	// LOCALE_NAME_SYSTEM_DEFAULT _INVARIANT _USER_DEFAULT
+
+
+
+	LPSTR psz{ nullptr };
+const DWORD cchMsg =	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		FORMAT_MESSAGE_FROM_SYSTEM |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
 		NULL,
-		dw,
+		dwErrorCode,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf,
+			(LPTSTR)&lpMsgBuf,
 		0, NULL);
+
+
+
 
 	// Display the error message and exit the process
 	// Maybe.
@@ -31,13 +42,14 @@ void ErrorExit(LPTSTR lpszFunction)
 	StringCchPrintf((LPTSTR)lpDisplayBuf,
 		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
 		TEXT("%s failed with error %d: %s"),
-		lpszFunction, dw, lpMsgBuf);
+		lpszFunction, dwErrorCode, lpMsgBuf);
 
+	MessageBox(NULL, (LPCTSTR)cchMsg, TEXT("Error"), MB_OK);
 	MessageBox(NULL, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK);
 
 	LocalFree(lpMsgBuf);
 	LocalFree(lpDisplayBuf);
-	ExitProcess(dw);
+	ExitProcess(dwErrorCode);
 
 }
 

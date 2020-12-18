@@ -5,7 +5,7 @@
 #pragma once
 
 #define __FIND_A_RESOLUTION
-
+#define SAFE_DELETE(p) if ((p) != NULL) { delete (p); (p) = NULL; }
 
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
@@ -1075,4 +1075,17 @@ static std::map<int, const TCHAR*> wmTranslation = {
 {32768, L"WM_APP" },
 {52429, L"WM_RASDIALEVENT" },
 };
+#endif
+
+
+#ifdef __DEBUG_EXTRA_INSPECTION_
+//#define __DEBUG_EXTRA_INSPECTION_
+
+int messagenumber = (int)msg.message; // 275;
+const TCHAR* translatedMessage = wmTranslation[messagenumber];
+if (translatedMessage == NULL)
+{
+    translatedMessage = _T("UnknownMessage");
+}
+OutputDebugString(translatedMessage);
 #endif
