@@ -11,6 +11,10 @@ class CustomRunner;
 class Plasma 
 {
 public:
+
+	
+	win32_offscreen_buffer Buffer;
+
 	Plasma(olved__buffer& buffer);
 	Plasma();
 	~Plasma(void);
@@ -20,7 +24,7 @@ public:
 #if 0
 	void SomeFunction5(HWND hwnd, win32_offscreen_buffer& surfdata);
 #endif
-
+	
 	void Foo();
 	void BuildMem();
 

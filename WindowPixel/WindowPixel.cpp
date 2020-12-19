@@ -109,7 +109,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
  
         if (hWnd) { if (MessageAndGameLoop(&msg, hWnd)) {}; } 
 
-
+        GetMessage(&msg, hWnd,0,0);
 
         // No longer running.....
         OutputDebugString(_T(" Class Pt Clean Up\n "));

@@ -14,17 +14,18 @@ void Scratch::APP(CustomRunner& customRunner) {
 	POINT p;
 	BOOL  b;
 	
-	if (customRunner.hdc == NULL) customRunner.hdc  = GetDC(customRunner.hWnd);
-	if (customRunner.hdc == NULL) return; 
+	 customRunner.SafeGetDC();
+	 customRunner.SafeGetDC();
+
 
 	/* Get the current cursor position */
 	b = GetCursorPos(&p);
-	if (!b) { ReleaseDC(customRunner.hWnd, customRunner.hdc); return; }
+	if (!b) {customRunner.SafeReleaseDC(); return; }
 
 	y = -p.x;
 	x = -p.y;
 	
-	ReleaseDC(customRunner.hWnd, customRunner.hdc);  // wingdi
+	customRunner.SafeReleaseDC();  // wingdi
 	
 	customRunner.
 		RenderWeirdGradient(x, y);
@@ -58,11 +59,18 @@ void Scratch::APP(CustomRunner& customRunner) {
 
 		customRunner.Line(0, 0, 300, 300, RGB(0, 255, 0));
 
-		//customRunner.Foo();
+	//	customRunner.Foo();
 
 
 	}
+
+	
+	
+
+
+
 }
+
 
 
 

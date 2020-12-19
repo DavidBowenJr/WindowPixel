@@ -16,6 +16,8 @@ class Scratch;
 		CustomRunner();
 		~CustomRunner();
 		
+		int rfCntHdc;
+
 		int wmId;
 		int wmEvent;
 		PAINTSTRUCT ps;
@@ -33,6 +35,14 @@ class Scratch;
 	private:
 		//int BytesPerPixel;  // = 4;
 	public:
+
+
+		void SafeReleaseDC();
+
+		HDC SafeGetDC();
+
+
+
 
 		//void  Win32ResizeDibSection(win32_offscreen_buffer* Buffer, uint32_t Width, uint32_t Height);
 		void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
@@ -104,7 +114,7 @@ class Scratch;
 		POINT getLocalCursor();
 
 		// Just a test
-		void PlasmaXXXX();
+		//void PlasmaXXXX();
 
 	};
 

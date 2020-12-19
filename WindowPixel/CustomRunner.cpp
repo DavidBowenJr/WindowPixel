@@ -10,6 +10,9 @@
 
 	CustomRunner::CustomRunner()
 	{
+		this->rfCntHdc = 0;
+
+
 		OutputDebugString(TEXT("\n ..CR..Con.. \n"));
 
 		Buffer.Memory = NULL;
@@ -58,6 +61,8 @@
 
 	}
 
+
+
 	CustomRunner::~CustomRunner()
 	{
 
@@ -92,6 +97,40 @@
 			}
 		OutputDebugString(_T("\n Class CustomRunner  ~ Called.\n"));
 	}
+
+	void CustomRunner::SafeReleaseDC()
+	{
+		if (this->rfCntHdc >= 1)
+		{
+			ReleaseDC(this->hWnd, this->hdc);
+			rfCntHdc -= 1;
+		}
+	}
+
+
+	HDC CustomRunner::SafeGetDC()
+	{
+		
+		if (this->rfCntHdc == 0) // Good
+		{
+			rfCntHdc += 1;
+			return GetDC(hWnd);
+		}
+		else
+		{
+			// Maybe Consult us where this happens.
+
+			//std::wstring wst; wst.append()
+			MessageBox(NULL, TEXT("NAG...!Potential Problem trying to lock an all ready lock Context. ")
+				, TEXT("Error"), MB_OK);
+		}
+
+		return HDC(this->hdc);
+	}
+
+
+
+
 
 	void CustomRunner::Win32ResizeDibSection(uint32_t Width, uint32_t Height)
 	{
@@ -507,11 +546,11 @@
 		for(int y = 0; y < h; y++)
 			for (int x = 256; x < w; x++)
 			{
-				 int color = int(128.0 + (128.0 * sin(x / 8.0)));
+				// int color = int(128.0 + (128.0 * sin(x / 8.0)));
 				// int color = int(128.0 + (128.0 * sin((x + y) / 8.0)));
-				// int color = int(128.0 + (128.0 * sin(sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0)) / 8.0)));
+				 int color = int(128.0 + (128.0 * sin(sqrt((x - w / 2.0) * (x - w / 2.0) + (y - h / 2.0) * (y - h / 2.0)) / 8.0)));
 			//	int color = int(128.0 + (128.0 * sin(x / 8.0))+ 128.0 + (128.0 * sin(y / 8.0))) / 2;
-
+				
 				SetPixel(x, y, RGB(color, color, color));
 			}
 #endif
@@ -668,5 +707,5 @@ for (size_t y = 0; y < h; y++)
 	}
 
 	// Just a test
-	void CustomRunner::PlasmaXXXX() { this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this); }
+	//void CustomRunner::PlasmaXXXX() { this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this); }
 

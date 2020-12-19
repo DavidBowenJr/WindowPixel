@@ -42,12 +42,10 @@ Plasma::Plasma() {
 
 void Plasma::BuildMem()
 {
-	
 }
 
 void Plasma::ReleaseMem()
 {
-
 }
 
 
@@ -169,7 +167,6 @@ void Plasma::SomeFunction5(HWND& rHWnd, win32_offscreen_buffer& rSurfdata, Custo
 				rDraw.PutPixel(rSurfdata, x, y, rgbref);
 			}
 	}
-
 
 }
 
@@ -365,6 +362,8 @@ void Plasma::SomeFunction5(HWND hwnd, win32_offscreen_buffer& surfdata)
 
 }
 #endif
+
+
 
 
 void Plasma::Foo()
