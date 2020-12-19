@@ -66,6 +66,8 @@
 	CustomRunner::~CustomRunner()
 	{
 
+		SafeReleaseDC();
+
 
 		if (this->pplasma != nullptr)
 		{
