@@ -4,10 +4,12 @@
 #pragma comment(lib, "WinMM.lib")
 
 
-class Scratch;
-class Plasma;
 
-	class CustomRunner
+class Plasma;
+class Scratch;
+
+
+	class CustomRunner 
 	{
 	
 	public:

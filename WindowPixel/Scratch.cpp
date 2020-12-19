@@ -1,4 +1,5 @@
 #include "Scratch.h"
+#include "Plasma.h"
 #include "CustomRunner.h"
 
 Scratch::Scratch()  { OutputDebugString(TEXT("CONSTRUCTOR CALLED FOR SCRATCH SURFACE  .....")); }
@@ -46,11 +47,15 @@ void Scratch::APP(CustomRunner& customRunner) {
 				customRunner.
 				TextureBuffer[0]);
 
-		customRunner.PlasmaXXXX();
+		// By Forward Declaration of class Plasma we can get here.
+	     customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
+	
+		 // This one is wraped in customRunner.
+	//	customRunner.PlasmaXXXX();
 
 		customRunner.Line(0, 0, 300, 300, RGB(0, 255, 0));
 
-		customRunner.Foo();
+		//customRunner.Foo();
 
 
 	}

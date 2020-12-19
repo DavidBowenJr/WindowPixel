@@ -2,8 +2,8 @@
 //#include "CustomRunner.h"
 
 
-
-class CustomRunner;
+class Plasma;      // Forward Declaration
+class CustomRunner; // Forward Declaration
 
 
 class Scratch

@@ -44,8 +44,17 @@ const DWORD cchMsg =	FormatMessage(
 		TEXT("%s failed with error %d: %s"),
 		lpszFunction, dwErrorCode, lpMsgBuf);
 
-	MessageBox(NULL, (LPCTSTR)cchMsg, TEXT("Error"), MB_OK);
-	MessageBox(NULL, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK);
+
+	MessageBox(NULL,  std::to_wstring(cchMsg).c_str() ,TEXT("Error"), MB_OK);
+
+
+
+	std::wstring wstr;
+	wstr.append(lpszFunction);
+	MessageBox(NULL,
+		(LPCTSTR)lpDisplayBuf
+	
+		, TEXT("Error"), MB_OK);
 
 	LocalFree(lpMsgBuf);
 	LocalFree(lpDisplayBuf);
