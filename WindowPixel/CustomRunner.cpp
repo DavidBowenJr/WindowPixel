@@ -69,6 +69,11 @@
 		SafeReleaseDC();
 
 
+		SAFE_DELETE(pplasma);
+		SAFE_DELETE(scratch);
+		SAFE_DELETE(TextureBuffer[0].Memory);
+
+		/*
 		if (this->pplasma != nullptr)
 		{
 			delete pplasma; pplasma = nullptr;
@@ -85,6 +90,7 @@
 		{
 			free(TextureBuffer[0].Memory);
 		}
+		*/
 
 		/// <summary>
 		/// buffer that will be sent to the stretch blit function.
@@ -112,7 +118,6 @@
 
 	HDC CustomRunner::SafeGetDC()
 	{
-		
 		if (this->rfCntHdc == 0) // Good
 		{
 			rfCntHdc += 1;
