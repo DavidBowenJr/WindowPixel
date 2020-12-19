@@ -2,7 +2,6 @@
 //#include "CustomRunner.h"
 
 
-class Plasma;      // Forward Declaration
 class CustomRunner; // Forward Declaration
 
 
@@ -12,5 +11,6 @@ public:
 	Scratch();
 	~Scratch();
 	void APP(CustomRunner& customRunner);
+	
 };
 

@@ -5,6 +5,8 @@
 Scratch::Scratch()  { OutputDebugString(TEXT("CONSTRUCTOR CALLED FOR SCRATCH SURFACE  .....")); }
 Scratch::~Scratch() { OutputDebugString(TEXT("DECONSTRUCTOR CALLED FOR SCRATCH SURFACE ....")); }
 
+
+
 void Scratch::APP(CustomRunner& customRunner) {
 	int x = 0;
 	int y = 0;
@@ -33,6 +35,7 @@ void Scratch::APP(CustomRunner& customRunner) {
 				Buffer,
 				customRunner.
 				TextureBuffer[0]);
+
 		customRunner.
 			FlipHorizontal(
 				customRunner.
@@ -60,4 +63,6 @@ void Scratch::APP(CustomRunner& customRunner) {
 
 	}
 }
+
+
 
