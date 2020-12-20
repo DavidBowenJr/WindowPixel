@@ -121,7 +121,8 @@
 		if (this->rfCntHdc == 0) // Good
 		{
 			rfCntHdc += 1;
-			return GetDC(hWnd);
+			this->hdc = GetDC(hWnd);
+			return this->hdc;
 		}
 		else
 		{
@@ -192,7 +193,8 @@
 		{
 		
 		//	SafeReleaseDC();
-		this->hdc =	SafeGetDC();
+		//this->hdc =	
+			SafeGetDC();
 	
 			RECT rt;
 			GetClientRect( hWnd, &rt);
