@@ -68,33 +68,10 @@
 
 		SafeReleaseDC();
 
-
 		SAFE_DELETE(pplasma);
 		SAFE_DELETE(scratch);
 		SAFE_DELETE(TextureBuffer[0].Memory);
 
-		/*
-		if (this->pplasma != nullptr)
-		{
-			delete pplasma; pplasma = nullptr;
-		}
-
-
-		if (scratch != nullptr)
-		{
-			delete scratch; scratch = nullptr;
-		}
-
-
-		if (TextureBuffer[0].Memory != NULL)
-		{
-			free(TextureBuffer[0].Memory);
-		}
-		*/
-
-		/// <summary>
-		/// buffer that will be sent to the stretch blit function.
-		/// </summary>
 		if (Buffer.Memory != NULL)
 			if (VirtualFree(
 				Buffer.Memory,       // Base address of block
@@ -126,11 +103,7 @@
 		}
 		else
 		{
-			// Maybe Consult us where this happens.
-
-			//std::wstring wst; wst.append()
-			MessageBox(NULL, TEXT("NAG...!Potential Problem trying to lock an all ready lock Context. ")
-				, TEXT("Error"), MB_OK);
+			MessageBox(NULL, TEXT("NAG...!Potential Problem trying to lock an all ready lock Context. "), TEXT("Error"), MB_OK);
 		}
 
 		return HDC(this->hdc);
@@ -175,20 +148,7 @@
 	void CustomRunner::Win32UpdateWindow()
 	{
 
-		/*
-		{
-			 HDC ___dc = GetDC(hWnd);
-			RECT rt;
-			GetClientRect(hWnd, &rt);
-			uint32_t canvasWidth = rt.right - rt.left;
-			uint32_t canvasHeight = rt.bottom - rt.top;
-			if (this)
-			{
-				this->Win32UpdateWindow(___dc, canvasWidth, canvasHeight);
-			}
-			ReleaseDC(hWnd, ___dc);
-		}
-		*/
+		
 
 		{
 		
@@ -214,17 +174,7 @@
 
 
 	}
-	/*
-	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32_t WindowWidth, uint32_t WindowHeight)
-	{
-		if (Buffer.Memory == NULL) _ASSERT(L"Bad");
-		int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
-		int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
-		if (previousmode == previousmode) {};
-		StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
 
-	}
-	*/
 
 
 
@@ -259,64 +209,29 @@
 #endif
 
 
-	/*
-	void CustomRunner::Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width, int Height)
-	{
-		UNREFERENCED_PARAMETER(Height);
-		UNREFERENCED_PARAMETER(Width);
-		UNREFERENCED_PARAMETER(x);
-		UNREFERENCED_PARAMETER(y);
-
-		// get screen coordinates
-		// int maxX = GetSystemMetrics(SM_CXSCREEN);
-		// int maxY = GetSystemMetrics(SM_CYSCREEN);
-
-		bool bSetMappingMode = false;
-		if (bSetMappingMode)
-		{
-			// set mapping mode, window and viewport extents
-			// LOTS CAN BE DONE  HERE...
-
-			 SetMapMode(hdc, MM_ANISOTROPIC);
-			SetWindowExtEx(hdc, 50, 50, NULL);
-			SetViewportExtEx(hdc, 100, 100, NULL);
-			SetViewportOrgEx(hdc, 50, 10, NULL);
-		}
-
-		LONG WinW = cR->right - cR->left;
-		LONG WinH = cR->bottom - cR->top;
-		StretchDIBits(hdc,
-			0, 0,(int) BitmapWidth , (int) BitmapHeight,
-			0, 0, (int)WinW, (int) WinH,
-			BitmapMemory, &BitmapInfo,
-			(UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
-	}
-	*/
-	// FIXME.
 	HWND CustomRunner::myPaint(HWND hWnd)
 	{
 		RECT CR;
 		GetClientRect(hWnd, &CR);
-
 		this->hWnd = hWnd;
+	 	HDC hDC_local = BeginPaint(hWnd, &this->ps); 
+	
+		
+	//	uint32_t WindowWidth = this->ps.rcPaint.right - this->ps.rcPaint.left;
+	//	uint32_t WindowHeight = this->ps.rcPaint.bottom - this->ps.rcPaint.top;
 
-		// PAINTSTRUCT ps;
-		HDC hDC = BeginPaint(hWnd, &this->ps);
-
-		//int x = this->ps.rcPaint.left;
-		//int y = this->ps.rcPaint.top;
-		uint32_t WindowWidth = this->ps.rcPaint.right - this->ps.rcPaint.left;
-		uint32_t WindowHeight = this->ps.rcPaint.bottom - this->ps.rcPaint.top;
-
-		//if(Buffer.Memory != NULL)
-		//Try to get contained.
-		this->Win32UpdateWindow(hDC, WindowWidth, WindowHeight);
-	//	this->Win32UpdateWindow(hDC, WindowWidth, WindowHeight, Buffer);
+	//	RECT rt;
+	//	GetClientRect(hWnd, &rt);
+	//	uint32_t canvasWidth = rt.right - rt.left;
+	//	uint32_t canvasHeight = rt.bottom - rt.top;
+		this->Win32UpdateWindow();
 
 
-		//this->Win32UpdateWindow(hDC, &CR, x, y, Wt, Ht);
-
+	//	this->Win32UpdateWindow(hDC_local, WindowWidth, WindowHeight);
+		
 		EndPaint(hWnd, &this->ps);
+	
+		
 		return hWnd;
 	}
 

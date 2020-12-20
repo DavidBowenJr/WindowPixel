@@ -315,22 +315,7 @@ LRESULT
 
     case WM_SIZE:
     {
-
-       
-        /*
-        RECT CR;
-        GetClientRect(hWnd, &CR);
-        LONG W = CR.right - CR.left;
-        LONG H = CR.bottom - CR.top;
-
-       // COULD PASS IN GLOBAL
-     
-        customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
-        customRunner->hWnd = hWnd;
-        GlobalWorkBuffer = customRunner->Buffer;
-        */
-
-     
+    
     } break;
 
     case WM_ERASEBKGND:
