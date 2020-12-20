@@ -162,15 +162,69 @@
 		Buffer.Pitch = Width * Buffer.BytesPerPixel;
 	}
 
-	void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight)
+	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32_t WindowWidth, uint32_t WindowHeight)
 	{
 		if (Buffer.Memory == NULL) _ASSERT(L"Bad");
-		int previousmode = SetStretchBltMode(hdc, MAXSTRETCHBLTMODE);
-		int wh = SetICMMode(hdc, ICM_ON); if (wh == wh) {};
+		int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
+		int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
 		if (previousmode == previousmode) {};
-		StretchDIBits(hdc, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+		StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
 
 	}
+	void CustomRunner::Win32UpdateWindow()
+	{
+
+		/*
+		{
+			 HDC ___dc = GetDC(hWnd);
+			RECT rt;
+			GetClientRect(hWnd, &rt);
+			uint32_t canvasWidth = rt.right - rt.left;
+			uint32_t canvasHeight = rt.bottom - rt.top;
+			if (this)
+			{
+				this->Win32UpdateWindow(___dc, canvasWidth, canvasHeight);
+			}
+			ReleaseDC(hWnd, ___dc);
+		}
+		*/
+
+		{
+		
+		//	SafeReleaseDC();
+		this->hdc =	SafeGetDC();
+	
+			RECT rt;
+			GetClientRect( hWnd, &rt);
+			uint32_t canvasWidth = rt.right - rt.left;
+			uint32_t canvasHeight = rt.bottom - rt.top;
+			if (this)
+			{
+				this->Win32UpdateWindow( hdc, canvasWidth, canvasHeight);
+			}
+			//ReleaseDC(___hWnd, ___dc);
+			SafeReleaseDC();
+
+		}
+
+
+
+
+
+	}
+	/*
+	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32_t WindowWidth, uint32_t WindowHeight)
+	{
+		if (Buffer.Memory == NULL) _ASSERT(L"Bad");
+		int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
+		int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
+		if (previousmode == previousmode) {};
+		StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+
+	}
+	*/
+
+
 
 #if 0
 	void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer)

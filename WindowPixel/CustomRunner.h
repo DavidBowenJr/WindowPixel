@@ -52,6 +52,8 @@ class Scratch;
 
 		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight);
 
+		void Win32UpdateWindow();
+
 #if 0
 		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);
 #endif

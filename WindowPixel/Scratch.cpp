@@ -15,7 +15,7 @@ void Scratch::APP(CustomRunner& customRunner) {
 	BOOL  b;
 	
 	 customRunner.SafeGetDC();
-	 customRunner.SafeGetDC();
+	//customRunner.SafeGetDC();
 
 
 	/* Get the current cursor position */

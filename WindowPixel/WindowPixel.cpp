@@ -168,7 +168,14 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             customRunner->Render();
         }
 #endif
-#if 1
+
+        {
+            customRunner->Win32UpdateWindow(); //sealed function
+        }
+
+
+
+#if 0
         {
             HDC deviceContext = GetDC(hWnd);
             RECT rt;
