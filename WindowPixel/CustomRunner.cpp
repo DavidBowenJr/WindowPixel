@@ -225,7 +225,9 @@
 		this->hWnd = hWnd;
 		
 
-		HDC hDC_local = BeginPaint(hWnd, &this->ps); 
+	//	HDC hDC_local
+		this->hdc = BeginPaint(hWnd, &this->ps); 
+		this->rfCntHdc + 1;
 
 		this->Win32UpdateWindow();
 

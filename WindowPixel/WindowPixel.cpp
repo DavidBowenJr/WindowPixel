@@ -326,6 +326,8 @@ LRESULT
     {
 
 
+
+
         // Time 2:37 PM
         // 12/12/2020 Now it will scale 
         
@@ -343,7 +345,7 @@ LRESULT
         customRunner->pplasma = new Plasma(plasmaBuffer);
         plasmaBuffer = customRunner->pplasma->olvedBuffer; // ?
         customRunner->scratch = new Scratch();
-        
+       
 
     } break;
 
