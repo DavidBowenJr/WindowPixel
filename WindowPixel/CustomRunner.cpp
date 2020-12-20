@@ -8,6 +8,9 @@
 #include "colorstruct.h"
 #include <mmsystem.h> // timeGetTime
 
+#include <chrono>
+#include <thread>
+
 	CustomRunner::CustomRunner()
 	{
 		this->rfCntHdc = 0;
@@ -148,8 +151,9 @@
 	}
 	void CustomRunner::Win32UpdateWindow()
 	{
-
-		
+		// Pace the program down a bit so we have better cache hits maybe.
+		// otherwise my harddrive ramps up ....
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
 		{
 		
