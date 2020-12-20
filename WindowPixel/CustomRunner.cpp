@@ -208,30 +208,28 @@
 	}
 #endif
 
+	HWND CustomRunner::myPaint()
+	{
+	this->hWnd = this->myPaint(this->hWnd);
+
+		return this->hWnd;
+	}
 
 	HWND CustomRunner::myPaint(HWND hWnd)
 	{
+		// Magic.
+		SafeReleaseDC();
+		
 		RECT CR;
 		GetClientRect(hWnd, &CR);
 		this->hWnd = hWnd;
-	 	HDC hDC_local = BeginPaint(hWnd, &this->ps); 
-	
 		
-	//	uint32_t WindowWidth = this->ps.rcPaint.right - this->ps.rcPaint.left;
-	//	uint32_t WindowHeight = this->ps.rcPaint.bottom - this->ps.rcPaint.top;
 
-	//	RECT rt;
-	//	GetClientRect(hWnd, &rt);
-	//	uint32_t canvasWidth = rt.right - rt.left;
-	//	uint32_t canvasHeight = rt.bottom - rt.top;
+		HDC hDC_local = BeginPaint(hWnd, &this->ps); 
+
 		this->Win32UpdateWindow();
 
-
-	//	this->Win32UpdateWindow(hDC_local, WindowWidth, WindowHeight);
-		
 		EndPaint(hWnd, &this->ps);
-	
-		
 		return hWnd;
 	}
 

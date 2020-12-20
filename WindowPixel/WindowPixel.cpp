@@ -281,7 +281,8 @@ LRESULT
 
     case WM_PAINT:
     {
-        hWnd = customRunner->myPaint(hWnd);
+      //  hWnd = customRunner->myPaint(hWnd);
+        hWnd = customRunner->myPaint();
     } break;
 
     case WM_KEYDOWN:
@@ -324,9 +325,7 @@ LRESULT
     case WM_CREATE:
     {
 
-#ifdef __USE_OLD_GRAPHICS_
-        graphicsDemonstration->WindowMessageCreate(hWnd);
-#endif
+
         // Time 2:37 PM
         // 12/12/2020 Now it will scale 
         
@@ -339,30 +338,18 @@ LRESULT
         customRunner = new CustomRunner();
         customRunner->Win32ResizeDibSection((uint32)W, (uint32)H);
         customRunner->hWnd = hWnd;
-      //  GlobalWorkBuffer = customRunner->Buffer;
+
         // Inject into class
         customRunner->pplasma = new Plasma(plasmaBuffer);
         plasmaBuffer = customRunner->pplasma->olvedBuffer; // ?
         customRunner->scratch = new Scratch();
         
 
-
-       // customRunner->Win32ResizeDibSection((uint32_t)W, (uint32_t)H);
-     //   customRunner->hWnd = hWnd;
-     //   GlobalWorkBuffer = customRunner->Buffer;
-
     } break;
 
 
     case WM_DESTROY:
     {
-#ifdef __USE_OLD_GRAPHICS_
-        if (graphicsDemonstration != NULL)
-        {
-            graphicsDemonstration->destroy(hWnd);
-        }
-#endif
-
         isRunning = false;
         OutputDebugString(_T(" WM_DESTROY\n"));
         PostQuitMessage(0);

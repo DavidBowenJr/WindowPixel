@@ -63,6 +63,8 @@ class Scratch;
 
 		// void Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width, int Height);
 
+		HWND myPaint();
+
 		HWND myPaint(HWND hWnd);
 
 		void ClearBuffer();
