@@ -85,6 +85,7 @@
 
 	void CustomRunner::SafeReleaseDC()
 	{
+		rfCntHdc = rfCntHdc;
 		if (this->rfCntHdc >= 1)
 		{
 			ReleaseDC(this->hWnd, this->hdc);
@@ -227,7 +228,7 @@
 
 	//	HDC hDC_local
 		this->hdc = BeginPaint(hWnd, &this->ps); 
-		this->rfCntHdc + 1;
+		this->rfCntHdc + 2;
 
 		this->Win32UpdateWindow();
 
