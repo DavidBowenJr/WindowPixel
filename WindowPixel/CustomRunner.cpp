@@ -149,7 +149,7 @@
 
 		// first get a graphics device context
 	//	HDC hdc = SafeGetDC();
-
+	
 		// set the foreground color to green and save old one
 		old_fcolor = SetTextColor(hdc_param, RGB(0, 255, 0));
 
@@ -162,10 +162,21 @@
 		// draw some text at (20,30)
 		TextOut(hdc_param, 20, 30, L"Hello", strlen("Hello"));
 
+		
 		// now restore everything
 		SetTextColor(hdc_param, old_fcolor);
 		SetBkColor(hdc_param, old_bcolor);
 		SetBkMode(hdc_param, old_tmode);
+		
+		// Ok with this line we can say our rect is hollow ext... somewhat vague but  theres lot's that can be done now.. much more... old gdi  windows. very nice.
+	HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject(HOLLOW_BRUSH));
+
+		old_bcolor = SetBkMode(hdc_param,OPAQUE);
+		SetBkColor(hdc_param, RGB(0,0,0));
+		RoundRect(hdc_param, 125, 125, 220, 240, 15, 13);
+	
+	//	PatBlt(hdc_param, 0, 0, WindowWidth, WindowHeight, SRCCOPY); // PATCOPY);
+
 #endif
 
 
