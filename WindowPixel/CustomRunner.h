@@ -80,7 +80,7 @@ class Scratch;
 		void PutPixel(win32_offscreen_buffer& Destination, uint32_t x, uint32_t y, COLORREF bgr);
 
 		// RGB(r, g, b);
-		void SetPixel(uint32_t x, uint32_t y, COLORREF color);
+		void mSetPixel(uint32_t x, uint32_t y, COLORREF color);
 
 		// http://rosettacode.org/wiki/Bitmap/Bresenham%27s_line_algorithm#C.2B.2B
 		void Line(float x1, float y1, float x2, float y2,  const COLORREF& color);

@@ -160,7 +160,7 @@
 		old_tmode = SetBkMode(hdc_param, TRANSPARENT);
 
 		// draw some text at (20,30)
-		TextOut(hdc_param, 20, 30, L"Hello", strlen("Hello"));
+		TextOut(hdc_param, 20, 30, L"Hello",(int) strlen("Hello"));
 
 		
 		// now restore everything
@@ -171,11 +171,23 @@
 		// Ok with this line we can say our rect is hollow ext... somewhat vague but  theres lot's that can be done now.. much more... old gdi  windows. very nice.
 	HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject(HOLLOW_BRUSH));
 
+	//	
+
 		old_bcolor = SetBkMode(hdc_param,OPAQUE);
 		SetBkColor(hdc_param, RGB(0,0,0));
 		RoundRect(hdc_param, 125, 125, 220, 240, 15, 13);
 	
 	//	PatBlt(hdc_param, 0, 0, WindowWidth, WindowHeight, SRCCOPY); // PATCOPY);
+		
+		// Demonstarting GetPixel and SetPixel  it's A SO SLOWWWW. SNAIL COULD BE USED BUT?????? 
+		for(int y = 0; y < 100; y++)
+			for (int x = 0; x < 100; x++)
+			{
+				COLORREF color = GetPixel(hdc_param, x, y);
+				SetPixel(hdc_param, x+50, y, color);
+				
+			}
+		
 
 #endif
 
@@ -468,7 +480,7 @@
 			}
 	}
 
-	void CustomRunner::SetPixel(uint32_t x, uint32_t y, COLORREF color)
+	void CustomRunner::mSetPixel(uint32_t x, uint32_t y, COLORREF color)
 	{
 		this->PutPixel(this->Buffer, x, y, color);
 	}
@@ -503,11 +515,11 @@
 		{
 			if (steep)
 			{
-				SetPixel(y, x, color);
+				mSetPixel(y, x, color);
 			}
 			else
 			{
-				SetPixel(x, y, color);
+				mSetPixel(x, y, color);
 			}
 
 			error -= dy;
@@ -624,7 +636,7 @@ for (size_t y = 0; y < h; y++)
 for (size_t y = 0; y < h; y++)
 	for (size_t x = 0; x < w; x++)
 	{
-		SetPixel(static_cast<uint32_t>(x), static_cast<uint32_t>(y),(COLORREF) xlbuffer[y][x]);
+		mSetPixel(static_cast<uint32_t>(x), static_cast<uint32_t>(y),(COLORREF) xlbuffer[y][x]);
 	}
 
 
