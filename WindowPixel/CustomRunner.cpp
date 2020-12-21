@@ -139,6 +139,37 @@
 		int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
 		if (previousmode == previousmode) {};
 		StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+
+#if 1
+		// Text Yes....
+		// Getting the GDC Text on top of our memory ...Draw ... text last.
+		COLORREF old_fcolor, // old foreground text color
+			old_bcolor; // old background text color
+		int old_tmode; // old text transparency mode
+
+		// first get a graphics device context
+	//	HDC hdc = SafeGetDC();
+
+		// set the foreground color to green and save old one
+		old_fcolor = SetTextColor(hdc_param, RGB(0, 255, 0));
+
+		// set the background color to black and save old one
+		old_bcolor = SetBkColor(hdc_param, RGB(0, 0, 0));
+
+		// finally set the transparency mode to transparent
+		old_tmode = SetBkMode(hdc_param, TRANSPARENT);
+
+		// draw some text at (20,30)
+		TextOut(hdc_param, 20, 30, L"Hello", strlen("Hello"));
+
+		// now restore everything
+		SetTextColor(hdc_param, old_fcolor);
+		SetBkColor(hdc_param, old_bcolor);
+		SetBkMode(hdc_param, old_tmode);
+#endif
+
+
+
 	}
 
 	void CustomRunner::Win32UpdateWindow()
@@ -187,7 +218,7 @@
 		// PAINTSTRUCT ps; // used in WM_PAINT
 		// HDC hdc; // handle to a device context
 		// RECT rect; // rectangle of window
-#if 1
+#if 0
 		SafeReleaseDC();
 		this->hWnd = hWnd;
 		this->hdc = SafeGetDC();
@@ -197,6 +228,18 @@
 		this->Win32UpdateWindow();
 		ValidateRect(hWnd, &rt);
 #endif
+
+#if 1
+		SafeReleaseDC();
+		this->hWnd = hWnd;
+		// invalidate the entire window
+		InvalidateRect(hWnd, NULL, FALSE);
+		this->hdc = BeginPaint(hWnd, &this->ps);
+		this->Win32UpdateWindow();
+		EndPaint(hWnd, &ps);
+		ReleaseDC(hWnd, hdc);
+#endif
+
 
 		// This is good also  but testing some theory from Yaldex...
 #if 0
