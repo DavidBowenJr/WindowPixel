@@ -41,9 +41,6 @@ class Scratch;
 
 		HDC SafeGetDC();
 
-
-
-
 		//void  Win32ResizeDibSection(win32_offscreen_buffer* Buffer, uint32_t Width, uint32_t Height);
 		void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
 

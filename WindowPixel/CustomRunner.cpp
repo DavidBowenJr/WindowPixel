@@ -15,7 +15,6 @@
 	{
 		this->rfCntHdc = 0;
 
-
 		OutputDebugString(TEXT("\n ..CR..Con.. \n"));
 
 		Buffer.Memory = NULL;
@@ -57,18 +56,13 @@
 			if (TextureBuffer[0].Width > 0)
 			{
 				OutputDebugString(std::to_wstring(TextureBuffer[0].Width).c_str());
-
 			}
 		}
-
-
 	}
-
 
 
 	CustomRunner::~CustomRunner()
 	{
-
 		SafeReleaseDC();
 
 		SAFE_DELETE(pplasma);
@@ -85,6 +79,7 @@
 			}
 		OutputDebugString(_T("\n Class CustomRunner  ~ Called.\n"));
 	}
+
 
 	void CustomRunner::SafeReleaseDC()
 	{
@@ -109,12 +104,8 @@
 		{
 			MessageBox(NULL, TEXT("NAG...!Potential Problem trying to lock an all ready lock Context. "), TEXT("Error"), MB_OK);
 		}
-
 		return HDC(this->hdc);
 	}
-
-
-
 
 
 	void CustomRunner::Win32ResizeDibSection(uint32_t Width, uint32_t Height)
@@ -140,6 +131,7 @@
 		Buffer.Pitch = Width * Buffer.BytesPerPixel;
 	}
 
+
 	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32_t WindowWidth, uint32_t WindowHeight)
 	{
 		if (Buffer.Memory == NULL) _ASSERT(L"Bad");
@@ -147,20 +139,15 @@
 		int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
 		if (previousmode == previousmode) {};
 		StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
-
 	}
+
 	void CustomRunner::Win32UpdateWindow()
 	{
 		// Pace the program down a bit so we have better cache hits maybe.
 		// otherwise my harddrive ramps up ....
 		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-
-		{
-		
-		//	SafeReleaseDC();
-		//this->hdc =	
+		{	
 			SafeGetDC();
-	
 			RECT rt;
 			GetClientRect( hWnd, &rt);
 			uint32_t canvasWidth = rt.right - rt.left;
@@ -169,49 +156,10 @@
 			{
 				this->Win32UpdateWindow( hdc, canvasWidth, canvasHeight);
 			}
-			//ReleaseDC(___hWnd, ___dc);
 			SafeReleaseDC();
-
 		}
-
-
-
-
-
 	}
 
-
-
-
-#if 0
-	void CustomRunner::Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer)
-	{
-
-
-		if (Buffer.Memory == NULL) _ASSERTE(L"Bad");
-
-		int previousmode = SetStretchBltMode(hdc, MAXSTRETCHBLTMODE); // COLORONCOLOR
-		int wh = SetICMMode(hdc, ICM_ON);
-		if (wh == wh) {};
-		if (previousmode == previousmode) {};
-		StretchDIBits(hdc, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
-
-
-
-		this->Buffer.BytesPerPixel = Buffer.BytesPerPixel;
-		this->Buffer.Height = Buffer.Height;
-		memcpy(&this->Buffer.Info, &Buffer.Info, sizeof(BITMAPINFO));
-
-
-		if (this->Buffer.Memory == NULL && Buffer.Memory != NULL)
-			this->Buffer.Memory = Buffer.Memory;
-		this->Buffer.Pitch = Buffer.Pitch;
-		this->Buffer.Width = Buffer.Width;
-		this->Buffer.Height = Buffer.Height;
-
-
-	}
-#endif
 
 	HWND CustomRunner::myPaint()
 	{
@@ -220,25 +168,55 @@
 		return this->hWnd;
 	}
 
+
+	
+
+
 	HWND CustomRunner::myPaint(HWND hWnd)
 	{
-		// Magic.
+
+// Very good read somewhat old but good ...
+
+//	http://www.yaldex.com/games-programming/0672323699_ch03lev1sec3.html
+
+
+		// BOOL ValidateRect(HWND hWnd; // handle of window
+	    // CONST RECT *lpRect); // address of validation rectangle coordinates
+
+		// handle of window along with a region you want to be validated in lpRect.
+		// PAINTSTRUCT ps; // used in WM_PAINT
+		// HDC hdc; // handle to a device context
+		// RECT rect; // rectangle of window
+#if 1
+		SafeReleaseDC();
+		this->hWnd = hWnd;
+		this->hdc = SafeGetDC();
+		this->SafeReleaseDC();
+		RECT rt;
+		GetClientRect(hWnd, &rt);
+		this->Win32UpdateWindow();
+		ValidateRect(hWnd, &rt);
+#endif
+
+		// This is good also  but testing some theory from Yaldex...
+#if 0
 		SafeReleaseDC();
 		
 		RECT CR;
 		GetClientRect(hWnd, &CR);
 		this->hWnd = hWnd;
 		
-
-	//	HDC hDC_local
-		this->hdc = BeginPaint(hWnd, &this->ps); 
-		this->rfCntHdc + 2;
+		this->hdc = BeginPaint(hWnd, &this->ps);              
 
 		this->Win32UpdateWindow();
 
 		EndPaint(hWnd, &this->ps);
+		ReleaseDC(hWnd, hdc);
+#endif
+
 		return hWnd;
 	}
+
 
 	void CustomRunner::ClearBuffer()
 	{
@@ -246,6 +224,7 @@
 
 
 	}
+
 
 	void CustomRunner::Render() { this->scratch->APP(*this); }
 

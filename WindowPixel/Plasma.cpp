@@ -10,10 +10,6 @@
 
 #include "Plasma.h"
 
- // for our timeGetTime
-
-//static SDL_Surface* scr;
-
 
 Plasma::Plasma(olved__buffer& olvedBuffer) {
 
@@ -38,14 +34,6 @@ this->olvedBuffer.Height  =	olvedBuffer.Height  = plasma_screenHeight;
 
 Plasma::Plasma() {
 	OutputDebugString(TEXT("Plasma CC "));
-}
-
-void Plasma::BuildMem()
-{
-}
-
-void Plasma::ReleaseMem()
-{
 }
 
 
@@ -74,21 +62,6 @@ Plasma::~Plasma()
 	//ReleaseMem();
 
 }
-
-// Any way sorta got this going from LODEV
-// Pass initalization of Plasma to  WM_CREATE 
-//  // Inject into class CustomRunner
-// .... customRunner->pplasma = new Plasma(plasmaBuffer);
-// The Plasma class for now will fill out the  olved__buffer& olvedBuffer
-// lodev ol ved  loved solved.
-// And when the program terminates will Call Plasma deconstructor at the end of the program and do clean up
-// olvedBuffer is somewhat probed for the moment ....
-
-
-
-
-
-
 
 void Plasma::SomeFunction5(HWND& rHWnd, win32_offscreen_buffer& rSurfdata, CustomRunner& rDraw )
 {
@@ -169,13 +142,6 @@ void Plasma::SomeFunction5(HWND& rHWnd, win32_offscreen_buffer& rSurfdata, Custo
 	}
 
 }
-
-
-
-
-
-
-
 
 #if 0
 void Plasma::SomeFunction5(HWND* pHWnd, win32_offscreen_buffer* surfdata)
