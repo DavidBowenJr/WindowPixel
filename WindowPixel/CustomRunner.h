@@ -41,24 +41,11 @@ class Scratch;
 
 		HDC SafeGetDC();
 
-		//void  Win32ResizeDibSection(win32_offscreen_buffer* Buffer, uint32_t Width, uint32_t Height);
 		void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
-
-	//	void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);
-
 
 		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight);
 
 		void Win32UpdateWindow();
-
-#if 0
-		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer Buffer);
-#endif
-
-		//void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight, win32_offscreen_buffer* Buffer);
-
-
-		// void Win32UpdateWindow(HDC hdc, RECT* cR, int x, int y, int Width, int Height);
 
 		HWND myPaint();
 
@@ -68,10 +55,20 @@ class Scratch;
 
 		void Render();
 
+
+
+#ifdef STRANGE_RENDER
+
 		void RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset);
 
 		// This is just a test
 		void RenderWeirdGradient(uint32_t x, uint32_t y, win32_offscreen_buffer& TextureBuffer, win32_offscreen_buffer& GardBuffer);
+#endif
+
+
+
+
+
 
 		void PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF bgr);
 
@@ -110,9 +107,15 @@ class Scratch;
 
 		void FlipVertical(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source);
 
+	
+		void Funn();
+
+
 		COLORREF getColorAtCursor();
 
 		POINT getLocalCursor();
+
+		POINT getLocalCursor(HDC hdc);
 
 		// Just a test
 		//void PlasmaXXXX();

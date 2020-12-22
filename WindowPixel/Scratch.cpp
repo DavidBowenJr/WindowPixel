@@ -27,8 +27,17 @@ void Scratch::APP(CustomRunner& customRunner) {
 	
 	customRunner.SafeReleaseDC();  // wingdi
 	
+
+#ifdef STRANGE_RENDER
 	customRunner.
 		RenderWeirdGradient(x, y);
+#endif
+
+
+	customRunner.Funn();
+
+
+
 	{
 		customRunner.
 			CopyImage(
@@ -36,6 +45,10 @@ void Scratch::APP(CustomRunner& customRunner) {
 				Buffer,
 				customRunner.
 				TextureBuffer[0]);
+
+
+
+
 
 		customRunner.
 			FlipHorizontal(
@@ -59,7 +72,10 @@ void Scratch::APP(CustomRunner& customRunner) {
 
 		customRunner.Line(0, 0, 300, 300, RGB(0, 255, 0));
 
-	//	customRunner.Foo();
+
+
+		customRunner.Foo();
+
 
 
 	}

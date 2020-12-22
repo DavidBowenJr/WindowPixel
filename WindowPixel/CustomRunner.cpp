@@ -132,6 +132,7 @@
 	}
 
 
+
 	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32_t WindowWidth, uint32_t WindowHeight)
 	{
 		if (Buffer.Memory == NULL) _ASSERT(L"Bad");
@@ -147,8 +148,6 @@
 			old_bcolor; // old background text color
 		int old_tmode; // old text transparency mode
 
-		// first get a graphics device context
-	//	HDC hdc = SafeGetDC();
 	
 		// set the foreground color to green and save old one
 		old_fcolor = SetTextColor(hdc_param, RGB(0, 255, 0));
@@ -169,29 +168,54 @@
 		SetBkMode(hdc_param, old_tmode);
 		
 		// Ok with this line we can say our rect is hollow ext... somewhat vague but  theres lot's that can be done now.. much more... old gdi  windows. very nice.
-	HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject(HOLLOW_BRUSH));
+	HBRUSH	hOldbrush2 = (HBRUSH)SelectObject(hdc_param, GetStockObject(HOLLOW_BRUSH));
+	
+	//https: //docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wmf/2af5f7e4-9abb-4fb4-b428-d739c8b23829
+	
+//	HPEN white_dashed_pen = CreatePen(PS_DASHDOTDOT, 1, RGB(255, 255, 255));
+//	SelectObject(hdc_param, white_dashed_pen);
 
-	//	
 
 		old_bcolor = SetBkMode(hdc_param,OPAQUE);
 		SetBkColor(hdc_param, RGB(0,0,0));
-		RoundRect(hdc_param, 125, 125, 220, 240, 15, 13);
-	
-	//	PatBlt(hdc_param, 0, 0, WindowWidth, WindowHeight, SRCCOPY); // PATCOPY);
 		
-		// Demonstarting GetPixel and SetPixel  it's A SO SLOWWWW. SNAIL COULD BE USED BUT?????? 
-		for(int y = 0; y < 100; y++)
-			for (int x = 0; x < 100; x++)
-			{
-				COLORREF color = GetPixel(hdc_param, x, y);
-				SetPixel(hdc_param, x+50, y, color);
-				
-			}
-		
+	POINT p =	this->getLocalCursor(hdc_param);
+
+		RoundRect(hdc_param, 1+p.x, 1+p.y, 220, 240, 15, 13);
+	//	DeleteObject(white_dashed_pen);
+
+
+	//	MoveToEx(hdc_param, 10, 10, NULL);
+		//	LineTo(hdc_param, 50, 60);
+			MoveToEx(hdc_param, 20, 10, NULL);
+			LineTo(hdc_param, 30, 20);
+			LineTo(hdc_param, 10, 20);
+			LineTo(hdc_param, 20, 10);
+
+			Ellipse(hdc_param, p.x +10, p.y + 10, p.x +30, p.y + 30);
+			Ellipse(hdc_param, 250, 175, 350, 225);
+			
+			// create the polygon shown in the figure
+
+			POINT p0 = { 10, 30 };
+			POINT p1 = { 20,  0 };
+			POINT p2 = { 30, 32 };
+			POINT p3 = { 40, 31 };
+			POINT p4 = { 35, 40 };
+			POINT p5 = { 20, 40 };
+			POINT p6 = { 15, 45 };
+
+			HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject(DKGRAY_BRUSH));
+			POINT poly[7] = { p0.x, p0.y, p1.x, p1.y, p2.x, p2.y,
+			p3.x, p3.y, p4.x, p4.y, p5.x, p5.y, p6.x, p6.y };
+			// assume hdc is valid, and pen and brush are selected into
+// graphics device context
+			Polygon(hdc, poly, 7);
+
+
+
 
 #endif
-
-
 
 	}
 
@@ -211,7 +235,9 @@
 				this->Win32UpdateWindow( hdc, canvasWidth, canvasHeight);
 			}
 			SafeReleaseDC();
+
 		}
+
 	}
 
 
@@ -294,6 +320,9 @@
 
 	void CustomRunner::Render() { this->scratch->APP(*this); }
 
+
+#ifdef STRANGE_RENDER
+
 	/* more or less from HMH but it's very usefull */
 	void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset)
 	{
@@ -319,6 +348,10 @@
 		}
 	}
 
+#endif
+
+
+
 	/// <summary>
 	/// Serves no particular purpose just a test.
 	/// </summary>
@@ -338,7 +371,14 @@
 
 		 RenderWeirdGradient(0, 0, Bf, Gd);
 		 */
+
+#ifdef STRANGE_RENDER
 		RenderWeirdGradient(0, 0, custRun.Buffer, custRun.TextureBuffer[0]);
+		
+#endif
+		Funn();
+
+
 	}
 
 	/// <summary>
@@ -412,6 +452,27 @@
 		}
 	}
 
+
+
+	void CustomRunner::Funn()
+	{
+		static int inc = 0;
+		for(int y = 0; y < Buffer.Height; y++)
+			for (int x = 0; x < Buffer.Width; x++)
+			{
+
+				
+
+
+				COLORREF color = RGB( (BYTE) 255,(BYTE)x + y , (BYTE) y );
+				mSetPixel(x, y, color);
+				inc++;
+			}
+	
+	}
+
+
+#ifdef STRANGE_RENDER
 	// This is just a test
 	void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset, win32_offscreen_buffer& TextureBuffer, win32_offscreen_buffer& GardBuffer)
 	{
@@ -437,6 +498,10 @@
 			Row += Pitch;
 		}
 	}
+#endif
+
+
+
 
 	void CustomRunner::PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF bgr)
 	{
@@ -733,6 +798,15 @@ for (size_t y = 0; y < h; y++)
 		if (!b) return { ~0,~0 };
 		return p;
 	}
+
+	POINT CustomRunner::getLocalCursor(HDC hdc)
+	{
+		POINT p;
+		GetCursorPos(&p);
+		return p;
+
+	}
+
 
 	// Just a test
 	//void CustomRunner::PlasmaXXXX() { this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this); }
