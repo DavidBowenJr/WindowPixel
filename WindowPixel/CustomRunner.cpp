@@ -46,12 +46,28 @@
 			bitmapData = LoadBitmapFile((char*)("photo3.bmp"), &bitmapInfoHeader);
 			bitmapInfoHeader.biBitCount = 32;
 			memcpy(&TextureBuffer[0].Info, &bitmapInfoHeader, sizeof(BITMAPINFO));
-			TextureBuffer[0].Memory = bitmapData;
+
+			//TextureBuffer[0].Memory = bitmapData;
+
+		
+
+
+			// TextureBuffer[0].Memory = new uint8[sizeof(uint32) * (bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight)];
+			TextureBuffer[0].Memory = new uint32[bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight];
+			// Or 
+
+			// We know for now a component is 8 bits long... 4 components is 32 bits total...
+			memcpy( TextureBuffer[0].Memory,  bitmapData, sizeof(uint32) * (bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight));// bitmapInfoHeader.biSizeImage + (bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight)); // bitmapData;
+			SAFE_DELETE(bitmapData);
+
 			TextureBuffer[0].Width = bitmapInfoHeader.biWidth;
 			TextureBuffer[0].Height = bitmapInfoHeader.biHeight;
 			TextureBuffer[0].BytesPerPixel = bitmapInfoHeader.biBitCount / 8;
 			TextureBuffer[0].Pitch = bitmapInfoHeader.biWidth * (bitmapInfoHeader.biBitCount / 8);
 			TextureBuffer[0].Pitch = TextureBuffer[0].Pitch;
+
+			ZeroMemory(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER));
+
 
 			if (TextureBuffer[0].Width > 0)
 			{
