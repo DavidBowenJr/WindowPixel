@@ -67,6 +67,8 @@
 
 		SAFE_DELETE(pplasma);
 		SAFE_DELETE(scratch);
+
+		//free(TextureBuffer[0].Memory);
 		SAFE_DELETE(TextureBuffer[0].Memory);
 
 		if (Buffer.Memory != NULL)
@@ -135,11 +137,15 @@
 
 	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32_t WindowWidth, uint32_t WindowHeight)
 	{
-		if (Buffer.Memory == NULL) _ASSERT(L"Bad");
-		int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
-		int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
-		if (previousmode == previousmode) {};
-		StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+		if (GetDeviceCaps(hdc_param, RASTERCAPS))
+		{
+
+			if (Buffer.Memory == NULL) _ASSERT(L"Bad");
+				int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
+				int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
+				if (previousmode == previousmode) {};
+				StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+		}
 
 #if 1
 		// Text Yes....
@@ -457,18 +463,14 @@
 	void CustomRunner::Funn()
 	{
 		static int inc = 0;
-		for(int y = 0; y < Buffer.Height; y++)
-			for (int x = 0; x < Buffer.Width; x++)
+		for(unsigned int y = 0; y < Buffer.Height; y++)
+			for (unsigned int x = 0; x < Buffer.Width; x++)
 			{
-
-				
-
-
-				COLORREF color = RGB( (BYTE) 255,(BYTE)x + y , (BYTE) y );
+				COLORREF color = RGB( (BYTE) y ,(BYTE) x  , (BYTE)  x + y );
+				//COLORREF color = RGB((BYTE)x, (BYTE)x + y, (BYTE)y);
 				mSetPixel(x, y, color);
 				inc++;
 			}
-	
 	}
 
 

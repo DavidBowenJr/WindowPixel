@@ -4,6 +4,9 @@
 
 #pragma once
 
+// we have option of free or delete Im using Delete. for ImageSource
+#define _BitmapFile_USE_DELETE
+
 #define __FIND_A_RESOLUTION
 #define SAFE_DELETE(p) if ((p) != NULL) { delete (p); (p) = NULL; }
 

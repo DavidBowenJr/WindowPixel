@@ -5,6 +5,89 @@
 //#include "???"
 //#include <stdio.h>
 
+
+#ifdef _BitmapFile_USE_DELETE
+uint8* LoadBitmapFile(char* filename, BITMAPINFOHEADER* pBitmapInfoHeader) {
+	FILE* pFile;
+
+	BITMAPFILEHEADER bitmapFileHeader; 
+
+	uint8* bitmapImage; 
+
+// open a file with read binary attribute
+	fopen_s(&pFile, (char*)filename, "rb");
+	
+	if (pFile == nullptr) return NULL;
+
+	// FILE HEADER
+	fread(&bitmapFileHeader, sizeof(BITMAPFILEHEADER), 1, pFile);
+
+	
+	if (bitmapFileHeader.bfType != 'MB') {
+		fclose(pFile); // close file we didn't succeed.
+		return NULL;  // no image data.
+	}
+
+
+	// INFO HEADER
+	{
+
+		fread(pBitmapInfoHeader, sizeof(BITMAPINFOHEADER), 1, pFile);
+		fseek(pFile, (long)bitmapFileHeader.bfOffBits, SEEK_SET);
+
+		// 32 bits
+		 int extraBytes = pBitmapInfoHeader->biWidth * pBitmapInfoHeader->biHeight;
+
+		bitmapImage = (uint8*) new uint8[pBitmapInfoHeader->biSizeImage + extraBytes]; 
+		if (!bitmapImage) { SAFE_DELETE(bitmapImage); fclose(pFile); return NULL; }
+
+
+		for (SIZE_T z = 0; z < (pBitmapInfoHeader->biSizeImage + extraBytes); z++)
+		{
+			bitmapImage[z] = 0;
+		}
+
+		// READ in the image data
+		fread(bitmapImage, pBitmapInfoHeader->biSizeImage, 1, pFile);
+		if (bitmapImage == NULL) {
+			fclose(pFile); return NULL;
+		}
+
+	
+		auto sub = pBitmapInfoHeader->biSizeImage + extraBytes;
+		unsigned char* temp = new unsigned char[sub];
+		int inc3 = 0;
+		
+			for (SIZE_T i = 0; i < (pBitmapInfoHeader->biSizeImage + extraBytes); i += 4) {
+				temp[i     ] = (uint8)bitmapImage[inc3];
+				temp[i + 1 ] = (uint8)bitmapImage[inc3 + 1];
+				temp[i + 2 ] = (uint8)bitmapImage[inc3 + 2];
+				temp[i + 3 ] = (uint8)bitmapImage[inc3 + 3];
+				inc3 += 3;
+			}
+		
+
+		{
+			for (SIZE_T i = 0; i < (pBitmapInfoHeader->biSizeImage + extraBytes); i++)
+			{
+				bitmapImage[i] = (uint8)temp[i];
+			}
+			delete[] temp;
+		}
+
+		// Close file and return bitmap image that was allocated with built in new  rather than c allocate so now we can call SAFE_DELETE  rather than free
+		fclose(pFile);
+		return (uint8*)bitmapImage;
+
+	}
+
+}
+
+#endif
+
+
+
+#ifdef _BitmapFile_USE_FREE
 uint8_t* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader) {
 	FILE* filePtr; // our file pointer
 	BITMAPFILEHEADER bitmapFileHeader; // our bitmap file header
@@ -35,8 +118,8 @@ uint8_t* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader) {
 	if (bPrep32bit)
 	{
 		// Make a 32 bit buffer Brute Force
-		bitmapImage = (uint8_t*)malloc(bitmapInfoHeader->biSizeImage + extraBytes);
-
+		bitmapImage = (uint8_t*)malloc(bitmapInfoHeader->biSizeImage + extraBytes); // with free
+		//bitmapImage = (uint8_t*) new uint8_t[bitmapInfoHeader->biSizeImage + extraBytes];
 		for (SIZE_T z = 0; z < (bitmapInfoHeader->biSizeImage + extraBytes); z++)
 			bitmapImage[z] = 0;
 	}
@@ -98,6 +181,8 @@ uint8_t* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader) {
 	return (uint8_t*) bitmapImage;
 
 }
+#endif
+
 
 
 ///
