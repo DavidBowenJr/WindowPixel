@@ -49,12 +49,10 @@
 
 			//TextureBuffer[0].Memory = bitmapData;
 
-		
-
-
 			// TextureBuffer[0].Memory = new uint8[sizeof(uint32) * (bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight)];
 			TextureBuffer[0].Memory = new uint32[bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight];
 			// Or 
+
 
 			// We know for now a component is 8 bits long... 4 components is 32 bits total...
 			memcpy( TextureBuffer[0].Memory,  bitmapData, sizeof(uint32) * (bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight));// bitmapInfoHeader.biSizeImage + (bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight)); // bitmapData;
@@ -67,7 +65,6 @@
 			TextureBuffer[0].Pitch = TextureBuffer[0].Pitch;
 
 			ZeroMemory(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER));
-
 
 			if (TextureBuffer[0].Width > 0)
 			{
