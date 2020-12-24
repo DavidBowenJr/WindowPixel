@@ -10,6 +10,7 @@
 
 #include <chrono>
 #include <thread>
+#include <limits.h>
 
 	CustomRunner::CustomRunner()
 	{
@@ -123,7 +124,7 @@
 	}
 
 
-	void CustomRunner::Win32ResizeDibSection(uint32_t Width, uint32_t Height)
+	void CustomRunner::Win32ResizeDibSection(uint32 Width, uint32 Height)
 	{
 		if (Buffer.Memory)
 		{
@@ -148,8 +149,20 @@
 
 
 
-	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32_t WindowWidth, uint32_t WindowHeight)
+	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight)
 	{
+
+// Being a little silly here but we prove that we can Create A compatiable device that will hold a HDC memory device handle that can be used.
+		
+		// this is not really the way it will be used directly in context .. but it may give a general idea. 
+		// some of the steps used. some not important. 
+		// Doing a simple accumulated dither StrectchDiBits
+		// Also we see at the bottom  PatPlit who is using the hdc memimage
+
+		static int dither = 0;
+
+
+
 		if (GetDeviceCaps(hdc_param, RASTERCAPS))
 		{
 
@@ -157,7 +170,16 @@
 				int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
 				int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
 				if (previousmode == previousmode) {};
-				StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+
+				if (dither >= 10)
+				{
+					StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+				
+					dither = 0;
+				}
+				dither++;
+
+		
 		}
 
 #if 1
@@ -229,12 +251,71 @@
 			p3.x, p3.y, p4.x, p4.y, p5.x, p5.y, p6.x, p6.y };
 			// assume hdc is valid, and pen and brush are selected into
 // graphics device context
-			Polygon(hdc, poly, 7);
+			Polygon(hdc_param, poly, 7);
 
 
 
 
 #endif
+
+#if 1
+
+			//SM_CYDLGFRAME
+			RECT Rect;
+			if   ( GetClientRect(this->hWnd, &Rect) )                    // (GetWindowRect(this->hWnd, &Rect))
+			{
+				OutputDebugString(L"\n");
+				OutputDebugString(L"\n");
+				OutputDebugString(std::to_wstring(Rect.bottom).c_str());
+				OutputDebugString(L"\t");
+				OutputDebugString(std::to_wstring(Rect.top).c_str());
+				OutputDebugString(L"\t");
+				OutputDebugString(std::to_wstring(Rect.left).c_str());
+				OutputDebugString(L"\t");
+				OutputDebugString(std::to_wstring(Rect.right).c_str());
+
+				OutputDebugString(L"\n");
+				OutputDebugString(L"\n");
+
+				int maxX = Rect.right - Rect.bottom;
+				int maxY = Rect.bottom - Rect.top;
+
+
+	//	HDC	localHDC = GetDC(hWnd);
+		HDC memdc = CreateCompatibleDC(hdc_param);
+		HBITMAP hbit = CreateCompatibleBitmap(hdc_param, maxX, maxY);
+	HPEN hRedPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+
+		HPEN hOldPen = (HPEN)SelectObject(memdc, hRedPen);
+		SelectObject(memdc, hOldPen);
+	//	PatBlt(memdc, 0, 0, maxX, maxY, PATCOPY);
+
+
+		/*
+		Anyways, the difference is that StretchDIBits uses a
+		device independant bitmap (DIB) as the source, while StretchBlt
+		uses a device-dependant bitmap (DDB) as a source.
+		They (supposedly) do the same thing,
+		but with different formats of information.
+		*/
+
+		//StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+		StretchBlt(hdc_param, 0, 0, maxX, maxY, memdc, 0, 0, maxX, maxY, SRCCOPY);
+
+
+
+		ReleaseDC(this->hWnd, memdc);
+
+
+
+
+
+			}
+
+#endif
+
+
+
 
 	}
 
@@ -408,8 +489,8 @@
 	void CustomRunner::CopyImage(win32_offscreen_buffer& destBuffer, win32_offscreen_buffer& sourceBuffer)
 	{
 
-		for (uint32_t j = 0; j < sourceBuffer.Width; j++)
-			for (uint32_t i = 0; i < sourceBuffer.Height; i++)
+		for (uint32 j = 0; j < sourceBuffer.Width; j++)
+			for (uint32 i = 0; i < sourceBuffer.Height; i++)
 			{
 				//	COLORREF color = CustomRunner::GetPixel(sourceBuffer.Memory, sourceBuffer.Width, sourceBuffer.Height, j, i);
 					// PutPixel(destBuffer.Memory, destBuffer.Width, destBuffer.Height, j, i, color);
@@ -420,18 +501,18 @@
 
 	void CustomRunner::FlipHorizontal(win32_offscreen_buffer& Destination, win32_offscreen_buffer& Source)
 	{
-		uint32_t sy = 0; // y and pitch for Source
-		uint32_t dy = 0; // y and pitch for Destination
+		uint32 sy = 0; // y and pitch for Source
+		uint32 dy = 0; // y and pitch for Destination
 
-		uint32_t* gps = (uint32*)Source.Memory; // Base Address  for our source memory region
-		uint32_t* gpd = (uint32*)Destination.Memory; // Base Address for our destination memory region
+		uint32* gps = (uint32*)Source.Memory; // Base Address  for our source memory region
+		uint32* gpd = (uint32*)Destination.Memory; // Base Address for our destination memory region
 
 		for (uint32_t Y = 0; Y < Source.Height; Y++)
 		{
 			// Compute Row...
 			sy = (Source.Width * Y);
 			dy = (Destination.Width * Y);
-			for (uint32_t X = 0; X < Source.Width; X++)
+			for (uint32 X = 0; X < Source.Width; X++)
 			{
 				// Compute Row Times Column
 				// On the Source we would like to read from it's end to it's start to flip horizontal
@@ -456,11 +537,11 @@
 		uint32* gps = (uint32*)Source.Memory;
 		uint32* gpd = (uint32*)Destination.Memory;
 
-		for (uint32_t Y = 0; Y < Source.Height; ++Y)
+		for (uint32 Y = 0; Y < Source.Height; ++Y)
 		{
 			sy = (Source.Width * (Source.Height - Y));
 			dy = (Destination.Width * Y);
-			for (uint32_t X = 0; X < Source.Width; ++X)
+			for (uint32 X = 0; X < Source.Width; ++X)
 			{
 				uint32* ps = gps;
 				uint32* pd = gpd;
@@ -518,7 +599,7 @@
 
 
 
-	void CustomRunner::PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF bgr)
+	void CustomRunner::PutPixel(void* BitmapMemory, uint32 BitmapWidth, uint32 BitmapHeight, uint32 x, uint32 y, COLORREF bgr)
 	{
 		if (BitmapMemory == NULL) return;
 
@@ -532,21 +613,21 @@
 			}
 	}
 
-	void CustomRunner::PutPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, int x, int y, COLORREF bgr)
+	void CustomRunner::PutPixel(void* BitmapMemory, uint32 BitmapWidth, uint32 BitmapHeight, int x, int y, COLORREF bgr)
 	{
 		if (BitmapMemory == NULL) return;
 
 		if (y < (signed int)BitmapHeight && y > -1)
 			if (x < (signed int)BitmapWidth && x > -1)
 			{
-				uint32_t* p32b = (uint32_t*)BitmapMemory;
+				uint32_t* p32b = (uint32*)BitmapMemory;
 				p32b += (BitmapWidth * y) + x;
 				unsigned char* p8b = (unsigned char*)&bgr;
-				*p32b = (uint32_t)*p8b << 16 | *(p8b + 1) << 8 | *(p8b + 2);
+				*p32b = (uint32)*p8b << 16 | *(p8b + 1) << 8 | *(p8b + 2);
 			}
 	}
 
-	void CustomRunner::PutPixel(win32_offscreen_buffer& Destination, uint32_t x, uint32_t y, COLORREF bgr)
+	void CustomRunner::PutPixel(win32_offscreen_buffer& Destination, uint32 x, uint32 y, COLORREF bgr)
 	{
 		if (Destination.Memory == NULL) return;
 
@@ -560,7 +641,7 @@
 			}
 	}
 
-	void CustomRunner::mSetPixel(uint32_t x, uint32_t y, COLORREF color)
+	void CustomRunner::mSetPixel(uint32 x, uint32 y, COLORREF color)
 	{
 		this->PutPixel(this->Buffer, x, y, color);
 	}
@@ -612,22 +693,21 @@
 
 	}
 
-	void CustomRunner::WuDrawLine(void* bm, uint32_t bw, uint32_t bh, float x0, float y0, float x1, float y1)
+	void CustomRunner::WuDrawLine(void* bm, uint32 bw, uint32 bh, float x0, float y0, float x1, float y1)
 	{
 		//this->DrawRect(bm, bw, bh);
 		if (bm == NULL) return;
 
-		for (uint32_t i = (uint32_t)y0; i < y0 + y1; i++)
-			for (uint32_t j = (uint32_t)x0; j < (uint32_t)x0 + x1; j++)
+		for (uint32 i = (uint32)y0; i < y0 + y1; i++)
+			for (uint32 j = (uint32)x0; j < (uint32)x0 + x1; j++)
 				this->PutPixel(bm, bw, bh, j, i, (0xFFFFFFFF));
 	}
 
-	void CustomRunner::DrawRect(void* bm, uint32_t bw, uint32_t bh)
+	void CustomRunner::DrawRect(void* bm, uint32 bw, uint32 bh)
 	{
 		if (bm == NULL) return;
-
-		for (uint32_t i = 0; i < bw / 4; i++)
-			for (uint32_t j = 0; j < bh / 4; j++)
+		for (uint32 i = 0; i < bw / 4; i++)
+			for (uint32 j = 0; j < bh / 4; j++)
 			{
 				this->PutPixel(bm, bw, bh, i, j, (COLORREF)0XFFFF0000);
 			}
@@ -636,13 +716,10 @@
 	void CustomRunner::DrawRect()
 	{
 		if (this->Buffer.Memory == NULL) return;
-
-		for (uint32_t i = 0; i < Buffer.Width / 4; i++)
-			for (uint32_t j = 0; j < Buffer.Height / 4; j++)
+		for (uint32 i = 0; i < Buffer.Width / 4; i++)
+			for (uint32 j = 0; j < Buffer.Height / 4; j++)
 			{
-				//	this->PutPixel(Buffer.Memory, Buffer.Width, Buffer.Height, i, j, (COLORREF)0XFFFF0000);
 				this->PutPixel(this->Buffer, i, j, (COLORREF)0Xffff0000);
-
 			}
 	}
 
@@ -727,15 +804,14 @@ for (size_t y = 0; y < h; y++)
 
 	}
 
-	void CustomRunner::PutPixelBackOrder(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y, COLORREF gbr)
+	void CustomRunner::PutPixelBackOrder(void* BitmapMemory, uint32 BitmapWidth, uint32 BitmapHeight, uint32 x, uint32 y, COLORREF gbr)
 	{
 		if (BitmapMemory == NULL) return;
-
 		UNREFERENCED_PARAMETER(gbr);
-		if (y < BitmapHeight) // && y > -1)
-			if (x < BitmapWidth) // && x > -1)
+		if (y < BitmapHeight)
+			if (x < BitmapWidth)
 			{
-				uint32_t* p32b = (uint32_t*)BitmapMemory;
+				uint32* p32b = (uint32*)BitmapMemory;
 				p32b += (BitmapWidth * y) + x;
 				BYTE r = GetRValue(*p32b);
 				BYTE g = GetGValue(*p32b);
@@ -743,33 +819,29 @@ for (size_t y = 0; y < h; y++)
 				*p32b = RGB(b, g, r);
 				*p32b = ~*p32b;
 			}
-
 	}
 
-	COLORREF CustomRunner::mGetPixel(void* BitmapMemory, uint32_t BitmapWidth, uint32_t BitmapHeight, uint32_t x, uint32_t y)
+	COLORREF CustomRunner::mGetPixel(void* BitmapMemory, uint32 BitmapWidth, uint32 BitmapHeight, uint32 x, uint32 y)
 	{
 		if (BitmapMemory == NULL) return COLORREF(0);
-
-		if (y < BitmapHeight) // && y > -1)
-			if (x < BitmapWidth) // && x > -1)
+		if (y < BitmapHeight)
+			if (x < BitmapWidth) 
 			{
-				uint32_t* p32b = (uint32_t*)BitmapMemory;
+				uint32* p32b = (uint32*)BitmapMemory;
 				p32b += (BitmapWidth * y) + x;
 				unsigned char* p8b = (unsigned char*)p32b;
 				return (COLORREF)*p8b << 16 | *(p8b + 1) << 8 | *(p8b + 2);
 			}
-
 		return COLORREF(0);
 	}
 
-	COLORREF CustomRunner::mGetPixel(win32_offscreen_buffer& sourceBuffer, uint32_t x, uint32_t y)
+	COLORREF CustomRunner::mGetPixel(win32_offscreen_buffer& sourceBuffer, uint32 x, uint32 y)
 	{
 		if (sourceBuffer.Memory == NULL) return COLORREF(0);
-
 		if (y < sourceBuffer.Height)
 			if (x < sourceBuffer.Width)
 			{
-				uint32_t* p32b = (uint32_t*)sourceBuffer.Memory;
+				uint32* p32b = (uint32*)sourceBuffer.Memory;
 				p32b += (sourceBuffer.Width * y) + x;
 				uint8b* p8b = (uint8b*)p32b;
 				return (COLORREF)*p8b << 16 | *(p8b + 1) << 8 | *(p8b + 2);
@@ -819,7 +891,6 @@ for (size_t y = 0; y < h; y++)
 		POINT p;
 		GetCursorPos(&p);
 		return p;
-
 	}
 
 
