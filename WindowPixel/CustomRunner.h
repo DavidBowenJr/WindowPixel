@@ -66,7 +66,7 @@ class Scratch;
 #endif
 
 
-
+		BOOL mSaveBitmap(LPWSTR wPath, HWND hWnd, HDC hdc);
 
 
 

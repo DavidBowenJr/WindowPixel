@@ -73,6 +73,8 @@ BOOL WINAPI SaveBitmap(WCHAR* wPath,HWND hWndParam, HDC hDC)
 
     hMemDC = CreateCompatibleDC(hDC);
     hBitmap = CreateDIBSection(hDC, &bInfo, DIB_RGB_COLORS, (VOID**)&bBits, NULL, 0);
+   
+    
     SelectObject(hMemDC, hBitmap);
     BitBlt(hMemDC, 0, 0, lWidth, lHeight, hDC, x, y, SRCCOPY);
 

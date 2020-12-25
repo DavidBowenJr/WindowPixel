@@ -152,21 +152,11 @@
 
 	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight)
 	{
-
-// Being a little silly here but we prove that we can Create A compatiable device that will hold a HDC memory device handle that can be used.
 		
-		// this is not really the way it will be used directly in context .. but it may give a general idea. 
-		// some of the steps used. some not important. 
-		// Doing a simple accumulated dither StrectchDiBits
-		// Also we see at the bottom  PatPlit who is using the hdc memimage
-
 		static int dither = 0;
-
-
-
+		
 		if (GetDeviceCaps(hdc_param, RASTERCAPS))
 		{
-
 			if (Buffer.Memory == NULL) _ASSERT(L"Bad");
 				int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
 				int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
@@ -274,24 +264,37 @@
 			RECT Rect;
 			if (GetClientRect(this->hWnd, &Rect))                    // (GetWindowRect(this->hWnd, &Rect))
 			{
-				int maxX = Rect.right - Rect.bottom;
+
+				int maxX = Rect.right - Rect.left;
 				int maxY = Rect.bottom - Rect.top;
 				HDC memdc = CreateCompatibleDC(hdc_param);
 				HBITMAP hbit = CreateCompatibleBitmap(hdc_param, maxX, maxY);
-				HPEN hRedPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-				HPEN hOldPen = (HPEN)SelectObject(memdc, hRedPen);
-				SelectObject(memdc, hOldPen);
-				if (SaveBitmap((LPWSTR)L"SavedBitmap.bmp", this->hWnd, hdc_param))
-				{
-				}
+				INT x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+				INT y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+				SelectObject(memdc, hbit);
+				BitBlt(memdc, 0, 0, Rect.right, Rect.bottom, hdc_param, x, y, SRCCOPY);
+				if (mSaveBitmap((LPWSTR)L"SavedBitmapmem.bmp", this->hWnd, memdc)) {}
 				ReleaseDC(this->hWnd, memdc);
+
+
+				if (mSaveBitmap((LPWSTR)L"SavedBitmaplocal.bmp", this->hWnd, hdc_param)) {}
+			
 			}
+
+
+
+
 #endif
 
 
-
-
 	}
+
+
+	BOOL CustomRunner::mSaveBitmap(LPWSTR wPath, HWND hWnd, HDC hdc)
+	{
+		return 	 SaveBitmap((LPWSTR)wPath, hWnd, hdc);
+	}
+
 
 	void CustomRunner::Win32UpdateWindow()
 	{
