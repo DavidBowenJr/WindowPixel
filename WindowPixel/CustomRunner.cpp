@@ -297,6 +297,9 @@
 			SelectObject(memdc, hbit);
 			BitBlt(memdc, 0, 0, Rect.right, Rect.bottom, hdc_param, x, y, SRCCOPY);
 			if (mSaveBitmap((LPWSTR)L"SavedBitmapmem.bmp", this->hWnd, memdc)) {}
+			
+			DeleteObject(hbit);
+			
 			ReleaseDC(this->hWnd, memdc);
 
 
