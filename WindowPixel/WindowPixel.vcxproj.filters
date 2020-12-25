@@ -72,6 +72,9 @@
     <ClInclude Include="colorstruct.h">
       <Filter>Source Files\ColorStructs</Filter>
     </ClInclude>
+    <ClInclude Include="SaveBitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowPixel.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files\ColorStructs</Filter>
     </ClCompile>
     <ClCompile Include="colorstruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveBitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

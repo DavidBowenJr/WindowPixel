@@ -155,6 +155,7 @@
     <ClInclude Include="Plasma.h" />
     <ClInclude Include="QueryTimer.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SaveBitmap.h" />
     <ClInclude Include="Scratch.h" />
     <ClInclude Include="share.h" />
     <ClInclude Include="targetver.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="ImageSource.cpp" />
     <ClCompile Include="Plasma.cpp" />
     <ClCompile Include="QueryTimer.cpp" />
+    <ClCompile Include="SaveBitmap.cpp" />
     <ClCompile Include="Scratch.cpp" />
     <ClCompile Include="WindowPixel.cpp" />
   </ItemGroup>

@@ -11,6 +11,7 @@
 #include <chrono>
 #include <thread>
 #include <limits.h>
+#include "SaveBitmap.h"
 
 	CustomRunner::CustomRunner()
 	{
@@ -171,13 +172,13 @@
 				int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
 				if (previousmode == previousmode) {};
 
-				if (dither >= 10)
+				//if (dither >= 2)
 				{
 					StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
 				
 					dither = 0;
 				}
-				dither++;
+			//	dither++;
 
 		
 		}
@@ -260,58 +261,31 @@
 
 #if 1
 
-			//SM_CYDLGFRAME
+			//https://stackoverflow.com/questions/3291167/how-can-i-take-a-screenshot-in-a-windows-application
+
+
+			/// <summary>
+			/// FOR NOW IM ALLOWING THIS TO RUN WILD BUT IN A REAL APPLICATION WE WOULD HAVE A STATE THAT WOULD ALLOW THIS CODE BLOCK TO RUN ONCE EACH KEY STROKE.
+			/// </summary>
+			/// <param name="hdc_param"></param>
+			/// <param name="WindowWidth"></param>
+			/// <param name="WindowHeight"></param>
+			
 			RECT Rect;
-			if   ( GetClientRect(this->hWnd, &Rect) )                    // (GetWindowRect(this->hWnd, &Rect))
+			if (GetClientRect(this->hWnd, &Rect))                    // (GetWindowRect(this->hWnd, &Rect))
 			{
-				OutputDebugString(L"\n");
-				OutputDebugString(L"\n");
-				OutputDebugString(std::to_wstring(Rect.bottom).c_str());
-				OutputDebugString(L"\t");
-				OutputDebugString(std::to_wstring(Rect.top).c_str());
-				OutputDebugString(L"\t");
-				OutputDebugString(std::to_wstring(Rect.left).c_str());
-				OutputDebugString(L"\t");
-				OutputDebugString(std::to_wstring(Rect.right).c_str());
-
-				OutputDebugString(L"\n");
-				OutputDebugString(L"\n");
-
 				int maxX = Rect.right - Rect.bottom;
 				int maxY = Rect.bottom - Rect.top;
-
-
-	//	HDC	localHDC = GetDC(hWnd);
-		HDC memdc = CreateCompatibleDC(hdc_param);
-		HBITMAP hbit = CreateCompatibleBitmap(hdc_param, maxX, maxY);
-	HPEN hRedPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
-
-		HPEN hOldPen = (HPEN)SelectObject(memdc, hRedPen);
-		SelectObject(memdc, hOldPen);
-	//	PatBlt(memdc, 0, 0, maxX, maxY, PATCOPY);
-
-
-		/*
-		Anyways, the difference is that StretchDIBits uses a
-		device independant bitmap (DIB) as the source, while StretchBlt
-		uses a device-dependant bitmap (DDB) as a source.
-		They (supposedly) do the same thing,
-		but with different formats of information.
-		*/
-
-		//StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
-		StretchBlt(hdc_param, 0, 0, maxX, maxY, memdc, 0, 0, maxX, maxY, SRCCOPY);
-
-
-
-		ReleaseDC(this->hWnd, memdc);
-
-
-
-
-
+				HDC memdc = CreateCompatibleDC(hdc_param);
+				HBITMAP hbit = CreateCompatibleBitmap(hdc_param, maxX, maxY);
+				HPEN hRedPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+				HPEN hOldPen = (HPEN)SelectObject(memdc, hRedPen);
+				SelectObject(memdc, hOldPen);
+				if (SaveBitmap((LPWSTR)L"SavedBitmap.bmp", this->hWnd, hdc_param))
+				{
+				}
+				ReleaseDC(this->hWnd, memdc);
 			}
-
 #endif
 
 
