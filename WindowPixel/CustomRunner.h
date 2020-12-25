@@ -65,6 +65,9 @@ class Scratch;
 		void RenderWeirdGradient(uint32_t x, uint32_t y, win32_offscreen_buffer& TextureBuffer, win32_offscreen_buffer& GardBuffer);
 #endif
 
+		void TestSomeGDIProcedure(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight);
+
+		void TestSaveFeature(HDC hdc_param);
 
 		BOOL mSaveBitmap(LPWSTR wPath, HWND hWnd, HDC hdc);
 

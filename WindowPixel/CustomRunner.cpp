@@ -148,39 +148,16 @@
 		Buffer.Pitch = Width * Buffer.BytesPerPixel;
 	}
 
-
-
-	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight)
+	// PROTO CODE
+	void CustomRunner::TestSomeGDIProcedure(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight)
 	{
 		
-		static int dither = 0;
-		
-		if (GetDeviceCaps(hdc_param, RASTERCAPS))
-		{
-			if (Buffer.Memory == NULL) _ASSERT(L"Bad");
-				int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
-				int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
-				if (previousmode == previousmode) {};
-
-				//if (dither >= 2)
-				{
-					StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
-				
-					dither = 0;
-				}
-			//	dither++;
-
-		
-		}
-
-#if 1
-		// Text Yes....
 		// Getting the GDC Text on top of our memory ...Draw ... text last.
 		COLORREF old_fcolor, // old foreground text color
 			old_bcolor; // old background text color
 		int old_tmode; // old text transparency mode
 
-	
+
 		// set the foreground color to green and save old one
 		old_fcolor = SetTextColor(hdc_param, RGB(0, 255, 0));
 
@@ -191,102 +168,94 @@
 		old_tmode = SetBkMode(hdc_param, TRANSPARENT);
 
 		// draw some text at (20,30)
-		TextOut(hdc_param, 20, 30, L"Hello",(int) strlen("Hello"));
+		TextOut(hdc_param, 20, 30, L"Hello", (int)strlen("Hello"));
 
-		
+
 		// now restore everything
 		SetTextColor(hdc_param, old_fcolor);
 		SetBkColor(hdc_param, old_bcolor);
 		SetBkMode(hdc_param, old_tmode);
-		
-		// Ok with this line we can say our rect is hollow ext... somewhat vague but  theres lot's that can be done now.. much more... old gdi  windows. very nice.
-	HBRUSH	hOldbrush2 = (HBRUSH)SelectObject(hdc_param, GetStockObject(HOLLOW_BRUSH));
-	
-	//https: //docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wmf/2af5f7e4-9abb-4fb4-b428-d739c8b23829
-	
-//	HPEN white_dashed_pen = CreatePen(PS_DASHDOTDOT, 1, RGB(255, 255, 255));
-//	SelectObject(hdc_param, white_dashed_pen);
+
+		HBRUSH	hOldbrush2 = (HBRUSH)SelectObject(hdc_param, GetStockObject(HOLLOW_BRUSH));
+
+		//https: //docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wmf/2af5f7e4-9abb-4fb4-b428-d739c8b23829
+
+	//	HPEN white_dashed_pen = CreatePen(PS_DASHDOTDOT, 1, RGB(255, 255, 255));
+	//	SelectObject(hdc_param, white_dashed_pen);
 
 
-		old_bcolor = SetBkMode(hdc_param,OPAQUE);
-		SetBkColor(hdc_param, RGB(0,0,0));
-		
-	POINT p =	this->getLocalCursor(hdc_param);
+		old_bcolor = SetBkMode(hdc_param, OPAQUE);
+		SetBkColor(hdc_param, RGB(0, 0, 0));
 
-		RoundRect(hdc_param, 1+p.x, 1+p.y, 220, 240, 15, 13);
-	//	DeleteObject(white_dashed_pen);
+		POINT p = this->getLocalCursor(hdc_param);
+
+		RoundRect(hdc_param, 1 + p.x, 1 + p.y, 220, 240, 15, 13);
+		//	DeleteObject(white_dashed_pen);
 
 
-	//	MoveToEx(hdc_param, 10, 10, NULL);
-		//	LineTo(hdc_param, 50, 60);
-			MoveToEx(hdc_param, 20, 10, NULL);
-			LineTo(hdc_param, 30, 20);
-			LineTo(hdc_param, 10, 20);
-			LineTo(hdc_param, 20, 10);
+		//	MoveToEx(hdc_param, 10, 10, NULL);
+			//	LineTo(hdc_param, 50, 60);
+		MoveToEx(hdc_param, 20, 10, NULL);
+		LineTo(hdc_param, 30, 20);
+		LineTo(hdc_param, 10, 20);
+		LineTo(hdc_param, 20, 10);
 
-			Ellipse(hdc_param, p.x +10, p.y + 10, p.x +30, p.y + 30);
-			Ellipse(hdc_param, 250, 175, 350, 225);
-			
-			// create the polygon shown in the figure
+		Ellipse(hdc_param, p.x + 10, p.y + 10, p.x + 30, p.y + 30);
+		Ellipse(hdc_param, 250, 175, 350, 225);
 
-			POINT p0 = { 10, 30 };
-			POINT p1 = { 20,  0 };
-			POINT p2 = { 30, 32 };
-			POINT p3 = { 40, 31 };
-			POINT p4 = { 35, 40 };
-			POINT p5 = { 20, 40 };
-			POINT p6 = { 15, 45 };
+		// create the polygon shown in the figure
 
-			HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject(DKGRAY_BRUSH));
-			POINT poly[7] = { p0.x, p0.y, p1.x, p1.y, p2.x, p2.y,
-			p3.x, p3.y, p4.x, p4.y, p5.x, p5.y, p6.x, p6.y };
-			// assume hdc is valid, and pen and brush are selected into
+		POINT p0 = { 10, 30 };
+		POINT p1 = { 20,  0 };
+		POINT p2 = { 30, 32 };
+		POINT p3 = { 40, 31 };
+		POINT p4 = { 35, 40 };
+		POINT p5 = { 20, 40 };
+		POINT p6 = { 15, 45 };
+
+		HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject(DKGRAY_BRUSH));
+		POINT poly[7] = { p0.x, p0.y, p1.x, p1.y, p2.x, p2.y,
+		p3.x, p3.y, p4.x, p4.y, p5.x, p5.y, p6.x, p6.y };
+		// assume hdc is valid, and pen and brush are selected into
 // graphics device context
-			Polygon(hdc_param, poly, 7);
+		Polygon(hdc_param, poly, 7);
+	}
+
+	void CustomRunner::TestSaveFeature(HDC hdc_param)
+	{
+		RECT Rect;
+		if (GetClientRect(this->hWnd, &Rect))
+		{
+
+			int maxX = Rect.right - Rect.left;
+			int maxY = Rect.bottom - Rect.top;
+			HDC memdc = CreateCompatibleDC(hdc_param);
+			HBITMAP hbit = CreateCompatibleBitmap(hdc_param, maxX, maxY);
+			INT x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+			INT y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+			SelectObject(memdc, hbit);
+			BitBlt(memdc, 0, 0, Rect.right, Rect.bottom, hdc_param, x, y, SRCCOPY);
+			if (mSaveBitmap((LPWSTR)L"SavedBitmapmem.bmp", this->hWnd, memdc)) {}
+			ReleaseDC(this->hWnd, memdc);
 
 
+			if (mSaveBitmap((LPWSTR)L"SavedBitmaplocal.bmp", this->hWnd, hdc_param)) {}
+
+		}
+
+	}
 
 
-#endif
-
-#if 1
-
-			//https://stackoverflow.com/questions/3291167/how-can-i-take-a-screenshot-in-a-windows-application
-
-
-			/// <summary>
-			/// FOR NOW IM ALLOWING THIS TO RUN WILD BUT IN A REAL APPLICATION WE WOULD HAVE A STATE THAT WOULD ALLOW THIS CODE BLOCK TO RUN ONCE EACH KEY STROKE.
-			/// </summary>
-			/// <param name="hdc_param"></param>
-			/// <param name="WindowWidth"></param>
-			/// <param name="WindowHeight"></param>
-			
-			RECT Rect;
-			if (GetClientRect(this->hWnd, &Rect))                    // (GetWindowRect(this->hWnd, &Rect))
-			{
-
-				int maxX = Rect.right - Rect.left;
-				int maxY = Rect.bottom - Rect.top;
-				HDC memdc = CreateCompatibleDC(hdc_param);
-				HBITMAP hbit = CreateCompatibleBitmap(hdc_param, maxX, maxY);
-				INT x = GetSystemMetrics(SM_XVIRTUALSCREEN);
-				INT y = GetSystemMetrics(SM_YVIRTUALSCREEN);
-				SelectObject(memdc, hbit);
-				BitBlt(memdc, 0, 0, Rect.right, Rect.bottom, hdc_param, x, y, SRCCOPY);
-				if (mSaveBitmap((LPWSTR)L"SavedBitmapmem.bmp", this->hWnd, memdc)) {}
-				ReleaseDC(this->hWnd, memdc);
-
-
-				if (mSaveBitmap((LPWSTR)L"SavedBitmaplocal.bmp", this->hWnd, hdc_param)) {}
-			
-			}
-
-
-
-
-#endif
-
-
+	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight)
+	{
+		if (GetDeviceCaps(hdc_param, RASTERCAPS))
+		{
+			if (Buffer.Memory == NULL) _ASSERT(L"Bad");
+			int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
+			int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
+			if (previousmode == previousmode) {};
+			StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+		}
 	}
 
 
@@ -310,6 +279,13 @@
 			if (this)
 			{
 				this->Win32UpdateWindow( hdc, canvasWidth, canvasHeight);
+
+				// PROTO TEST DO GDI STUFF...
+				this->TestSomeGDIProcedure(hdc, canvasWidth, canvasHeight);
+
+				// PROTO TEST SAVE
+				this->TestSaveFeature(hdc);
+
 			}
 			SafeReleaseDC();
 
