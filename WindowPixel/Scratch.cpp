@@ -64,8 +64,8 @@ void Scratch::APP(CustomRunner& customRunner) {
 				customRunner.
 				TextureBuffer[0]);
 
-		// By Forward Declaration of class Plasma we can get here.
-	     customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
+
+	//     customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
 	
 		 // This one is wraped in customRunner.
 	//	customRunner.PlasmaXXXX();
@@ -74,7 +74,7 @@ void Scratch::APP(CustomRunner& customRunner) {
 
 
 
-		customRunner.Foo();
+	//	customRunner.Foo();
 
 
 

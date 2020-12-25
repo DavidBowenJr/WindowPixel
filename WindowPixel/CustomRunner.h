@@ -9,6 +9,10 @@ class Plasma;
 class Scratch;
 
 
+
+#define BUF_SIZE 1024
+
+
 	class CustomRunner 
 	{
 	
@@ -29,6 +33,8 @@ class Scratch;
 		win32_offscreen_buffer Buffer;
 		
 		win32_offscreen_buffer TextureBuffer[4];
+		WCHAR wbuff[BUF_SIZE];
+
 		
 		Plasma*  pplasma;
 		Scratch* scratch;
@@ -41,9 +47,9 @@ class Scratch;
 
 		HDC SafeGetDC();
 
-		void Win32ResizeDibSection(uint32_t Width, uint32_t Height);
+		void Win32ResizeDibSection(uint32 Width, uint32 Height);
 
-		void Win32UpdateWindow(HDC hdc, uint32_t WindowWidth, uint32_t WindowHeight);
+		void Win32UpdateWindow(HDC &hdc, uint32& WindowWidth, uint32& WindowHeight);
 
 		void Win32UpdateWindow();
 
@@ -56,16 +62,10 @@ class Scratch;
 		void Render();
 
 
+		void TestSomeMouse();
 
-#ifdef STRANGE_RENDER
 
-		void RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset);
-
-		// This is just a test
-		void RenderWeirdGradient(uint32_t x, uint32_t y, win32_offscreen_buffer& TextureBuffer, win32_offscreen_buffer& GardBuffer);
-#endif
-
-		void TestSomeGDIProcedure(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight);
+		void TestSomeGDIProcedure(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight);
 
 		void TestSaveFeature(HDC hdc_param);
 

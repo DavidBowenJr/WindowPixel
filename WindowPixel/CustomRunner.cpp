@@ -13,6 +13,8 @@
 #include <limits.h>
 #include "SaveBitmap.h"
 
+
+
 	CustomRunner::CustomRunner()
 	{
 		this->rfCntHdc = 0;
@@ -148,10 +150,43 @@
 		Buffer.Pitch = Width * Buffer.BytesPerPixel;
 	}
 
-	// PROTO CODE
-	void CustomRunner::TestSomeGDIProcedure(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight)
+
+
+	void CustomRunner::TestSomeMouse()
 	{
+		BOOL isMousePressent = ::GetSystemMetrics(SM_MOUSEPRESENT);
+		BOOL isMouseWheelPressent = GetSystemMetrics(SM_MOUSEWHEELPRESENT);
+		INT nButtonCount = ::GetSystemMetrics(SM_CMOUSEBUTTONS);
+
+		// Press or Release of a mouse button
+		// double click of a mouse button
+		// movement of the mouse.
+		// ignore events not in client area of this application
+		//https://flylib.com/books/en/4.348.1.16/1/
 		
+		// [Message]				[Sent When]
+		// WM_LBUTTONDOWN		|	left mouse button is pressed
+		// WM_LBUTTONUP			|	left mouse button is released
+		// WM_LBUTTONDBCKLK		|	left mouse button is double-clicked
+		// WM_MBUTTONDOWN		|	middle mouse button is pressed
+		// WM_MBUTTONUP			|	middle mouse button is released
+		// WM_MBUTTONDBCLK		|	middle mouse button is double-clicked
+		// WM_RBUTTONDOWN		|	right  mouse button is pressed
+		// WM_RBUTTONUP			|	right  mouse button is released
+		// WM_RBUTTONDBLCLK		|	right  mouse button is double-clicked
+		// WM_MOUSEMOVE			|	cursor is moved over the window's client area
+
+
+		
+
+
+	}
+
+	// PROTO CODE
+	void CustomRunner::TestSomeGDIProcedure(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
+	{
+			std::wstring wstr;
+
 		// Getting the GDC Text on top of our memory ...Draw ... text last.
 		COLORREF old_fcolor, // old foreground text color
 			old_bcolor; // old background text color
@@ -159,13 +194,39 @@
 
 
 		// set the foreground color to green and save old one
-		old_fcolor = SetTextColor(hdc_param, RGB(0, 255, 0));
+		old_fcolor = SetTextColor(hdc_param, RGB(0, 0, 255));
 
 		// set the background color to black and save old one
 		old_bcolor = SetBkColor(hdc_param, RGB(0, 0, 0));
 
 		// finally set the transparency mode to transparent
 		old_tmode = SetBkMode(hdc_param, TRANSPARENT);
+
+
+	
+
+		wstr.append(L" This is a test ");
+		
+// SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
+		
+
+/*
+		ZeroMemory(wbuff, sizeof(WCHAR) * BUF_SIZE);
+		wsprintf(wbuff, wstr.c_str(), wstr.size());
+		TextOut(hdc_param, 120, 50, wbuff, BUF_SIZE);
+*/
+
+		static	long double ld = 100.00001;
+		ld += 0.01;
+		wstr.append(std::to_wstring(ld));
+		wstr.append(L"\t: counting away. ");
+
+
+		SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
+		TextOut(hdc_param, 120, 50, wstr.c_str(), static_cast<int>(wstr.size()));
+		wstr.clear();
+
+
 
 		// draw some text at (20,30)
 		TextOut(hdc_param, 20, 30, L"Hello", (int)strlen("Hello"));
@@ -246,8 +307,12 @@
 	}
 
 
-	void CustomRunner::Win32UpdateWindow(HDC hdc_param, uint32 WindowWidth, uint32 WindowHeight)
+	void CustomRunner::Win32UpdateWindow(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
 	{
+
+			std::wstring wstr{ L" This is a test..." };
+	
+
 		if (GetDeviceCaps(hdc_param, RASTERCAPS))
 		{
 			if (Buffer.Memory == NULL) _ASSERT(L"Bad");
@@ -256,6 +321,7 @@
 			if (previousmode == previousmode) {};
 			StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
 		}
+
 	}
 
 
@@ -278,19 +344,20 @@
 			uint32_t canvasHeight = rt.bottom - rt.top;
 			if (this)
 			{
-				this->Win32UpdateWindow( hdc, canvasWidth, canvasHeight);
+				Win32UpdateWindow( hdc, canvasWidth, canvasHeight);
 
 				// PROTO TEST DO GDI STUFF...
-				this->TestSomeGDIProcedure(hdc, canvasWidth, canvasHeight);
+				TestSomeGDIProcedure( hdc, canvasWidth, canvasHeight);
 
 				// PROTO TEST SAVE
-				this->TestSaveFeature(hdc);
+			//	this->TestSaveFeature(hdc);
+				
+			//	this->TestSomeMouse();
 
 			}
 			SafeReleaseDC();
 
 		}
-
 	}
 
 
@@ -300,10 +367,6 @@
 
 		return this->hWnd;
 	}
-
-
-	
-
 
 	HWND CustomRunner::myPaint(HWND hWnd)
 	{
@@ -362,53 +425,14 @@
 		return hWnd;
 	}
 
-
 	void CustomRunner::ClearBuffer()
 	{
 		//uint8_t* row = (uint8_t*)BitmapMemory; // get the first 8 bits from a 32 bit buffer in memory
-
-
 	}
-
 
 	void CustomRunner::Render() { this->scratch->APP(*this); }
 
 
-#ifdef STRANGE_RENDER
-
-	/* more or less from HMH but it's very usefull */
-	void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset)
-	{
-		if (Buffer.Memory == NULL) return;
-
-		uint32_t w = Buffer.Width;
-		uint32_t h = Buffer.Height;
-		UNREFERENCED_PARAMETER(h);
-
-		uint32_t Pitch = w * Buffer.BytesPerPixel;
-		uint8* Row = (uint8*)Buffer.Memory;
-		for (uint32_t Y = 0; Y < Buffer.Height; ++Y)
-		{
-			uint32* Pixel = (uint32*)Row;
-			for (uint32_t X = 0; X < Buffer.Width; ++X)
-			{
-				uint8 Blue = (BYTE)(YOffset + X);
-				uint8 Green = (BYTE)(XOffset + YOffset + X + Y);
-				uint8 Red = (BYTE)(XOffset + Y);
-				*Pixel++ = (uint32_t)((Red << 16) | (Green << 8) | Blue);
-			}
-			Row += Pitch;
-		}
-	}
-
-#endif
-
-
-
-	/// <summary>
-	/// Serves no particular purpose just a test.
-	/// </summary>
-	/// <param name="custRun"></param>
 	void CustomRunner::AnotherWrap(CustomRunner& custRun)
 	{
 		/*
@@ -434,11 +458,6 @@
 
 	}
 
-	/// <summary>
-	///  Just a test more param needed PutPixel keeps us in bounds.
-	/// </summary>
-	/// <param name="destBuffer"></param>
-	/// <param name="sourceBuffer"></param>
 	void CustomRunner::CopyImage(win32_offscreen_buffer& destBuffer, win32_offscreen_buffer& sourceBuffer)
 	{
 
@@ -506,7 +525,6 @@
 	}
 
 
-
 	void CustomRunner::Funn()
 	{
 		static int inc = 0;
@@ -519,38 +537,6 @@
 				inc++;
 			}
 	}
-
-
-#ifdef STRANGE_RENDER
-	// This is just a test
-	void CustomRunner::RenderWeirdGradient(uint32_t XOffset, uint32_t YOffset, win32_offscreen_buffer& TextureBuffer, win32_offscreen_buffer& GardBuffer)
-	{
-		if (TextureBuffer.Memory == NULL) return;
-		win32_offscreen_buffer* B = &TextureBuffer;
-		uint32_t w = B->Width;
-		uint32_t h = B->Height;
-
-		UNREFERENCED_PARAMETER(GardBuffer);
-
-		uint32_t Pitch = w * B->BytesPerPixel;
-		uint8_t* Row = (uint8_t*)B->Memory;
-		for (uint32_t Y = 0; Y < B->Height; ++Y)
-		{
-			uint32* Pixel = (uint32*)Row;
-			for (uint32_t X = 0; X < B->Width; ++X)
-			{
-				uint8_t Blue = (BYTE)(YOffset + X);
-				uint8_t Green = (BYTE)(XOffset + YOffset + X + Y);
-				uint8_t Red = (BYTE)(XOffset + Y);
-				*Pixel++ = (uint32_t)(Red << 16) | (Green << 8) | (Blue);
-			}
-			Row += Pitch;
-		}
-	}
-#endif
-
-
-
 
 	void CustomRunner::PutPixel(void* BitmapMemory, uint32 BitmapWidth, uint32 BitmapHeight, uint32 x, uint32 y, COLORREF bgr)
 	{
