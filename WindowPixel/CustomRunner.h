@@ -29,6 +29,7 @@ class Scratch;
 		
 		HFONT  hfont = NULL;
 		HDC memBackSurface = NULL;
+		HBITMAP	hBitmapBackBuffer = NULL;
 
 
 		int rfCntHdc;

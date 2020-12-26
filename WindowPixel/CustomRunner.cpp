@@ -83,6 +83,13 @@
 
 		DeleteObject(hfont);
 
+		// Our BackBuffer for say maybe.
+		// better name but for now bfn.
+		DeleteObject( hBitmapBackBuffer   );
+		DeleteDC(this->memBackSurface);
+
+
+
 
 
 		SafeReleaseDC();
@@ -246,6 +253,21 @@
 		int old_tmode; // old text transparency mode
 
 		
+		////////////////////////////////////////
+		// Clear Screen
+		SelectObject(this->memBackSurface, this->hBitmapBackBuffer);
+
+		//        COLOR_ACTIVEBORDER equals 10   COLOR_WINDOW = 5
+		FillRect(this->memBackSurface, &this->ps.rcPaint, (HBRUSH)(COLOR_ACTIVEBORDER)); //         (COLOR_WINDOW + 5));
+		
+		////////////////////////////////////////
+
+
+
+
+
+
+
 		// set the foreground color to green and save old one
 		old_fcolor = SetTextColor(hdc_param, RGB(255, 255, 255)); // RGB(0, 0, 255));
 
@@ -313,6 +335,7 @@
 			spawnCreateAFontOnce = FALSE;
 		}
 
+		
 		
 		SelectObject(hdc_param, hfont);
 
@@ -399,7 +422,8 @@
 		POINT p5 = { 20, 40 };
 		POINT p6 = { 15, 45 };
 
-		HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject(DKGRAY_BRUSH));
+//#define DEFAULT_PALETTE     15
+		HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject( WHITE_BRUSH)); //      DKGRAY_BRUSH));
 		POINT poly[7] = { p0.x, p0.y, p1.x, p1.y, p2.x, p2.y,
 		p3.x, p3.y, p4.x, p4.y, p5.x, p5.y, p6.x, p6.y };
 		// assume hdc is valid, and pen and brush are selected into
@@ -445,8 +469,11 @@
 		{
 			if (Buffer.Memory == NULL) _ASSERT(L"Bad");
 			int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
+		
 			int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
-			if (previousmode == previousmode) {};
+		//	if (previousmode == previousmode) {};
+
+
 			StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS,
 			//	(DWORD)SRCPAINT);
 				(DWORD)SRCCOPY);
@@ -463,43 +490,46 @@
 	//	this->memBackSurface
 
 		{
-			SafeGetDC();
+			// Rule 1 CreateCompatibleBitmap DeleteDC when app fin in decon
+
+			static BOOL runone = TRUE;
+
+
+		//	SafeGetDC();
 			RECT rect;
 			if (GetClientRect(this->hWnd, &rect))
 			{
 				uint32 mX = rect.right - rect.left;
 				uint32 mY = rect.bottom - rect.top;
+				
+				if(runone)
+				{
+					runone = !runone;
+				// IF CHANGES SIZE DEAL WITH LATTER
 				this->memBackSurface = CreateCompatibleDC(this->hdc);
-				HBITMAP hbit = CreateCompatibleBitmap(this->hdc, mX, mY);
-				//SafeReleaseDC();
+			//	HBITMAP hbit = CreateCompatibleBitmap(this->hdc, mX, mY);
+				this->hBitmapBackBuffer = CreateCompatibleBitmap(this->hdc, mX, mY);
+			}
+				
+			//	SafeReleaseDC();
 
 				if (this->memBackSurface)
 				{
 
-					SelectObject(this->hdc, hbit);
-					Win32UpdateWindow( this->hdc, mX, mY);
-				
-					
-					SelectObject(this->memBackSurface, hbit);
+					SelectObject(this->memBackSurface, this->hBitmapBackBuffer);
 					TestSomeGDIProcedure(this->memBackSurface, mX, mY);
-					
 
 
-				//	SelectObject(this->memBackSurface, hbit);
+					SafeGetDC();
+					SelectObject(this->hdc, this->hBitmapBackBuffer);
 
-					
-				//	SelectObject(this->hdc, hbit);
-				
-				
-
-
+				//	SafeGetDC();
+					Win32UpdateWindow( this->hdc, mX, mY);
+			
 					BitBlt(this->hdc, 0, 0, rect.right, rect.bottom, this->memBackSurface, 0, 0,  SRCPAINT); // SRCCOPY);// SRCPAINT); // SRCCOPY);
-		
-					DeleteObject(hbit);
-					DeleteDC(this->memBackSurface);
-				
+	
 
-					SafeReleaseDC();
+				SafeReleaseDC();
 					
 				
 

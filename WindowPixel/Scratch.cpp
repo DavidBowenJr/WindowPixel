@@ -28,13 +28,8 @@ void Scratch::APP(CustomRunner& customRunner) {
 	customRunner.SafeReleaseDC();  // wingdi
 	
 
-#ifdef STRANGE_RENDER
-	customRunner.
-		RenderWeirdGradient(x, y);
-#endif
 
-
-	customRunner.Funn();
+	//            customRunner.Funn();
 
 
 
@@ -65,7 +60,7 @@ void Scratch::APP(CustomRunner& customRunner) {
 				TextureBuffer[0]);
 
 
-	//     customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
+	     customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
 	
 		 // This one is wraped in customRunner.
 	//	customRunner.PlasmaXXXX();
