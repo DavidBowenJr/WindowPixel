@@ -245,9 +245,9 @@
 			old_bcolor; // old background text color
 		int old_tmode; // old text transparency mode
 
-
+		
 		// set the foreground color to green and save old one
-		old_fcolor = SetTextColor(hdc_param, RGB(0, 0, 255));
+		old_fcolor = SetTextColor(hdc_param, RGB(255, 255, 255)); // RGB(0, 0, 255));
 
 		// set the background color to black and save old one
 		old_bcolor = SetBkColor(hdc_param, RGB(0, 0, 0));
@@ -338,6 +338,8 @@
 		wstr.append(L"\t: counting away. ");
 
 
+		SetBkColor(hdc_param, RGB(255, 255, 255));
+
 		// SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
 		TextOut(hdc_param, 120, 50, wstr.c_str(), static_cast<int>(wstr.size()));
 		wstr.clear();
@@ -358,6 +360,8 @@
 		SetBkColor(hdc_param, old_bcolor);
 		SetBkMode(hdc_param, old_tmode);
 
+
+
 		HBRUSH	hOldbrush2 = (HBRUSH)SelectObject(hdc_param, GetStockObject(HOLLOW_BRUSH));
 
 		//https: //docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wmf/2af5f7e4-9abb-4fb4-b428-d739c8b23829
@@ -367,7 +371,7 @@
 
 
 		old_bcolor = SetBkMode(hdc_param, OPAQUE);
-		SetBkColor(hdc_param, RGB(0, 0, 0));
+		SetBkColor(hdc_param,RGB(0, 0, 0));
 
 		POINT p = this->getLocalCursor(hdc_param);
 
