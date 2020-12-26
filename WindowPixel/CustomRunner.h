@@ -3,10 +3,17 @@
   #include "share.h"
 #pragma comment(lib, "WinMM.lib")
 
-
+#include <commdlg.h> // for LPCFHOOKPROC
 
 class Plasma;
 class Scratch;
+
+
+
+
+
+
+
 
 
 
@@ -20,6 +27,10 @@ class Scratch;
 		CustomRunner();
 		~CustomRunner();
 		
+		HFONT  hfont = NULL;
+
+
+
 		int rfCntHdc;
 
 		int wmId;
@@ -41,6 +52,8 @@ class Scratch;
 	private:
 		//int BytesPerPixel;  // = 4;
 	public:
+
+		void CreateAFont(HDC& hdc_param);
 
 
 		void SafeReleaseDC();

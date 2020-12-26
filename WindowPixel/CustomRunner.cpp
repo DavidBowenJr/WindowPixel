@@ -80,6 +80,11 @@
 
 	CustomRunner::~CustomRunner()
 	{
+
+		DeleteObject(hfont);
+
+
+
 		SafeReleaseDC();
 
 		SAFE_DELETE(pplasma);
@@ -182,10 +187,58 @@
 
 	}
 
+	void CustomRunner::CreateAFont(HDC &hdc_param)
+	{
+		RECT Rect;
+		if (GetClientRect(this->hWnd, &Rect))
+		{
+
+			CHOOSEFONT cf;
+			LOGFONT lf;
+
+
+			// Initialize members of the CHOOSEFONT structure.
+
+			cf.lStructSize = sizeof(CHOOSEFONT);
+			cf.hwndOwner = (HWND)NULL;
+			cf.hDC = (HDC)NULL;
+			cf.lpLogFont = &lf;
+			cf.iPointSize = 0;
+			cf.Flags = CF_SCREENFONTS;
+			cf.rgbColors = RGB(0, 0, 0);
+			cf.lCustData = 0L;
+			cf.lpfnHook = (LPCFHOOKPROC)NULL;
+			cf.lpTemplateName = (LPCWSTR)NULL;
+			cf.hInstance = (HINSTANCE)NULL;
+			cf.lpszStyle = (LPWSTR)NULL;
+			cf.nFontType = SCREEN_FONTTYPE;
+			cf.nSizeMin = 0;
+			cf.nSizeMax = 0;
+
+			// Display the CHOOSEFONT common-dialog box.
+
+			ChooseFont(&cf);
+
+			// Create a logical font based on the user's
+			// selection and return a handle identifying
+			// that font.
+
+
+
+			hfont = CreateFontIndirect(cf.lpLogFont);
+			SelectObject(hdc_param, hfont);
+
+		}
+
+
+	}
+
+
+
 	// PROTO CODE
 	void CustomRunner::TestSomeGDIProcedure(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
 	{
-			std::wstring wstr;
+		std::wstring wstr;
 
 		// Getting the GDC Text on top of our memory ...Draw ... text last.
 		COLORREF old_fcolor, // old foreground text color
@@ -202,19 +255,82 @@
 		// finally set the transparency mode to transparent
 		old_tmode = SetBkMode(hdc_param, TRANSPARENT);
 
+		///////////////////////////////////////////////////////
+
+		
+		RECT Rect;
+
+		// Spawn off the font this system has and let user decide .... 
+	// Im useing the deconstrutor to DeleteOjbect for now... 
+	// gona ask once for now.. 
+		static BOOL spawnCreateAFontOnce = TRUE;
+
+		if (spawnCreateAFontOnce)
+		{  // Magic Font creation 
+
+		if (GetClientRect(this->hWnd, &Rect))
+		{
+
+			CHOOSEFONT cf;
+			LOGFONT lf;
+
+
+			// Initialize members of the CHOOSEFONT structure.
+
+			cf.lStructSize = sizeof(CHOOSEFONT);
+			cf.hwndOwner = (HWND)NULL;
+			cf.hDC = (HDC)NULL;
+			cf.lpLogFont = &lf;
+			cf.iPointSize = 0;
+			cf.Flags = CF_SCREENFONTS;
+			cf.rgbColors = RGB(0, 0, 0);
+			cf.lCustData = 0L;
+			cf.lpfnHook = (LPCFHOOKPROC)NULL;
+			cf.lpTemplateName = (LPCWSTR)NULL;
+			cf.hInstance = (HINSTANCE)NULL;
+			cf.lpszStyle = (LPWSTR)NULL;
+			cf.nFontType = SCREEN_FONTTYPE;
+			cf.nSizeMin = 0;
+			cf.nSizeMax = 0;
+
+			// Display the CHOOSEFONT common-dialog box.
+
+			ChooseFont(&cf);
+
+			// Create a logical font based on the user's
+			// selection and return a handle identifying
+			// that font.
+
+
+
+			hfont = CreateFontIndirect(cf.lpLogFont);
+			SelectObject(hdc_param, hfont);
+
+		}
 
 	
+		//	this->CreateAFont(hdc_param);
+			spawnCreateAFontOnce = FALSE;
+		}
+
+		
+		SelectObject(hdc_param, hfont);
+
+		///////////////////////////////////////////////////////
+
 
 		wstr.append(L" This is a test ");
-		
-// SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
-		
 
-/*
-		ZeroMemory(wbuff, sizeof(WCHAR) * BUF_SIZE);
-		wsprintf(wbuff, wstr.c_str(), wstr.size());
-		TextOut(hdc_param, 120, 50, wbuff, BUF_SIZE);
-*/
+		// SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
+		
+		 //  https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-drawtext
+		 DrawText(hdc_param, L"HI THERE", sizeof("HI THERE"), &Rect, DT_CALCRECT);
+
+		/*
+				ZeroMemory(wbuff, sizeof(WCHAR) * BUF_SIZE);
+				wsprintf(wbuff, wstr.c_str(), wstr.size());
+				TextOut(hdc_param, 120, 50, wbuff, BUF_SIZE);
+		*/
 
 		static	long double ld = 100.00001;
 		ld += 0.01;
@@ -222,7 +338,7 @@
 		wstr.append(L"\t: counting away. ");
 
 
-		SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
+		// SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
 		TextOut(hdc_param, 120, 50, wstr.c_str(), static_cast<int>(wstr.size()));
 		wstr.clear();
 
@@ -230,7 +346,11 @@
 
 		// draw some text at (20,30)
 		TextOut(hdc_param, 20, 30, L"Hello", (int)strlen("Hello"));
+		
 
+
+	//	DeleteObject(hfont);  /// test.
+	
 
 		// now restore everything
 		SetTextColor(hdc_param, old_fcolor);
