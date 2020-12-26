@@ -324,7 +324,7 @@
 		// SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
 		
 		 //  https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-drawtext
-		 DrawText(hdc_param, L"HI THERE", sizeof("HI THERE"), &Rect, DT_CALCRECT);
+	//	 DrawText(hdc_param, L"HI THERE", sizeof("HI THERE"), &Rect, DT_CALCRECT);
 
 		/*
 				ZeroMemory(wbuff, sizeof(WCHAR) * BUF_SIZE);
@@ -342,10 +342,11 @@
 		TextOut(hdc_param, 120, 50, wstr.c_str(), static_cast<int>(wstr.size()));
 		wstr.clear();
 
+		SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
 
 
 		// draw some text at (20,30)
-		TextOut(hdc_param, 20, 30, L"Hello", (int)strlen("Hello"));
+		TextOut(hdc_param, 120, 130, L"Hello", (int)strlen("Hello"));
 		
 
 
@@ -429,7 +430,7 @@
 
 	}
 
-
+	
 	void CustomRunner::Win32UpdateWindow(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
 	{
 
@@ -442,23 +443,77 @@
 			int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
 			int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
 			if (previousmode == previousmode) {};
-			StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS, (DWORD)SRCCOPY);
+			StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS,
+			//	(DWORD)SRCPAINT);
+				(DWORD)SRCCOPY);
 		}
 
 	}
 
 
-	BOOL CustomRunner::mSaveBitmap(LPWSTR wPath, HWND hWnd, HDC hdc)
-	{
-		return 	 SaveBitmap((LPWSTR)wPath, hWnd, hdc);
-	}
 
 
 	void CustomRunner::Win32UpdateWindow()
 	{
+
+	//	this->memBackSurface
+
+		{
+			SafeGetDC();
+			RECT rect;
+			if (GetClientRect(this->hWnd, &rect))
+			{
+				uint32 mX = rect.right - rect.left;
+				uint32 mY = rect.bottom - rect.top;
+				this->memBackSurface = CreateCompatibleDC(this->hdc);
+				HBITMAP hbit = CreateCompatibleBitmap(this->hdc, mX, mY);
+				//SafeReleaseDC();
+
+				if (this->memBackSurface)
+				{
+
+					SelectObject(this->hdc, hbit);
+					Win32UpdateWindow( this->hdc, mX, mY);
+				
+					
+					SelectObject(this->memBackSurface, hbit);
+					TestSomeGDIProcedure(this->memBackSurface, mX, mY);
+					
+
+
+				//	SelectObject(this->memBackSurface, hbit);
+
+					
+				//	SelectObject(this->hdc, hbit);
+				
+				
+
+
+					BitBlt(this->hdc, 0, 0, rect.right, rect.bottom, this->memBackSurface, 0, 0,  SRCPAINT); // SRCCOPY);// SRCPAINT); // SRCCOPY);
+		
+					DeleteObject(hbit);
+					DeleteDC(this->memBackSurface);
+				
+
+					SafeReleaseDC();
+					
+				
+
+				}
+
+			}
+
+		}
+
+
+
+
 		// Pace the program down a bit so we have better cache hits maybe.
 		// otherwise my harddrive ramps up ....
 		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+	
+#if 0
+		
 		{	
 			SafeGetDC();
 			RECT rt;
@@ -481,7 +536,17 @@
 			SafeReleaseDC();
 
 		}
+
+#endif
+
 	}
+
+
+	BOOL CustomRunner::mSaveBitmap(LPWSTR wPath, HWND hWnd, HDC hdc)
+	{
+		return 	 SaveBitmap((LPWSTR)wPath, hWnd, hdc);
+	}
+
 
 
 	HWND CustomRunner::myPaint()
@@ -506,7 +571,7 @@
 		// PAINTSTRUCT ps; // used in WM_PAINT
 		// HDC hdc; // handle to a device context
 		// RECT rect; // rectangle of window
-#if 0
+#if 0 //not good
 		SafeReleaseDC();
 		this->hWnd = hWnd;
 		this->hdc = SafeGetDC();
@@ -517,7 +582,7 @@
 		ValidateRect(hWnd, &rt);
 #endif
 
-#if 1
+#if 1 
 		SafeReleaseDC();
 		this->hWnd = hWnd;
 		// invalidate the entire window

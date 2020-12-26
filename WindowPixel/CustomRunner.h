@@ -28,7 +28,7 @@ class Scratch;
 		~CustomRunner();
 		
 		HFONT  hfont = NULL;
-
+		HDC memBackSurface = NULL;
 
 
 		int rfCntHdc;
