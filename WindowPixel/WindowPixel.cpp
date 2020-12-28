@@ -2,7 +2,11 @@
 // The very old gl libs
 //https://onedrive.live.com/?id=E38F9FC6490B29D9!1065&cid=E38F9FC6490B29D9&group=0&parId=E38F9FC6490B29D9!977&action=locate
 ////http://nehe.gamedev.net/tutorial/texture_filters,_lighting_&_keyboard_control/15002/
-
+// http://www.rastertek.com/dx11tut13.html
+// TEST WITH THE H KEY to fire off Direct Input Exit....
+// Hope to get Joy up and going... Been A long time since don't have an audio card
+// that support Force FeedBack  But usb should be ok. for my Radial Pro
+//#define WM_INPUT 0x00FF
 
 #include "framework.h"
 
@@ -21,6 +25,14 @@
 
 #include <Stringapiset.h> // MultiByteToWideChar
 #include "ErrorExit.h"
+
+
+#include "InputClass.h"
+
+
+
+
+
 #include "Plasma.h"
 #include "Scratch.h"
 
@@ -39,6 +51,7 @@ static bool isRunning;
 bool btrue = true;
 
 static CustomRunner* customRunner; 
+static InputClass* input;
 
 static bool Stop_create = false;
 
@@ -101,19 +114,56 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadString(hInstance, IDC_WINDOWPIXEL, szWindowClass, MAX_LOADSTRING);
  
+  //  customRunner->rawInputApi->RegisterRawInput();
+
+   // customRunner->rawInputApi->RegisterRawInput();
+
+
     if (RegisterClassEx(&wc))
     {
-        HWND hWnd = CreateWindowEx( 0,  wc.lpszClassName, _T("Our Game ext"),  WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, 0);
+
+      
+
+        HWND hWnd = CreateWindowEx( 0,  wc.lpszClassName, _T("Our Game ext"),  WS_OVERLAPPEDWINDOW | WS_VISIBLE
+            , CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, 0);
         
         hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
  
+    /////////////////////////////////////////////////////////////////////////////
+        HRESULT dxResult = 0;
+        if (input != NULL)
+        {
+            RECT Rect;
+            if (GetClientRect(hWnd, &Rect))
+            {
+                dxResult = input->Initialize(hInstance, hWnd, Rect.right, Rect.bottom);
+                if (!dxResult) {
+                    MessageBox(hWnd, L"Could not initialize the input object.", L"Error", MB_OK);
+                    SAFE_DELETE(input);
+                    SAFE_DELETE(customRunner);
+                    return false;
+                }
+            }
+        }
+
+  
+
+
+
+
+
         if (hWnd) { if (MessageAndGameLoop(&msg, hWnd)) {}; } 
+
+
+        input->Shutdown();
+
 
         GetMessage(&msg, hWnd,0,0);
 
         // No longer running.....
         OutputDebugString(_T(" Class Pt Clean Up\n "));
 
+        SAFE_DELETE(input);
         SAFE_DELETE(customRunner);
     
         OutputDebugString(_T("\n RegisterClassEx finnished \n"));
@@ -121,9 +171,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     OutputDebugString(_T(" Class Pt Clean Up\n "));
-
+    
+    SAFE_DELETE(input);
     SAFE_DELETE(customRunner);
-
+   
   
     return (int) msg.wParam;
 }
@@ -143,6 +194,17 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 
         if (pMsg->message == WM_QUIT) {
             isRunning = false;
+        } // else {}  // NEED TO CONSIDER.
+
+        if (!input->Frame())
+        {
+            MessageBox(hWnd, L"Frame Processing Failed", L"Error", MB_OK);
+       }
+
+        if (input->IsEscapePressed())
+        {
+            SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
+            return pMsg->wParam;
         }
 
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
@@ -163,7 +225,7 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
         
         if(customRunner)
         {
-           
+          
             customRunner->Render();
         
             customRunner->Win32UpdateWindow(); //sealed function
@@ -175,44 +237,10 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
     return pMsg->wParam;
 }
 
-//
-//  FUNCTION: MyRegisterClass()
-//
-//  PURPOSE: Registers the window class.
-//
-ATOM MyRegisterClass(HINSTANCE hInstance)
-{
-    WNDCLASSEXW wcex;
-
-    wcex.cbSize = sizeof(WNDCLASSEX);
-
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    =  WndProc;
-    wcex.cbClsExtra     = 0;
-    wcex.cbWndExtra     = 0;
-    wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINDOWPIXEL));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_WINDOWPIXEL);
-    wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-
-    return RegisterClassExW(&wcex);
-}
 
 
 
-//
-//  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  PURPOSE: Processes messages for the main window.
-//
-//  WM_COMMAND  - process the application menu
-//  WM_PAINT    - Paint the main window
-//  WM_DESTROY  - post a quit message and return
-//
-//
+
 
 LRESULT 
  CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -234,18 +262,25 @@ LRESULT
         hWnd = customRunner->myPaint();
     } break;
 
+    // https ://docs.microsoft.com/en-us/windows/win32/inputdev/using-raw-input
+    case WM_INPUT:
+        
+        break;
+
+        
     case WM_KEYDOWN:
     {
-        keys[wParam] = TRUE;
-        OutputDebugString(_T(" KEYDOWN \n"));
+  
+       // keys[wParam] = TRUE;
+      //  OutputDebugString(_T(" KEYDOWN \n"));
     }break;
 
     case WM_KEYUP:
     {
-        keys[wParam] = FALSE;
-        OutputDebugString(_T(" KEYUP \n"));
+      //  keys[wParam] = FALSE;
+     //   OutputDebugString(_T(" KEYUP \n"));
     } break;
-
+    
 
     case WM_ACTIVATE:
     {
@@ -290,6 +325,13 @@ LRESULT
         customRunner->Win32ResizeDibSection((uint32)W, (uint32)H);
         customRunner->hWnd = hWnd;
 
+        input = new InputClass;
+        if (!input)
+        {
+            OutputDebugString(TEXT("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"));
+        }
+        
+
         // Inject into class
         customRunner->pplasma = new Plasma(plasmaBuffer);
         plasmaBuffer = customRunner->pplasma->olvedBuffer; // ?
@@ -323,6 +365,8 @@ LRESULT
 
         switch (wmId)
         {
+    
+
         case IDM_ABOUT:
             DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
             break;

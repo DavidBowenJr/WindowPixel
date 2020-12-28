@@ -25,6 +25,12 @@
     <Filter Include="Source Files\ColorStructs">
       <UniqueIdentifier>{3c257c38-efd0-4bd5-9172-a73ff864cf9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Mouse">
+      <UniqueIdentifier>{ac606261-ca32-4fe9-9fd9-2f88ed511695}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DirectInput">
+      <UniqueIdentifier>{8189df69-6ab1-4dd0-b1a0-5dd81cfd55e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -60,9 +66,6 @@
     <ClInclude Include="ImageSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ErrorExit.h">
-      <Filter>Source Files\ErrorHandling</Filter>
-    </ClInclude>
     <ClInclude Include="PartsOfSDL.h">
       <Filter>Header Files\DLParts</Filter>
     </ClInclude>
@@ -73,6 +76,18 @@
       <Filter>Source Files\ColorStructs</Filter>
     </ClInclude>
     <ClInclude Include="SaveBitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorExit.h">
+      <Filter>Source Files\ErrorHandling</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\David\Desktop\New folder (3)\MouseClass.h">
+      <Filter>Source Files\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Users\David\Desktop\New folder (3)\MouseEvent.h">
+      <Filter>Source Files\Mouse</Filter>
+    </ClInclude>
+    <ClInclude Include="InputClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -104,10 +119,19 @@
     <ClCompile Include="ColorStructs.cpp">
       <Filter>Source Files\ColorStructs</Filter>
     </ClCompile>
-    <ClCompile Include="colorstruct.cpp">
+    <ClCompile Include="SaveBitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SaveBitmap.cpp">
+    <ClCompile Include="colorstruct.cpp">
+      <Filter>Source Files\ColorStructs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\David\Desktop\New folder (3)\MouseClass.cpp">
+      <Filter>Source Files\Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\David\Desktop\New folder (3)\MouseEvent.cpp">
+      <Filter>Source Files\Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="InputClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -123,5 +147,10 @@
     <Image Include="WindowPixel.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\Users\David\Desktop\New folder (3)\CameFrom.txt">
+      <Filter>Source Files\Mouse</Filter>
+    </Text>
   </ItemGroup>
 </Project>

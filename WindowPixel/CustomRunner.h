@@ -1,10 +1,15 @@
 #pragma once
 #include "framework.h"
   #include "share.h"
+
+
 #pragma comment(lib, "WinMM.lib")
 
 #include <commdlg.h> // for LPCFHOOKPROC
 
+
+
+class RawInputApi;
 class Plasma;
 class Scratch;
 
@@ -32,6 +37,8 @@ class Scratch;
 		HBITMAP	hBitmapBackBuffer = NULL;
 
 
+
+
 		int rfCntHdc;
 
 		int wmId;
@@ -46,6 +53,9 @@ class Scratch;
 		
 		win32_offscreen_buffer TextureBuffer[4];
 		WCHAR wbuff[BUF_SIZE];
+
+		
+
 
 		
 		Plasma*  pplasma;
@@ -67,7 +77,7 @@ class Scratch;
 
 		void Win32UpdateWindow();
 
-		HWND myPaint();
+	 	HWND myPaint();
 
 		HWND myPaint(HWND hWnd);
 
@@ -78,6 +88,8 @@ class Scratch;
 
 		void TestSomeMouse();
 
+		// RSTBUG
+		void TestSomeGDIProcedureTwo(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight);
 
 		void TestSomeGDIProcedure(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight);
 
@@ -127,15 +139,14 @@ class Scratch;
 	
 		void Funn();
 
-
+#if 0
 		COLORREF getColorAtCursor();
 
 		POINT getLocalCursor();
 
 		POINT getLocalCursor(HDC hdc);
-
-		// Just a test
-		//void PlasmaXXXX();
+#endif
+	
 
 	};
 

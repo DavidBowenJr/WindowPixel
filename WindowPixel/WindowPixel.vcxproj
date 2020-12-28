@@ -144,6 +144,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Users\David\Desktop\New folder (3)\MouseClass.h" />
+    <ClInclude Include="..\..\..\Users\David\Desktop\New folder (3)\MouseEvent.h" />
     <ClInclude Include="colorstruct.h" />
     <ClInclude Include="CustomRunner.h" />
     <ClInclude Include="ErrorExit.h" />
@@ -151,6 +153,7 @@
     <ClInclude Include="GraphicsDemonstration.h" />
     <ClInclude Include="ImageHeader.h" />
     <ClInclude Include="ImageSource.h" />
+    <ClInclude Include="InputClass.h" />
     <ClInclude Include="PartsOfSDL.h" />
     <ClInclude Include="Plasma.h" />
     <ClInclude Include="QueryTimer.h" />
@@ -162,12 +165,21 @@
     <ClInclude Include="WindowPixel.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Users\David\Desktop\New folder (3)\MouseClass.cpp">
+      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">StdCall</CallingConvention>
+      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">StdCall</CallingConvention>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Users\David\Desktop\New folder (3)\MouseEvent.cpp">
+      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">StdCall</CallingConvention>
+      <CallingConvention Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">StdCall</CallingConvention>
+    </ClCompile>
     <ClCompile Include="colorstruct.cpp" />
     <ClCompile Include="ColorStructs.cpp" />
     <ClCompile Include="CustomRunner.cpp" />
     <ClCompile Include="ErrorExit.cpp" />
     <ClCompile Include="GraphicsDemonstration.cpp" />
     <ClCompile Include="ImageSource.cpp" />
+    <ClCompile Include="InputClass.cpp" />
     <ClCompile Include="Plasma.cpp" />
     <ClCompile Include="QueryTimer.cpp" />
     <ClCompile Include="SaveBitmap.cpp" />
@@ -180,6 +192,9 @@
   <ItemGroup>
     <Image Include="small.ico" />
     <Image Include="WindowPixel.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\..\Users\David\Desktop\New folder (3)\CameFrom.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

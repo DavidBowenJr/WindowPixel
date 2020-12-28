@@ -1,6 +1,7 @@
 
 
 #include "CustomRunner.h"
+#include "RawInputApi.h" // hopefully keyboard mouse and joystick
 #include "Scratch.h"
 #include "Plasma.h"
 
@@ -12,6 +13,8 @@
 #include <thread>
 #include <limits.h>
 #include "SaveBitmap.h"
+
+
 
 
 
@@ -166,9 +169,9 @@
 
 	void CustomRunner::TestSomeMouse()
 	{
-		BOOL isMousePressent = ::GetSystemMetrics(SM_MOUSEPRESENT);
-		BOOL isMouseWheelPressent = GetSystemMetrics(SM_MOUSEWHEELPRESENT);
-		INT nButtonCount = ::GetSystemMetrics(SM_CMOUSEBUTTONS);
+	//	BOOL isMousePressent = ::GetSystemMetrics(SM_MOUSEPRESENT);
+	//	BOOL isMouseWheelPressent = GetSystemMetrics(SM_MOUSEWHEELPRESENT);
+//INT nButtonCount = ::GetSystemMetrics(SM_CMOUSEBUTTONS);
 
 		// Press or Release of a mouse button
 		// double click of a mouse button
@@ -187,6 +190,9 @@
 		// WM_RBUTTONUP			|	right  mouse button is released
 		// WM_RBUTTONDBLCLK		|	right  mouse button is double-clicked
 		// WM_MOUSEMOVE			|	cursor is moved over the window's client area
+		// https://docs.microsoft.com/en-us/windows/win32/inputdev/using-raw-input
+
+
 
 
 		
@@ -242,6 +248,39 @@
 
 
 
+	void CustomRunner::TestSomeGDIProcedureTwo(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
+	{
+		COLORREF old_fcolor, old_bcolor; // old foreground text color, old background text color
+		INT old_tmode; // old text transparency mode
+
+		// Clear The  Memmory image Screen
+		SelectObject( hdc_param, this->hBitmapBackBuffer);
+		FillRect(  hdc_param, &this->ps.rcPaint, (HBRUSH)(COLOR_ACTIVEBORDER)); 
+
+		////////////////////////////////////////
+		// Set foreground color to some color | AND Save the old one
+		old_fcolor = SetTextColor(hdc_param, RGB(255, 255, 255));
+
+		// Set the background color to black | AND Save the old one
+		old_bcolor = SetBkMode(hdc_param, RGB(0, 0, 0));
+
+		// Set the transparency mode to Transparent | AND Save the old one
+		old_tmode = SetBkMode(hdc_param, TRANSPARENT);
+
+		RECT clientRect;
+		if (GetClientRect(hWnd, &clientRect)) {
+
+			TextOut(hdc_param, 120, 130, L"Hello", (int)strlen("Hello"));
+
+		}
+
+		// now restore everything
+		SetTextColor (hdc_param,    old_fcolor);
+		SetBkColor   (hdc_param,    old_bcolor);
+		SetBkMode    (hdc_param,    old_tmode);
+		//hdc_param = memBackSurface;
+	}
+
 	// PROTO CODE
 	void CustomRunner::TestSomeGDIProcedure(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
 	{
@@ -260,13 +299,6 @@
 		//        COLOR_ACTIVEBORDER equals 10   COLOR_WINDOW = 5
 		FillRect(this->memBackSurface, &this->ps.rcPaint, (HBRUSH)(COLOR_ACTIVEBORDER)); //         (COLOR_WINDOW + 5));
 		
-		////////////////////////////////////////
-
-
-
-
-
-
 
 		// set the foreground color to green and save old one
 		old_fcolor = SetTextColor(hdc_param, RGB(255, 255, 255)); // RGB(0, 0, 255));
@@ -355,19 +387,23 @@
 				TextOut(hdc_param, 120, 50, wbuff, BUF_SIZE);
 		*/
 
+		
 		static	long double ld = 100.00001;
 		ld += 0.01;
 		wstr.append(std::to_wstring(ld));
 		wstr.append(L"\t: counting away. ");
-
+	
 
 		SetBkColor(hdc_param, RGB(255, 255, 255));
 
-		// SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
-		TextOut(hdc_param, 120, 50, wstr.c_str(), static_cast<int>(wstr.size()));
+	//	 SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
+	
+		 
+		 TextOut(hdc_param, 120, 50, wstr.c_str(), static_cast<int>(wstr.size()));
 		wstr.clear();
 
-		SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
+
+	//	SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
 
 
 		// draw some text at (20,30)
@@ -396,7 +432,9 @@
 		old_bcolor = SetBkMode(hdc_param, OPAQUE);
 		SetBkColor(hdc_param,RGB(0, 0, 0));
 
-		POINT p = this->getLocalCursor(hdc_param);
+
+		// Cursor should go here
+		POINT p = { 100, 100 };                                //    this->getLocalCursor(hdc_param);
 
 		RoundRect(hdc_param, 1 + p.x, 1 + p.y, 220, 240, 15, 13);
 		//	DeleteObject(white_dashed_pen);
@@ -414,6 +452,8 @@
 
 		// create the polygon shown in the figure
 
+#if 0
+
 		POINT p0 = { 10, 30 };
 		POINT p1 = { 20,  0 };
 		POINT p2 = { 30, 32 };
@@ -422,13 +462,16 @@
 		POINT p5 = { 20, 40 };
 		POINT p6 = { 15, 45 };
 
-//#define DEFAULT_PALETTE     15
 		HBRUSH	hOldbrush = (HBRUSH)SelectObject(hdc_param, GetStockObject( WHITE_BRUSH)); //      DKGRAY_BRUSH));
 		POINT poly[7] = { p0.x, p0.y, p1.x, p1.y, p2.x, p2.y,
 		p3.x, p3.y, p4.x, p4.y, p5.x, p5.y, p6.x, p6.y };
 		// assume hdc is valid, and pen and brush are selected into
-// graphics device context
+		
+		// graphics device context
 		Polygon(hdc_param, poly, 7);
+#endif
+
+
 	}
 
 	void CustomRunner::TestSaveFeature(HDC hdc_param)
@@ -461,24 +504,15 @@
 	
 	void CustomRunner::Win32UpdateWindow(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
 	{
-
-			std::wstring wstr{ L" This is a test..." };
-	
-
+		
 		if (GetDeviceCaps(hdc_param, RASTERCAPS))
 		{
 			if (Buffer.Memory == NULL) _ASSERT(L"Bad");
 			int previousmode = SetStretchBltMode(hdc_param, MAXSTRETCHBLTMODE);
-		
 			int wh = SetICMMode(hdc_param, ICM_ON); if (wh == wh) {};
-		//	if (previousmode == previousmode) {};
-
-
-			StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS,
-			//	(DWORD)SRCPAINT);
-				(DWORD)SRCCOPY);
+			if (previousmode == previousmode) {};
+			StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS,(DWORD)SRCCOPY);
 		}
-
 	}
 
 
@@ -486,16 +520,9 @@
 
 	void CustomRunner::Win32UpdateWindow()
 	{
-
-	//	this->memBackSurface
-
 		{
-			// Rule 1 CreateCompatibleBitmap DeleteDC when app fin in decon
-
 			static BOOL runone = TRUE;
-
-
-		//	SafeGetDC();
+			
 			RECT rect;
 			if (GetClientRect(this->hWnd, &rect))
 			{
@@ -505,73 +532,39 @@
 				if(runone)
 				{
 					runone = !runone;
-				// IF CHANGES SIZE DEAL WITH LATTER
-				this->memBackSurface = CreateCompatibleDC(this->hdc);
-			//	HBITMAP hbit = CreateCompatibleBitmap(this->hdc, mX, mY);
-				this->hBitmapBackBuffer = CreateCompatibleBitmap(this->hdc, mX, mY);
-			}
+					// IF CHANGES SIZE DEAL WITH LATTER
+					
+					this->memBackSurface = CreateCompatibleDC(this->hdc);
+					this->hBitmapBackBuffer = CreateCompatibleBitmap(this->hdc, mX, mY);
+				}
 				
-			//	SafeReleaseDC();
-
 				if (this->memBackSurface)
 				{
-
+					
 					SelectObject(this->memBackSurface, this->hBitmapBackBuffer);
 					TestSomeGDIProcedure(this->memBackSurface, mX, mY);
-
-
-					SafeGetDC();
-					SelectObject(this->hdc, this->hBitmapBackBuffer);
-
-				//	SafeGetDC();
-					Win32UpdateWindow( this->hdc, mX, mY);
-			
-					BitBlt(this->hdc, 0, 0, rect.right, rect.bottom, this->memBackSurface, 0, 0,  SRCPAINT); // SRCCOPY);// SRCPAINT); // SRCCOPY);
-	
-
-				SafeReleaseDC();
 					
-				
+					if (this->hdc)
+					{
+						SafeGetDC();
+						
 
+						SelectObject(this->hdc, this->hBitmapBackBuffer);
+						Win32UpdateWindow(this->hdc, mX, mY);
+
+						BitBlt(this->hdc, 0, 0, rect.right, rect.bottom, this->memBackSurface, 0, 0, SRCPAINT);
+
+						// uncomment still works.
+					//	this->TestSaveFeature(hdc);
+
+						SafeReleaseDC();
+					}
 				}
-
 			}
-
 		}
 
+		std::this_thread::sleep_for(std::chrono::milliseconds(150));
 
-
-
-		// Pace the program down a bit so we have better cache hits maybe.
-		// otherwise my harddrive ramps up ....
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
-	
-#if 0
-		
-		{	
-			SafeGetDC();
-			RECT rt;
-			GetClientRect( hWnd, &rt);
-			uint32_t canvasWidth = rt.right - rt.left;
-			uint32_t canvasHeight = rt.bottom - rt.top;
-			if (this)
-			{
-				Win32UpdateWindow( hdc, canvasWidth, canvasHeight);
-
-				// PROTO TEST DO GDI STUFF...
-				TestSomeGDIProcedure( hdc, canvasWidth, canvasHeight);
-
-				// PROTO TEST SAVE
-			//	this->TestSaveFeature(hdc);
-				
-			//	this->TestSomeMouse();
-
-			}
-			SafeReleaseDC();
-
-		}
-
-#endif
 
 	}
 
@@ -585,8 +578,7 @@
 
 	HWND CustomRunner::myPaint()
 	{
-	this->hWnd = this->myPaint(this->hWnd);
-
+		this->hWnd = this->myPaint(this->hWnd);
 		return this->hWnd;
 	}
 
@@ -605,25 +597,17 @@
 		// PAINTSTRUCT ps; // used in WM_PAINT
 		// HDC hdc; // handle to a device context
 		// RECT rect; // rectangle of window
-#if 0 //not good
-		SafeReleaseDC();
-		this->hWnd = hWnd;
-		this->hdc = SafeGetDC();
-		this->SafeReleaseDC();
-		RECT rt;
-		GetClientRect(hWnd, &rt);
-		this->Win32UpdateWindow();
-		ValidateRect(hWnd, &rt);
-#endif
 
-#if 1 
+
+#if 1
 		SafeReleaseDC();
-		this->hWnd = hWnd;
-		// invalidate the entire window
-		InvalidateRect(hWnd, NULL, FALSE);
+
 		this->hdc = BeginPaint(hWnd, &this->ps);
+	
 		this->Win32UpdateWindow();
+
 		EndPaint(hWnd, &ps);
+
 		ReleaseDC(hWnd, hdc);
 #endif
 
@@ -637,7 +621,7 @@
 		this->hWnd = hWnd;
 		
 		this->hdc = BeginPaint(hWnd, &this->ps);              
-
+		this->rfCntHdc = 1;
 		this->Win32UpdateWindow();
 
 		EndPaint(hWnd, &this->ps);
@@ -1012,6 +996,9 @@ for (size_t y = 0; y < h; y++)
 
 	/////////////////////////////////////////////////////////////////////////
 
+#if 0
+	// Temporaryly removed trying to see what's going on in raster. maybe refresh rate.
+
 	// Had to change My GetPixel to mGetPixel as to not conflict with Windows.
 	COLORREF CustomRunner::getColorAtCursor(void) {
 		POINT p;
@@ -1053,7 +1040,7 @@ for (size_t y = 0; y < h; y++)
 		GetCursorPos(&p);
 		return p;
 	}
-
+#endif
 
 	// Just a test
 	//void CustomRunner::PlasmaXXXX() { this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this); }
