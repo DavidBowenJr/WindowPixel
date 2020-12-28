@@ -6,11 +6,11 @@
 // TEST WITH THE H KEY to fire off Direct Input Exit....
 // Hope to get Joy up and going... Been A long time since don't have an audio card
 // that support Force FeedBack  But usb should be ok. for my Radial Pro
-//#define WM_INPUT 0x00FF
+
+#define _USE_INPUT_CLASS_ONE true
+
 
 #include "framework.h"
-
-
 
 #include <WinUser.h>
 
@@ -26,11 +26,9 @@
 #include <Stringapiset.h> // MultiByteToWideChar
 #include "ErrorExit.h"
 
-
+#if _USE_INPUT_CLASS_ONE
 #include "InputClass.h"
-
-
-
+#endif
 
 
 #include "Plasma.h"
@@ -51,7 +49,11 @@ static bool isRunning;
 bool btrue = true;
 
 static CustomRunner* customRunner; 
+
+#if _USE_INPUT_CLASS_ONE
 static InputClass* input;
+#endif
+
 
 static bool Stop_create = false;
 
@@ -114,22 +116,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadString(hInstance, IDC_WINDOWPIXEL, szWindowClass, MAX_LOADSTRING);
  
-  //  customRunner->rawInputApi->RegisterRawInput();
-
-   // customRunner->rawInputApi->RegisterRawInput();
-
 
     if (RegisterClassEx(&wc))
     {
-
-      
-
         HWND hWnd = CreateWindowEx( 0,  wc.lpszClassName, _T("Our Game ext"),  WS_OVERLAPPEDWINDOW | WS_VISIBLE
             , CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, 0);
         
         hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
  
     /////////////////////////////////////////////////////////////////////////////
+      
+#if _USE_INPUT_CLASS_ONE
         HRESULT dxResult = 0;
         if (input != NULL)
         {
@@ -145,6 +142,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 }
             }
         }
+#endif
+
 
   
 
@@ -154,16 +153,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         if (hWnd) { if (MessageAndGameLoop(&msg, hWnd)) {}; } 
 
-
+#if _USE_INPUT_CLASS_ONE
         input->Shutdown();
-
+#endif
 
         GetMessage(&msg, hWnd,0,0);
 
         // No longer running.....
         OutputDebugString(_T(" Class Pt Clean Up\n "));
 
+#if _USE_INPUT_CLASS_ONE
         SAFE_DELETE(input);
+#endif
+
         SAFE_DELETE(customRunner);
     
         OutputDebugString(_T("\n RegisterClassEx finnished \n"));
@@ -171,8 +173,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     OutputDebugString(_T(" Class Pt Clean Up\n "));
-    
+#if _USE_INPUT_CLASS_ONE
     SAFE_DELETE(input);
+#endif
+
     SAFE_DELETE(customRunner);
    
   
@@ -196,16 +200,28 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             isRunning = false;
         } // else {}  // NEED TO CONSIDER.
 
+
+#if _USE_INPUT_CLASS_ONE
         if (!input->Frame())
         {
             MessageBox(hWnd, L"Frame Processing Failed", L"Error", MB_OK);
-       }
+        }
 
         if (input->IsEscapePressed())
         {
             SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
             return pMsg->wParam;
         }
+
+        if (input->IsJoyExt())
+        {
+            SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
+            return pMsg->wParam;
+        }
+        OutputDebugString(std::to_wstring(input->jlx).c_str());
+
+
+#endif
 
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
             SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
@@ -325,12 +341,14 @@ LRESULT
         customRunner->Win32ResizeDibSection((uint32)W, (uint32)H);
         customRunner->hWnd = hWnd;
 
+
+#if _USE_INPUT_CLASS_ONE
         input = new InputClass;
         if (!input)
         {
             OutputDebugString(TEXT("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"));
         }
-        
+#endif
 
         // Inject into class
         customRunner->pplasma = new Plasma(plasmaBuffer);

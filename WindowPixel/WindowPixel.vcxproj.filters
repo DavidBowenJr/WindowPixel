@@ -88,7 +88,7 @@
       <Filter>Source Files\Mouse</Filter>
     </ClInclude>
     <ClInclude Include="InputClass.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\DirectInput</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -132,7 +132,7 @@
       <Filter>Source Files\Mouse</Filter>
     </ClCompile>
     <ClCompile Include="InputClass.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\DirectInput</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -56,6 +56,8 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	result = m_keyboard->Acquire();
 	if (FAILED(result)) { return false;  }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+
 	// Initialize the direct input interface for the mouse.
 	result = m_directInput->CreateDevice(GUID_SysMouse, &m_mouse, NULL);
 	if (FAILED(result))
@@ -78,13 +80,44 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 
-
 	// Acquire the mouse.
 	result = m_mouse->Acquire();
 	if (FAILED(result))
 	{
 		return false;
 	}
+//////////////////////////////////////////////////////////////////////////
+
+	// Initialize the direct input interface for the mouse.
+	result = m_directInput->CreateDevice(GUID_Joystick, &m_joystick, NULL);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Set the data format for the mouse using the pre-defined mouse data format.
+	result = m_joystick->SetDataFormat(&c_dfDIJoystick);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Set the cooperative level of the joystick to share with other programs.
+	result = m_joystick->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE  );
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Acquire the joystick
+	result = m_joystick->Acquire();
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	this->GetJoyCapabilities();
+
 
 	return true;
 
@@ -92,6 +125,14 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 
 void InputClass::Shutdown()
 {
+	// Release the joystick
+	if (m_joystick)
+	{
+		m_joystick->Unacquire();
+		m_joystick->Release();
+		m_joystick = 0;
+	}
+
 	// Release the mouse.
 	if (m_mouse)
 	{
@@ -137,17 +178,22 @@ bool InputClass::Frame()
 		return false;
 	}
 
+	result = ReadJoyStick();
+	if (!result)
+	{
+		return false;
+	}
+
 	// Process the changes in the mouse and keyboard.
 	ProcessInput();
 
 	return true;
 }
 
-// The Idea
 bool InputClass::IsEscapePressed()
 {
 	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
-	if (m_keyboardState[  DIK_H ] & 0x80)
+	if (m_keyboardState[DIK_H] & 0x80)
 	{
 		return true;
 	}
@@ -155,8 +201,59 @@ bool InputClass::IsEscapePressed()
 	return false;
 }
 
+bool InputClass::IsJoyExt()
+{
+	// Still have to get general info about this.
+	OutputDebugString(L" We Have : ");
+	OutputDebugString( std::to_wstring(nAxes[0]).c_str());
+	OutputDebugString(L" | number of Axis ");
 
 
+	OutputDebugString(L"\n The number of Buttons on this joystick : ");
+	OutputDebugString(std::to_wstring(this->m_joyCapabilities.dwButtons).c_str());
+	OutputDebugString(L"\n");
+
+	OutputDebugString(L"");
+	OutputDebugString(L"\n");
+
+	//OutputDebugString(std::to_wstring(m_joyState.rgbButtons[0]).c_str() );
+	if (m_joyState.rgbButtons[0] & 0x80)
+	{
+		return true;
+	}
+	if (m_joyCapabilities.dwAxes == 2)
+	{
+		this->jlx = m_joyState.lX;
+		this->jly = m_joyState.lY;
+	}
+	if (m_joyCapabilities.dwAxes == 3)
+	{
+		this->jlx = m_joyState.lX;
+		this->jly = m_joyState.lY;
+		this->jlz = m_joyState.lZ; 
+
+	}
+
+	return false;
+
+}
+
+bool InputClass :: GetJoyCapabilities()
+{
+	// For now im just doing a single joystick we can enumerate but kiss for now
+	this->m_joyCapabilities.dwSize = sizeof(DIDEVCAPS);
+	HRESULT hResult = m_joystick->GetCapabilities(&m_joyCapabilities);
+	if (FAILED(hResult))
+	{
+		 throw "Critical error: Unable to get game controller capabilities!";
+	}
+	else
+	{
+		nAxes.push_back(m_joyCapabilities.dwAxes);
+	
+	}
+
+}
 
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 {
@@ -210,6 +307,32 @@ bool InputClass::ReadMouse()
 
 	return true;
 }
+
+bool InputClass::ReadJoyStick()
+{
+	HRESULT result;
+
+	// Read the joystick device.
+	result = m_joystick->GetDeviceState(sizeof(DIJOYSTATE), (LPVOID)&m_joyState);
+	if (FAILED(result))
+	{
+		// If the joy lost focuc or was not acqured then try to get contral back.
+		if ((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
+		{
+			m_joystick->Acquire();
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	
+	return true;
+
+}
+
+
 
 void InputClass::ProcessInput()
 {
