@@ -118,7 +118,6 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 
 	this->GetJoyCapabilities();
 
-
 	return true;
 
 }
@@ -178,6 +177,7 @@ bool InputClass::Frame()
 		return false;
 	}
 
+	// Read the current state of the joystick.
 	result = ReadJoyStick();
 	if (!result)
 	{
@@ -221,6 +221,7 @@ bool InputClass::IsJoyExt()
 	{
 		return true;
 	}
+
 	if (m_joyCapabilities.dwAxes == 2)
 	{
 		this->jlx = m_joyState.lX;
@@ -231,11 +232,9 @@ bool InputClass::IsJoyExt()
 		this->jlx = m_joyState.lX;
 		this->jly = m_joyState.lY;
 		this->jlz = m_joyState.lZ; 
-
 	}
 
 	return false;
-
 }
 
 bool InputClass :: GetJoyCapabilities()
@@ -250,7 +249,6 @@ bool InputClass :: GetJoyCapabilities()
 	else
 	{
 		nAxes.push_back(m_joyCapabilities.dwAxes);
-	
 	}
 
 }
@@ -331,8 +329,6 @@ bool InputClass::ReadJoyStick()
 	return true;
 
 }
-
-
 
 void InputClass::ProcessInput()
 {

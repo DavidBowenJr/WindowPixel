@@ -8,6 +8,10 @@
 // that support Force FeedBack  But usb should be ok. for my Radial Pro
 
 #define _USE_INPUT_CLASS_ONE true
+// Using This controler to work with.
+
+/// Interact Raider Pro Digital Flight Stick Joystick SV - 251 Black with USB Cable
+
 
 
 #include "framework.h"
@@ -143,14 +147,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 #endif
-
-
-  
-
-
-
-
-
+        
+        
         if (hWnd) { if (MessageAndGameLoop(&msg, hWnd)) {}; } 
 
 #if _USE_INPUT_CLASS_ONE
@@ -218,7 +216,11 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
             return pMsg->wParam;
         }
-        OutputDebugString(std::to_wstring(input->jlx).c_str());
+        OutputDebugString(L"Analog x input from joystick : ");
+        OutputDebugString(std::to_wstring(input ->jlx).c_str());
+        OutputDebugString(L"\t Analog y input from joystick : ");
+        OutputDebugString(std::to_wstring(input->jly).c_str());
+        OutputDebugString(L"\n");
 
 
 #endif

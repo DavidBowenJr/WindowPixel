@@ -47,15 +47,13 @@ private:
 	bool ReadKeyboard();
 	bool ReadMouse();
 	bool ReadJoyStick();
-
 	void ProcessInput();
-
-
 
 private:
 	IDirectInput8W* m_directInput;
 	IDirectInputDevice8W* m_keyboard;
 	IDirectInputDevice8W* m_mouse;
+
 	IDirectInputDevice8W* m_joystick;
 
 	unsigned char m_keyboardState[256];
