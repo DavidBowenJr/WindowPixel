@@ -239,6 +239,9 @@ bool InputClass::IsJoyExt()
 
 bool InputClass :: GetJoyCapabilities()
 {
+
+	this->SetupJoyParameters();
+
 	// For now im just doing a single joystick we can enumerate but kiss for now
 	this->m_joyCapabilities.dwSize = sizeof(DIDEVCAPS);
 	HRESULT hResult = m_joystick->GetCapabilities(&m_joyCapabilities);
@@ -251,6 +254,45 @@ bool InputClass :: GetJoyCapabilities()
 		nAxes.push_back(m_joyCapabilities.dwAxes);
 	}
 
+}
+
+bool InputClass::SetupJoyParameters()
+{
+	// Set the range of the joystick axes tp[-1000, + 1000]
+	DIPROPRANGE directInputPropertyRange;
+	directInputPropertyRange.diph.dwSize = sizeof(DIPROPRANGE);
+	directInputPropertyRange.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+	directInputPropertyRange.diph.dwHow = DIPH_BYOFFSET;
+	directInputPropertyRange.lMin = -10;
+	directInputPropertyRange.lMax = +10;
+
+	directInputPropertyRange.diph.dwObj = DIJOFS_X;
+	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
+
+	directInputPropertyRange.diph.dwObj = DIJOFS_Y;
+	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
+
+	//note Supports 3 then Z
+
+	// Set the dead zone for the joystick axes (because many joysticks are not perfectly calibrated to be zero when centered).
+	
+	DIPROPDWORD dipdw;
+	dipdw.diph.dwSize = sizeof(DIPROPDWORD);
+	dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+	dipdw.diph.dwHow = DIPH_DEVICE;
+	dipdw.dwData = 1000; // 1000 = 10%
+
+	dipdw.diph.dwObj = DIJOFS_X; // sET THE x-axis deadzone
+	this->m_joystick->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+
+	dipdw.diph.dwObj = DIJOFS_Y; // Set the y-axis deadzone
+	this->m_joystick->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+
+
+
+
+
+	return false;
 }
 
 void InputClass::GetMouseLocation(int& mouseX, int& mouseY)

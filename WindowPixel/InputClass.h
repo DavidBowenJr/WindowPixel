@@ -40,6 +40,8 @@ public:
 	bool IsJoyExt();
 
 	bool GetJoyCapabilities(); // singlar for now.
+	bool SetupJoyParameters();
+
 
 	void GetMouseLocation(int&, int&);
 
