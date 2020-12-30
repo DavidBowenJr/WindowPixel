@@ -216,13 +216,27 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
             return pMsg->wParam;
         }
-        OutputDebugString(L"Analog x input from joystick : ");
-        OutputDebugString(std::to_wstring(input ->jlx).c_str());
-        OutputDebugString(L"\t Analog y input from joystick : ");
-        OutputDebugString(std::to_wstring(input->jly).c_str());
-        OutputDebugString(L"\n");
 
+        if (input->jlx != 0)
+        {
+            OutputDebugString(L"Ax: ");
+            OutputDebugString(std::to_wstring(input->jlx).c_str());
+        }
 
+        if (input->jly != 0)
+        {
+            OutputDebugString(L"\n Ay: ");
+            OutputDebugString(std::to_wstring(input->jly).c_str());
+        }
+
+        if (input->jlz != 0)
+        {
+            OutputDebugString(L"\n Az: ");
+            OutputDebugString(std::to_wstring(input->jlz).c_str());
+            OutputDebugString(L"\n");
+        }
+
+    
 #endif
 
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {

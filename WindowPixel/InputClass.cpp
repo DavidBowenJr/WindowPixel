@@ -109,6 +109,9 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 		return false;
 	}
 
+	this->GetJoyCapabilities();
+
+
 	// Acquire the joystick
 	result = m_joystick->Acquire();
 	if (FAILED(result))
@@ -116,7 +119,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 		return false;
 	}
 
-	this->GetJoyCapabilities();
+
 
 	return true;
 
@@ -203,18 +206,23 @@ bool InputClass::IsEscapePressed()
 
 bool InputClass::IsJoyExt()
 {
+
+	this->ReadJoyStick();
+
+	
+
 	// Still have to get general info about this.
-	OutputDebugString(L" We Have : ");
-	OutputDebugString( std::to_wstring(nAxes[0]).c_str());
-	OutputDebugString(L" | number of Axis ");
+	//OutputDebugString(L" We Have : ");
+	//OutputDebugString( std::to_wstring(nAxes[0]).c_str());
+	//OutputDebugString(L" | number of Axis ");
 
 
-	OutputDebugString(L"\n The number of Buttons on this joystick : ");
-	OutputDebugString(std::to_wstring(this->m_joyCapabilities.dwButtons).c_str());
-	OutputDebugString(L"\n");
+	//OutputDebugString(L"\n The number of Buttons on this joystick : ");
+	//OutputDebugString(std::to_wstring(this->m_joyCapabilities.dwButtons).c_str());
+	//OutputDebugString(L"\n");
 
-	OutputDebugString(L"");
-	OutputDebugString(L"\n");
+	//OutputDebugString(L"");
+	//OutputDebugString(L"\n");
 
 	//OutputDebugString(std::to_wstring(m_joyState.rgbButtons[0]).c_str() );
 	if (m_joyState.rgbButtons[0] & 0x80)
@@ -239,8 +247,8 @@ bool InputClass::IsJoyExt()
 
 bool InputClass :: GetJoyCapabilities()
 {
-
-	this->SetupJoyParameters();
+	this->m_joystick->Unacquire();
+	//this->SetupJoyParameters();
 
 	// For now im just doing a single joystick we can enumerate but kiss for now
 	this->m_joyCapabilities.dwSize = sizeof(DIDEVCAPS);
@@ -251,15 +259,26 @@ bool InputClass :: GetJoyCapabilities()
 	}
 	else
 	{
+		
 		nAxes.push_back(m_joyCapabilities.dwAxes);
+		
+		//www
+		this->m_joystick->Acquire();
+		
+		if (this->SetupJoyParameters()) {};
+
+
 	}
 
 }
 
 bool InputClass::SetupJoyParameters()
 {
+	this->m_joystick->Unacquire();
 	// Set the range of the joystick axes tp[-1000, + 1000]
 	DIPROPRANGE directInputPropertyRange;
+
+	ZeroMemory(&directInputPropertyRange, sizeof(DIPROPRANGE));
 	directInputPropertyRange.diph.dwSize = sizeof(DIPROPRANGE);
 	directInputPropertyRange.diph.dwHeaderSize = sizeof(DIPROPHEADER);
 	directInputPropertyRange.diph.dwHow = DIPH_BYOFFSET;
@@ -272,25 +291,32 @@ bool InputClass::SetupJoyParameters()
 	directInputPropertyRange.diph.dwObj = DIJOFS_Y;
 	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
+
+	
+
+
 	//note Supports 3 then Z
 
 	// Set the dead zone for the joystick axes (because many joysticks are not perfectly calibrated to be zero when centered).
 	
+#if 0
 	DIPROPDWORD dipdw;
+	ZeroMemory(&dipdw, sizeof(DIPROPDWORD));
 	dipdw.diph.dwSize = sizeof(DIPROPDWORD);
 	dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
 	dipdw.diph.dwHow = DIPH_DEVICE;
 	dipdw.dwData = 1000; // 1000 = 10%
 
-	dipdw.diph.dwObj = DIJOFS_X; // sET THE x-axis deadzone
+	dipdw.diph.dwObj = DIJOFS_X; // Set the x-axis deadzone
 	this->m_joystick->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
 	dipdw.diph.dwObj = DIJOFS_Y; // Set the y-axis deadzone
 	this->m_joystick->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+#endif
 
 
 
-
+	this->m_joystick->Acquire();
 
 	return false;
 }
@@ -305,7 +331,6 @@ void InputClass::GetMouseLocation(int& mouseX, int& mouseY)
 bool InputClass::ReadKeyboard()
 {
 	HRESULT result;
-
 
 	// Read the keyboard device.
 	result = m_keyboard->GetDeviceState(sizeof(m_keyboardState), (LPVOID)&m_keyboardState);
@@ -329,7 +354,6 @@ bool InputClass::ReadMouse()
 {
 	HRESULT result;
 
-
 	// Read the mouse device.
 	result = m_mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&m_mouseState);
 	if (FAILED(result))
@@ -344,7 +368,6 @@ bool InputClass::ReadMouse()
 			return false;
 		}
 	}
-
 	return true;
 }
 
@@ -366,10 +389,7 @@ bool InputClass::ReadJoyStick()
 			return false;
 		}
 	}
-
-	
 	return true;
-
 }
 
 void InputClass::ProcessInput()
