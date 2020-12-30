@@ -236,6 +236,42 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             OutputDebugString(L"\n");
         }
 
+
+       const LONG POVNEUTRAL = -1;
+       LONG hatresult = POVNEUTRAL;
+
+        if (input->JHat != -1)
+        {
+            OutputDebugString(L"\n jPOV: ");
+            OutputDebugString(std::to_wstring(input->JHat).c_str());
+            OutputDebugString(L"\n");
+            hatresult = input->JHat;
+        }
+
+
+
+     
+
+
+
+        if (input->jSlider1 != -1) // do we have
+        if (input->jSlider1 != 0)
+        {
+            OutputDebugString(L"\n jSlider1: ");
+            OutputDebugString(std::to_wstring(input->jSlider1).c_str());
+            OutputDebugString(L"\n");
+        }
+
+        if(input->jSlider2 != -1) // do we have
+        if (input->jSlider2 != 0)
+        {
+            OutputDebugString(L"\n jSlider2: ");
+            OutputDebugString(std::to_wstring(input->jSlider2).c_str());
+            OutputDebugString(L"\n");
+        }
+
+
+
     
 #endif
 

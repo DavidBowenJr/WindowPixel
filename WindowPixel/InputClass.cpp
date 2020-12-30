@@ -207,8 +207,7 @@ bool InputClass::IsEscapePressed()
 bool InputClass::IsJoyExt()
 {
 
-	this->ReadJoyStick();
-
+	
 	
 
 	// Still have to get general info about this.
@@ -240,6 +239,9 @@ bool InputClass::IsJoyExt()
 		this->jlx = m_joyState.lX;
 		this->jly = m_joyState.lY;
 		this->jlz = m_joyState.lZ; 
+		this->JHat = m_joyState.rgdwPOV[0];       //rglSlider[1];          //rgdwPOV[0];
+		this->jSlider1 = m_joyState.rglSlider[0];
+		this->jSlider2 = m_joyState.rglSlider[1];
 	}
 
 	return false;
@@ -262,7 +264,7 @@ bool InputClass :: GetJoyCapabilities()
 		
 		nAxes.push_back(m_joyCapabilities.dwAxes);
 		
-		//www
+		
 		this->m_joystick->Acquire();
 		
 		if (this->SetupJoyParameters()) {};

@@ -27,6 +27,9 @@ public:
 	LONG jlx = 0;
 	LONG jly = 0;
 	LONG jlz = 0;
+	LONG JHat = 0;
+	LONG jSlider1 = 0;
+	LONG jSlider2 = 0;
 
 public:
 	InputClass();
