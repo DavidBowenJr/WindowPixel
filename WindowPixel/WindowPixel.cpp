@@ -211,7 +211,7 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             return pMsg->wParam;
         }
 
-        if (input->IsJoyExt())
+        if (input->IsJoyEtc())
         {
             SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
             return pMsg->wParam;

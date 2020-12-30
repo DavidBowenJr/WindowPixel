@@ -41,7 +41,7 @@ public:
 	bool Frame();
 
 	bool IsEscapePressed();
-	bool IsJoyExt();
+	bool IsJoyEtc(); // etcetera  so on.
 
 	bool GetJoyCapabilities(); // singlar for now.
 	bool SetupJoyParameters();

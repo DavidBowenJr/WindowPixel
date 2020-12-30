@@ -204,7 +204,7 @@ bool InputClass::IsEscapePressed()
 	return false;
 }
 
-bool InputClass::IsJoyExt()
+bool InputClass::IsJoyEtc()
 {
 
 	
@@ -234,6 +234,7 @@ bool InputClass::IsJoyExt()
 		this->jlx = m_joyState.lX;
 		this->jly = m_joyState.lY;
 	}
+
 	if (m_joyCapabilities.dwAxes == 3)
 	{
 		this->jlx = m_joyState.lX;
@@ -241,11 +242,11 @@ bool InputClass::IsJoyExt()
 		this->jlz = m_joyState.lZ; 
 		this->JHat = m_joyState.rgdwPOV[0];       //rglSlider[1];          //rgdwPOV[0];
 		this->jSlider1 = m_joyState.rglSlider[0];
-		this->jSlider2 = m_joyState.rglSlider[1];
-
-		memcpy(JButton, m_joyState.rgbButtons, sizeof(BYTE) * 32);
-
+		this->jSlider2 = m_joyState.rglSlider[1];	
 	}
+	
+	memcpy(JButton, m_joyState.rgbButtons, sizeof(BYTE) * 32);
+
 
 	return false;
 }
