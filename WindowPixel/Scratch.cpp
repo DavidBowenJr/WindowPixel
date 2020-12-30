@@ -60,7 +60,7 @@ void Scratch::APP(CustomRunner& customRunner) {
 				TextureBuffer[0]);
 
 
-	     customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
+	 //////////////////////////////////////////    customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
 	
 		 // This one is wraped in customRunner.
 	//	customRunner.PlasmaXXXX();

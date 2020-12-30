@@ -103,7 +103,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the joystick to share with other programs.
-	result = m_joystick->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE  );
+	result = m_joystick->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
 	if (FAILED(result))
 	{
 		return false;
@@ -119,10 +119,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 		return false;
 	}
 
-
-
 	return true;
-
 }
 
 void InputClass::Shutdown()
@@ -240,9 +237,9 @@ bool InputClass::IsJoyEtc()
 		this->jlx = m_joyState.lX;
 		this->jly = m_joyState.lY;
 		this->jlz = m_joyState.lZ; 
-		this->JHat = m_joyState.rgdwPOV[0];       //rglSlider[1];          //rgdwPOV[0];
+		this->JHat = m_joyState.rgdwPOV[0]; 
 		this->jSlider1 = m_joyState.rglSlider[0];
-		this->jSlider2 = m_joyState.rglSlider[1];	
+	//	this->jSlider2 = m_joyState.rglSlider[1];	
 	}
 	
 	memcpy(JButton, m_joyState.rgbButtons, sizeof(BYTE) * 32);
@@ -265,17 +262,12 @@ bool InputClass :: GetJoyCapabilities()
 	}
 	else
 	{
-		
 		nAxes.push_back(m_joyCapabilities.dwAxes);
-		
-		
+
 		this->m_joystick->Acquire();
-		
-		if (this->SetupJoyParameters()) {};
 
-
+	      	if (this->SetupJoyParameters()) {};
 	}
-
 }
 
 bool InputClass::SetupJoyParameters()
@@ -294,7 +286,18 @@ bool InputClass::SetupJoyParameters()
 	directInputPropertyRange.diph.dwObj = DIJOFS_X;
 	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
+
+	// we can also set independent Axis
+	directInputPropertyRange.lMin = -100;
+	directInputPropertyRange.lMax = +100;
+
 	directInputPropertyRange.diph.dwObj = DIJOFS_Y;
+	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
+
+
+	directInputPropertyRange.lMin = -1000;
+	directInputPropertyRange.lMax = +1000;
+	directInputPropertyRange.diph.dwObj = DIJOFS_Z;
 	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
 

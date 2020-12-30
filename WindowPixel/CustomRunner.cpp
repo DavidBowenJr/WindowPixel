@@ -516,8 +516,6 @@
 	}
 
 
-
-
 	void CustomRunner::Win32UpdateWindow()
 	{
 		{
@@ -540,10 +538,10 @@
 				
 				if (this->memBackSurface)
 				{
-					
+
 					SelectObject(this->memBackSurface, this->hBitmapBackBuffer);
 					TestSomeGDIProcedure(this->memBackSurface, mX, mY);
-					
+				
 					if (this->hdc)
 					{
 						SafeGetDC();
@@ -568,13 +566,10 @@
 
 	}
 
-
 	BOOL CustomRunner::mSaveBitmap(LPWSTR wPath, HWND hWnd, HDC hdc)
 	{
 		return 	 SaveBitmap((LPWSTR)wPath, hWnd, hdc);
 	}
-
-
 
 	HWND CustomRunner::myPaint()
 	{

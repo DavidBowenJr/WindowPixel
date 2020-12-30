@@ -7,7 +7,7 @@
 // Hope to get Joy up and going... Been A long time since don't have an audio card
 // that support Force FeedBack  But usb should be ok. for my Radial Pro
 
-#define _USE_INPUT_CLASS_ONE true
+           #define _USE_INPUT_CLASS_ONE true
 // Using This controler to work with.
 
 /// Interact Raider Pro Digital Flight Stick Joystick SV - 251 Black with USB Cable
@@ -247,28 +247,24 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             OutputDebugString(L"\n");
             hatresult = input->JHat;
         }
-
-
-
-      
-        if (input->jSlider1 != 0)
+        if (input->jSlider1 != -1)
         {
             OutputDebugString(L"\n jSlider1: ");
             OutputDebugString(std::to_wstring(input->jSlider1).c_str());
             OutputDebugString(L"\n");
         }
 
-   
-        if (input->jSlider2 != 0)
+        
+        if (input->jSlider2 != -1)
         {
             OutputDebugString(L"\n jSlider2: ");
             OutputDebugString(std::to_wstring(input->jSlider2).c_str());
             OutputDebugString(L"\n");
         }
+        
 
         if (input->JButton != 0)
         {
-
             for (int i = 0; i < 32; i++)
             {
                 if (input->JButton[i] & 0x80)
@@ -279,14 +275,11 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
                 }
             }
 
-        }
-
-        
-
-
-
-    
+        }  
 #endif
+
+
+
 
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
             SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
@@ -305,15 +298,11 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
         }
         
         if(customRunner)
-        {
-          
+        {         
             customRunner->Render();
-        
             customRunner->Win32UpdateWindow(); //sealed function
         }
-
     }
-
 
     return pMsg->wParam;
 }
@@ -343,7 +332,7 @@ LRESULT
         hWnd = customRunner->myPaint();
     } break;
 
-    // https ://docs.microsoft.com/en-us/windows/win32/inputdev/using-raw-input
+
     case WM_INPUT:
         
         break;
