@@ -30,6 +30,7 @@ public:
 	LONG JHat = 0;
 	LONG jSlider1 = 0;
 	LONG jSlider2 = 0;
+	BYTE JButton[32];
 
 public:
 	InputClass();

@@ -250,11 +250,7 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 
 
 
-     
-
-
-
-        if (input->jSlider1 != -1) // do we have
+      
         if (input->jSlider1 != 0)
         {
             OutputDebugString(L"\n jSlider1: ");
@@ -262,13 +258,30 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             OutputDebugString(L"\n");
         }
 
-        if(input->jSlider2 != -1) // do we have
+   
         if (input->jSlider2 != 0)
         {
             OutputDebugString(L"\n jSlider2: ");
             OutputDebugString(std::to_wstring(input->jSlider2).c_str());
             OutputDebugString(L"\n");
         }
+
+        if (input->JButton != 0)
+        {
+
+            for (int i = 0; i < 32; i++)
+            {
+                if (input->JButton[i] & 0x80)
+                {
+                    OutputDebugString(L" Button :\t");
+                    OutputDebugString(std::to_wstring(i).c_str());
+                    OutputDebugString(L" was Pressed \n");
+                }
+            }
+
+        }
+
+        
 
 
 
