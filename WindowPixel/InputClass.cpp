@@ -79,17 +79,22 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 		return false;
 	}
 
-	// Set the data format. In this case since it is a keyboard we can use the predefined data format.
-	result = m_keyboard->SetDataFormat(&c_dfDIKeyboard);
-	if (FAILED(result)) { return false; }
 
 	// Set the cooperative level of the keyborad to not share with other programs
 	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
 	if (FAILED(result)) { return false; }
 
+
+	// Set the data format. In this case since it is a keyboard we can use the predefined data format.
+	result = m_keyboard->SetDataFormat(&c_dfDIKeyboard);
+	if (FAILED(result)) { return false; }
+
+
+
+
 	// Now acquire the keyboard.
 	result = m_keyboard->Acquire();
-	result = m_keyboard->Poll();
+	//result = m_keyboard->Poll();
 	if (FAILED(result)) { return false; }
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,12 +106,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 		return false;
 	} 
 
-	// Set the data format for the mouse using the pre-defined mouse data format.
-	result = m_mouse->SetDataFormat(&c_dfDIMouse);
-	if (FAILED(result))
-	{
-		return false;
-	}
+	
 
 	// Set the cooperative level of the mouse to share with other programs.
 	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
@@ -116,9 +116,16 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 
+// Set the data format for the mouse using the pre-defined mouse data format.
+	result = m_mouse->SetDataFormat(&c_dfDIMouse);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	// Acquire the mouse.
 	result = m_mouse->Acquire();
-	result = m_mouse->Poll();
+	//result = m_mouse->Poll();
 	if (FAILED(result))
 	{
 		return false;
@@ -147,15 +154,17 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 		return false;
 	}
 
-	// Set the data format for the mouse using the pre-defined mouse data format.
-	result = m_joystick->SetDataFormat(&c_dfDIJoystick);
+	
+
+	// Set the cooperative level of the joystick to share with other programs.
+	result = m_joystick->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	// Set the cooperative level of the joystick to share with other programs.
-	result = m_joystick->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+// Set the data format for the mouse using the pre-defined mouse data format.
+	result = m_joystick->SetDataFormat(&c_dfDIJoystick);
 	if (FAILED(result))
 	{
 		return false;
