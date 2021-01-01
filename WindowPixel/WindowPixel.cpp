@@ -84,12 +84,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    WNDCLASSEX wc = {};
-    ZeroMemory(&wc, sizeof(WNDCLASSEX));
+    WNDCLASSEXW wc = {};
+    ZeroMemory(&wc, sizeof(WNDCLASSEXW));
 
    
     wc.hInstance = hInstance;
-    wc.lpszClassName = _T("WindowPixel");
+    wc.lpszClassName =  TEXT( L"WindowPixel");
 
     wc.cbSize = sizeof(WNDCLASSEXW);
 
@@ -108,8 +108,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_WINDOWPIXEL));
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wc.lpszMenuName = MAKEINTRESOURCE(IDC_WINDOWPIXEL);
-    wc.hIconSm = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wc.lpszMenuName = MAKEINTRESOURCEW(IDC_WINDOWPIXEL);
+    wc.hIconSm = LoadIconW(wc.hInstance, MAKEINTRESOURCEW(IDI_SMALL));
 #endif
 
     MSG msg;
@@ -117,16 +117,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     HACCEL hAccelTable;
 
-    LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadString(hInstance, IDC_WINDOWPIXEL, szWindowClass, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_WINDOWPIXEL, szWindowClass, MAX_LOADSTRING);
  
-
-    if (RegisterClassEx(&wc))
+    if (RegisterClassExW(&wc))
     {
-        HWND hWnd = CreateWindowEx( 0,  wc.lpszClassName, _T("Our Game ext"),  WS_OVERLAPPEDWINDOW | WS_VISIBLE
+        HWND hWnd = CreateWindowExW( 0,  wc.lpszClassName, L"Our Game ext",  WS_OVERLAPPEDWINDOW | WS_VISIBLE
             , CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, 0);
         
-        hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPIXEL));
+        hAccelTable = LoadAcceleratorsW(hInstance, MAKEINTRESOURCEW(IDC_WINDOWPIXEL));
  
     /////////////////////////////////////////////////////////////////////////////
       
@@ -139,7 +138,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             {
                 dxResult = input->Initialize(hInstance, hWnd, Rect.right, Rect.bottom);
                 if (!dxResult) {
-                    MessageBox(hWnd, L"Could not initialize the input object.", L"Error", MB_OK);
+                    MessageBoxW(hWnd, L"Could not initialize the input object.", L"Error", MB_OK);
                     SAFE_DELETE(input);
                     SAFE_DELETE(customRunner);
                     return false;
@@ -202,7 +201,7 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 #if _USE_INPUT_CLASS_ONE
         if (!input->Frame())
         {
-            MessageBox(hWnd, L"Frame Processing Failed", L"Error", MB_OK);
+            MessageBoxW(hWnd, L"Frame Processing Failed", L"Error", MB_OK);
         }
 
         if (input->IsEscapePressed())
@@ -219,21 +218,21 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 
         if (input->jlx != 0)
         {
-            OutputDebugString(L"Ax: ");
-            OutputDebugString(std::to_wstring(input->jlx).c_str());
+            OutputDebugStringW(L"Ax: ");
+            OutputDebugStringW(std::to_wstring(input->jlx).c_str());
         }
 
         if (input->jly != 0)
         {
-            OutputDebugString(L"\n Ay: ");
-            OutputDebugString(std::to_wstring(input->jly).c_str());
+            OutputDebugStringW(L"\n Ay: ");
+            OutputDebugStringW(std::to_wstring(input->jly).c_str());
         }
 
         if (input->jlz != 0)
         {
-            OutputDebugString(L"\n Az: ");
-            OutputDebugString(std::to_wstring(input->jlz).c_str());
-            OutputDebugString(L"\n");
+            OutputDebugStringW(L"\n Az: ");
+            OutputDebugStringW(std::to_wstring(input->jlz).c_str());
+            OutputDebugStringW(L"\n");
         }
 
 
@@ -242,24 +241,24 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 
         if (input->JHat != -1)
         {
-            OutputDebugString(L"\n jPOV: ");
-            OutputDebugString(std::to_wstring(input->JHat).c_str());
-            OutputDebugString(L"\n");
+            OutputDebugStringW(L"\n jPOV: ");
+            OutputDebugStringW(std::to_wstring(input->JHat).c_str());
+            OutputDebugStringW(L"\n");
             hatresult = input->JHat;
         }
         if (input->jSlider1 != -1)
         {
-            OutputDebugString(L"\n jSlider1: ");
-            OutputDebugString(std::to_wstring(input->jSlider1).c_str());
-            OutputDebugString(L"\n");
+            OutputDebugStringW(L"\n jSlider1: ");
+            OutputDebugStringW(std::to_wstring(input->jSlider1).c_str());
+            OutputDebugStringW(L"\n");
         }
 
         
         if (input->jSlider2 != -1)
         {
-            OutputDebugString(L"\n jSlider2: ");
-            OutputDebugString(std::to_wstring(input->jSlider2).c_str());
-            OutputDebugString(L"\n");
+            OutputDebugStringW(L"\n jSlider2: ");
+            OutputDebugStringW(std::to_wstring(input->jSlider2).c_str());
+            OutputDebugStringW(L"\n");
         }
         
 
@@ -269,9 +268,9 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             {
                 if (input->JButton[i] & 0x80)
                 {
-                    OutputDebugString(L" Button :\t");
-                    OutputDebugString(std::to_wstring(i).c_str());
-                    OutputDebugString(L" was Pressed \n");
+                    OutputDebugStringW(L" Button :\t");
+                    OutputDebugStringW(  std::to_wstring(i).c_str());
+                    OutputDebugStringW(L" was Pressed \n");
                 }
             }
 
@@ -282,7 +281,7 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 
 
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-            SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
+            SendNotifyMessageW(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
             return pMsg->wParam;
         }
 

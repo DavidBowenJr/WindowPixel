@@ -7,7 +7,7 @@ GraphicsDemonstration::GraphicsDemonstration()
 
 GraphicsDemonstration::~GraphicsDemonstration()
 {
-	OutputDebugString(L"Class GraphicsDemonstration ~Destructor Called.\n ");
+	OutputDebugStringW(L"Class GraphicsDemonstration ~Destructor Called.\n ");
 	//InvalidateRect(hWnd, NULL, 1);
 
 	//DeleteObject(hOldbrush);

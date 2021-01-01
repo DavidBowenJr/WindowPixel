@@ -12,16 +12,14 @@
 #pragma comment(lib, "dxguid.lib")
 #include <dinput.h>
 
+static	BOOL hasEnhanced;
+static	inline BOOL CALLBACK DIEnumKbdCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
+
+static inline  BOOL CALLBACK DIEnumJoyCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
 
 class InputClass
 {
 
-	// Example to retrieve the capabilities of the game controller:
-	// We are mostly interested in the dwAxes and swButtons members,
-	// They specify the number of axis and buttons available on the game controller.
-	// maybe the hat if one exzist.
-
-	// Container std::vector
 	std::vector<unsigned int> nAxes;
 public:
 	LONG jlx = 0;
@@ -55,12 +53,22 @@ private:
 	bool ReadJoyStick();
 	void ProcessInput();
 
-private:
+public:
+
+
+
+
 	IDirectInput8W* m_directInput;
+ 	IDirectInputDevice8W* m_joystick;
+
+
+
 	IDirectInputDevice8W* m_keyboard;
 	IDirectInputDevice8W* m_mouse;
 
-	IDirectInputDevice8W* m_joystick;
+
+
+
 
 	unsigned char m_keyboardState[256];
 	DIMOUSESTATE m_mouseState;
@@ -72,7 +80,12 @@ private:
 	int m_screenWidth, m_screenHeight;
 	int m_mouseX, m_mouseY;
 
+public:
+	GUID KeyboardGuid;
+	GUID JoystickGuid;
+
+
+
 };
 
 #endif
-

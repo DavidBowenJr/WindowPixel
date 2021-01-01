@@ -6,9 +6,30 @@
 
 
 
+
+//static IDirectInput8W* gm_directInput;
+//static IDirectInputDevice8W* gm_joystick;
+// we could  say  gm_directInput = this->m_directInput
+//  ...EM
+//  this->m_directInput = gm_directInput 
+
+// But lets not lets take advantage of a pointer holding another pointers address....
+// We will let the class do clean up we should our pp_gm_ as if they where private......
+
+
+// These are some of the globals im using to help Create a device in an emulator 
+// Treating as if Pointer To Pointer to store the local address  m_directInput and m_joystick  so to make a little simpler
+static LPDIRECTINPUT8W* pp_gm_directInput;
+static LPDIRECTINPUTDEVICE8W* pp_gm_joystick;
+
+
+
 InputClass::InputClass()
 {
 	m_directInput = 0;
+	m_joystick = 0;
+
+	//m_directInput = 0;
 	m_keyboard = 0;
 	m_mouse = 0;
 }
@@ -24,7 +45,7 @@ InputClass::~InputClass()
 bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
 	HRESULT result;
-	
+
 	// Store the screen size with will be used for positioning the mouse cursor.
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
@@ -33,12 +54,26 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	m_mouseX = 0;
 	m_mouseY = 0;
 
+
+	// Alias with pointer to pointer sneek poke and peek.
+	pp_gm_directInput =  &m_directInput;
+	pp_gm_joystick = &m_joystick;
+
+
+
 	// Initialize the main direct input interface
 	result = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL);
 	if (FAILED(result)) { return false; }
 
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	 this->m_directInput->EnumDevices(DI8DEVTYPE_KEYBOARD,(LPDIENUMDEVICESCALLBACKW) &DIEnumKbdCallback ,(void**) &KeyboardGuid, DIEDFL_ATTACHEDONLY);
+
+
 	// Initialize the direct input interface for the keyboard
-	result = m_directInput->CreateDevice(GUID_SysKeyboard, &m_keyboard, NULL);
+	result = m_directInput->CreateDevice( KeyboardGuid, &m_keyboard, NULL);      //GUID_SysKeyboard, &m_keyboard, NULL);
 	if (FAILED(result))
 	{
 		return false;
@@ -50,20 +85,21 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 
 	// Set the cooperative level of the keyborad to not share with other programs
 	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-	if (FAILED(result)) { return false;  }
+	if (FAILED(result)) { return false; }
 
 	// Now acquire the keyboard.
 	result = m_keyboard->Acquire();
-	if (FAILED(result)) { return false;  }
+	result = m_keyboard->Poll();
+	if (FAILED(result)) { return false; }
 
-////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
 
-	// Initialize the direct input interface for the mouse.
+		// Initialize the direct input interface for the mouse.
 	result = m_directInput->CreateDevice(GUID_SysMouse, &m_mouse, NULL);
 	if (FAILED(result))
 	{
 		return false;
-	}
+	} 
 
 	// Set the data format for the mouse using the pre-defined mouse data format.
 	result = m_mouse->SetDataFormat(&c_dfDIMouse);
@@ -82,14 +118,30 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 
 	// Acquire the mouse.
 	result = m_mouse->Acquire();
+	result = m_mouse->Poll();
 	if (FAILED(result))
 	{
 		return false;
 	}
-//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	// This time we  CreateDevice inside the DIEnumJoyStickCallback here or in this case DIEnumJoyCallback LPDIENUMDEVICESCALLBACKW
+	                  
 
-	// Initialize the direct input interface for the mouse.
-	result = m_directInput->CreateDevice(GUID_Joystick, &m_joystick, NULL);
+//	LPDIENUMDEVICESCALLBACKW 
+	/////////////////////////
+
+	OutputDebugStringW( std::to_wstring(this->m_screenWidth).c_str());
+//	gm_directInput = this->m_directInput;
+//	gm_joystick = this->m_joystick;
+	result = m_directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACKW) &DIEnumJoyCallback, &JoystickGuid, DIEDFL_ATTACHEDONLY);
+//	this->m_directInput = gm_directInput;
+//	this->m_joystick = gm_joystick;
+
+                                  
+
+
+		// Initialize the direct input interface for the mouse.
+//	  result = m_directInput->CreateDevice(GUID_Joystick, &m_joystick, NULL);
 	if (FAILED(result))
 	{
 		return false;
@@ -204,8 +256,8 @@ bool InputClass::IsEscapePressed()
 bool InputClass::IsJoyEtc()
 {
 
-	
-	
+
+
 
 	// Still have to get general info about this.
 	//OutputDebugString(L" We Have : ");
@@ -236,21 +288,21 @@ bool InputClass::IsJoyEtc()
 	{
 		this->jlx = m_joyState.lX;
 		this->jly = m_joyState.lY;
-		this->jlz = m_joyState.lZ; 
-		this->JHat = m_joyState.rgdwPOV[0]; 
+		this->jlz = m_joyState.lZ;
+		this->JHat = m_joyState.rgdwPOV[0];
 		this->jSlider1 = m_joyState.rglSlider[0];
-	//	this->jSlider2 = m_joyState.rglSlider[1];	
+		//	this->jSlider2 = m_joyState.rglSlider[1];	
 	}
-	
+
 	memcpy(JButton, m_joyState.rgbButtons, sizeof(BYTE) * 32);
 
 
 	return false;
 }
 
-bool InputClass :: GetJoyCapabilities()
+bool InputClass::GetJoyCapabilities()
 {
-	this->m_joystick->Unacquire();
+	m_joystick->Unacquire();
 	//this->SetupJoyParameters();
 
 	// For now im just doing a single joystick we can enumerate but kiss for now
@@ -258,21 +310,23 @@ bool InputClass :: GetJoyCapabilities()
 	HRESULT hResult = m_joystick->GetCapabilities(&m_joyCapabilities);
 	if (FAILED(hResult))
 	{
-		 throw "Critical error: Unable to get game controller capabilities!";
+		throw "Critical error: Unable to get game controller capabilities!";
 	}
 	else
 	{
 		nAxes.push_back(m_joyCapabilities.dwAxes);
 
-		this->m_joystick->Acquire();
+		//this->
+			m_joystick->Acquire();
 
-	      	if (this->SetupJoyParameters()) {};
+		if (this->SetupJoyParameters()) {};
 	}
 }
 
 bool InputClass::SetupJoyParameters()
 {
-	this->m_joystick->Unacquire();
+	//this->
+		m_joystick->Unacquire();
 	// Set the range of the joystick axes tp[-1000, + 1000]
 	DIPROPRANGE directInputPropertyRange;
 
@@ -284,7 +338,8 @@ bool InputClass::SetupJoyParameters()
 	directInputPropertyRange.lMax = +10;
 
 	directInputPropertyRange.diph.dwObj = DIJOFS_X;
-	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
+	//this->
+	m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
 
 	// we can also set independent Axis
@@ -292,23 +347,22 @@ bool InputClass::SetupJoyParameters()
 	directInputPropertyRange.lMax = +100;
 
 	directInputPropertyRange.diph.dwObj = DIJOFS_Y;
-	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
+	//this->
+		m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
 
 	directInputPropertyRange.lMin = -1000;
 	directInputPropertyRange.lMax = +1000;
 	directInputPropertyRange.diph.dwObj = DIJOFS_Z;
-	this->m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
-
-
-	
+	//this->
+		m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
 
 	//note Supports 3 then Z
 
 	// Set the dead zone for the joystick axes (because many joysticks are not perfectly calibrated to be zero when centered).
-	
-#if 0
+
+#if 1
 	DIPROPDWORD dipdw;
 	ZeroMemory(&dipdw, sizeof(DIPROPDWORD));
 	dipdw.diph.dwSize = sizeof(DIPROPDWORD);
@@ -325,7 +379,8 @@ bool InputClass::SetupJoyParameters()
 
 
 
-	this->m_joystick->Acquire();
+	
+	m_joystick->Acquire();
 
 	return false;
 }
@@ -417,3 +472,33 @@ void InputClass::ProcessInput()
 
 	return;
 }
+
+BOOL CALLBACK DIEnumKbdCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
+{
+ 
+	*(GUID*)pvRef =  lpddi->guidInstance;
+	hasEnhanced = FALSE;
+	if (GET_DIDEVICE_SUBTYPE(lpddi->dwDevType) == DI8DEVTYPEKEYBOARD_PCENH)
+	{
+		hasEnhanced = TRUE;
+		return DIENUM_STOP;
+	}
+	return DIENUM_CONTINUE;
+}
+
+         
+BOOL  CALLBACK DIEnumJoyCallback(  LPCDIDEVICEINSTANCE  lpddi, LPVOID pvRef)
+{
+	HRESULT hr = S_OK;
+	
+	(*pp_gm_directInput)->CreateDevice(lpddi->guidInstance, &*pp_gm_joystick, NULL);
+
+	// this->m_directInput->CreateDevice(lpddi->guidInstance, &this->m_joystick, NULL); // Similar but we can't access unless global so we op for pointer to pointer from our global to Address our InputClass.... 
+
+	if (FAILED(hr))
+		return DIENUM_CONTINUE;
+
+	return DIENUM_STOP;
+}
+
+

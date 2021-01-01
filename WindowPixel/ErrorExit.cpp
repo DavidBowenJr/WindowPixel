@@ -37,20 +37,20 @@ const DWORD cchMsg =	FormatMessage(
 	// Maybe.
 	lpDisplayBuf = (LPVOID)LocalAlloc(
 		LMEM_ZEROINIT,
-		(lstrlen( (LPCTSTR)lpMsgBuf) + lstrlen( (LPCTSTR)lpszFunction) + 40) * sizeof(TCHAR));
+		(lstrlen( (LPCTSTR)lpMsgBuf) + lstrlen( (LPCTSTR)lpszFunction) + 40) * sizeof(WCHAR));
 
 	StringCchPrintf((LPTSTR)lpDisplayBuf,
 		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-		TEXT("%s failed with error %d: %s"),
-		lpszFunction, dwErrorCode, lpMsgBuf);
+		TEXT( "%s failed with error %d: %s"),
+		(LPTSTR)lpszFunction, dwErrorCode, lpMsgBuf);
 
 
-	MessageBox(NULL,  std::to_wstring(cchMsg).c_str() ,TEXT("Error"), MB_OK);
+	MessageBoxW(NULL,  std::to_wstring(cchMsg).c_str() , L"Error", MB_OK);
 
 
 
 	std::wstring wstr;
-	wstr.append(lpszFunction);
+	wstr.append((LPWSTR)lpszFunction);
 	MessageBox(NULL,
 		(LPCTSTR)lpDisplayBuf
 	

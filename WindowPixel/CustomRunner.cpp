@@ -75,7 +75,7 @@
 
 			if (TextureBuffer[0].Width > 0)
 			{
-				OutputDebugString(std::to_wstring(TextureBuffer[0].Width).c_str());
+				OutputDebugStringW(std::to_wstring(TextureBuffer[0].Width).c_str());
 			}
 		}
 	}
@@ -109,9 +109,9 @@
 				0,             // Bytes of committed pages  // Decommit the pages <MEM_RELEASE>
 				MEM_RELEASE))
 			{
-				OutputDebugString(_T("\n Virtual Free Bitmap MEMORY RELEASED"));
+				OutputDebugStringW((L"\n Virtual Free Bitmap MEMORY RELEASED"));
 			}
-		OutputDebugString(_T("\n Class CustomRunner  ~ Called.\n"));
+		OutputDebugStringW((L"\n Class CustomRunner  ~ Called.\n"));
 	}
 
 
@@ -136,7 +136,7 @@
 		}
 		else
 		{
-			MessageBox(NULL, TEXT("NAG...!Potential Problem trying to lock an all ready lock Context. "), TEXT("Error"), MB_OK);
+			MessageBoxW(NULL, L"NAG...!Potential Problem trying to lock an all ready lock Context. " , L"Error", MB_OK);
 		}
 		return HDC(this->hdc);
 	}
@@ -206,13 +206,13 @@
 		if (GetClientRect(this->hWnd, &Rect))
 		{
 
-			CHOOSEFONT cf;
-			LOGFONT lf;
+			CHOOSEFONTW cf;
+			LOGFONTW lf;
 
 
 			// Initialize members of the CHOOSEFONT structure.
 
-			cf.lStructSize = sizeof(CHOOSEFONT);
+			cf.lStructSize = sizeof(CHOOSEFONTW);
 			cf.hwndOwner = (HWND)NULL;
 			cf.hDC = (HDC)NULL;
 			cf.lpLogFont = &lf;
@@ -230,7 +230,7 @@
 
 			// Display the CHOOSEFONT common-dialog box.
 
-			ChooseFont(&cf);
+			ChooseFontW(&cf);
 
 			// Create a logical font based on the user's
 			// selection and return a handle identifying
@@ -238,7 +238,7 @@
 
 
 
-			hfont = CreateFontIndirect(cf.lpLogFont);
+			hfont = CreateFontIndirectW(cf.lpLogFont);
 			SelectObject(hdc_param, hfont);
 
 		}
@@ -270,7 +270,7 @@
 		RECT clientRect;
 		if (GetClientRect(hWnd, &clientRect)) {
 
-			TextOut(hdc_param, 120, 130, L"Hello", (int)strlen("Hello"));
+			TextOutW(hdc_param, 120, 130, L"Hello", (int)strlen("Hello"));
 
 		}
 
@@ -325,8 +325,8 @@
 		if (GetClientRect(this->hWnd, &Rect))
 		{
 
-			CHOOSEFONT cf;
-			LOGFONT lf;
+			CHOOSEFONTW cf;
+			LOGFONTW lf;
 
 
 			// Initialize members of the CHOOSEFONT structure.
@@ -349,7 +349,7 @@
 
 			// Display the CHOOSEFONT common-dialog box.
 
-			ChooseFont(&cf);
+			ChooseFontW(&cf);
 
 			// Create a logical font based on the user's
 			// selection and return a handle identifying
@@ -357,7 +357,7 @@
 
 
 
-			hfont = CreateFontIndirect(cf.lpLogFont);
+			hfont = CreateFontIndirectW(cf.lpLogFont);
 			SelectObject(hdc_param, hfont);
 
 		}
@@ -399,7 +399,7 @@
 	//	 SelectObject(hdc_param, GetStockObject(SYSTEM_FIXED_FONT));
 	
 		 
-		 TextOut(hdc_param, 120, 50, wstr.c_str(), static_cast<int>(wstr.size()));
+		 TextOutW(hdc_param, 120, 50, wstr.c_str(), static_cast<int>(wstr.size()));
 		wstr.clear();
 
 
@@ -407,7 +407,7 @@
 
 
 		// draw some text at (20,30)
-		TextOut(hdc_param, 120, 130, L"Hello", (int)strlen("Hello"));
+		TextOutW(hdc_param, 120, 130, L"Hello", (int)strlen("Hello"));
 		
 
 
@@ -540,7 +540,7 @@
 				{
 
 					SelectObject(this->memBackSurface, this->hBitmapBackBuffer);
-					TestSomeGDIProcedure(this->memBackSurface, mX, mY);
+				//	TestSomeGDIProcedure(this->memBackSurface, mX, mY);
 				
 					if (this->hdc)
 					{
