@@ -130,7 +130,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 //	LPDIENUMDEVICESCALLBACKW 
 	/////////////////////////
 
-	OutputDebugStringW( std::to_wstring(this->m_screenWidth).c_str());
+	
 //	gm_directInput = this->m_directInput;
 //	gm_joystick = this->m_joystick;
 	result = m_directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACKW) &DIEnumJoyCallback, &JoystickGuid, DIEDFL_ATTACHEDONLY);
