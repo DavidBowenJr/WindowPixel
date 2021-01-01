@@ -28,8 +28,6 @@ InputClass::InputClass()
 {
 	m_directInput = 0;
 	m_joystick = 0;
-
-	//m_directInput = 0;
 	m_keyboard = 0;
 	m_mouse = 0;
 }
@@ -44,7 +42,7 @@ InputClass::~InputClass()
 
 bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
-	HRESULT result;
+	HRESULT rst;
 
 	// Store the screen size with will be used for positioning the mouse cursor.
 	m_screenWidth = screenWidth;
@@ -55,133 +53,57 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	m_mouseY = 0;
 
 
-	// Alias with pointer to pointer sneek poke and peek.
+	// Alias with pointer to pointer relay communication.
 	pp_gm_directInput =  &m_directInput;
 	pp_gm_joystick = &m_joystick;
 
 
 
-	// Initialize the main direct input interface
-	result = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL);
-	if (FAILED(result)) { return false; }
+	if (FAILED( rst = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL) )) { return false; }
+
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	if (FAILED( rst = m_directInput->EnumDevices(DI8DEVTYPE_KEYBOARD,(LPDIENUMDEVICESCALLBACKW) &DIEnumKbdCallback ,(void**) &KeyboardGuid, DIEDFL_ATTACHEDONLY) )) { return false; }
+
+	if (FAILED( rst = m_directInput->CreateDevice( KeyboardGuid, &m_keyboard, NULL) )) { return false; }
+	
+	if (FAILED(	rst = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE) )) { return false; }
+
+	if (FAILED( rst = m_keyboard->SetDataFormat(&c_dfDIKeyboard) )) { return false; }
+
+	if (FAILED( rst = m_keyboard->Acquire() )) { if (FAILED(rst = m_keyboard->Poll())) { return false; } }
 
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	 this->m_directInput->EnumDevices(DI8DEVTYPE_KEYBOARD,(LPDIENUMDEVICESCALLBACKW) &DIEnumKbdCallback ,(void**) &KeyboardGuid, DIEDFL_ATTACHEDONLY);
+	if (FAILED( rst = m_directInput->CreateDevice(GUID_SysMouse, &m_mouse, NULL) )) { return false; } 
 
+	if (FAILED( rst = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))) { return false; }
 
-	// Initialize the direct input interface for the keyboard
-	result = m_directInput->CreateDevice( KeyboardGuid, &m_keyboard, NULL);      //GUID_SysKeyboard, &m_keyboard, NULL);
-	if (FAILED(result))
-	{
-		return false;
-	}
+	if (FAILED( rst = m_mouse->SetDataFormat(&c_dfDIMouse) )) { return false; }
 
+	if (FAILED( rst = m_mouse->Acquire() )) { if (FAILED(rst = m_mouse->Poll())) { return false; } }
 
-	// Set the cooperative level of the keyborad to not share with other programs
-	result = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-	if (FAILED(result)) { return false; }
-
-
-	// Set the data format. In this case since it is a keyboard we can use the predefined data format.
-	result = m_keyboard->SetDataFormat(&c_dfDIKeyboard);
-	if (FAILED(result)) { return false; }
-
-
-
-
-	// Now acquire the keyboard.
-	result = m_keyboard->Acquire();
-	//result = m_keyboard->Poll();
-	if (FAILED(result)) { return false; }
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-
-		// Initialize the direct input interface for the mouse.
-	result = m_directInput->CreateDevice(GUID_SysMouse, &m_mouse, NULL);
-	if (FAILED(result))
-	{
-		return false;
-	} 
-
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       
+	if (FAILED( rst = m_directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACKW) &DIEnumJoyCallback, &JoystickGuid, DIEDFL_ATTACHEDONLY) )) { return false; }
 	
-
-	// Set the cooperative level of the mouse to share with other programs.
-	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-
-// Set the data format for the mouse using the pre-defined mouse data format.
-	result = m_mouse->SetDataFormat(&c_dfDIMouse);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	// Acquire the mouse.
-	result = m_mouse->Acquire();
-	//result = m_mouse->Poll();
-	if (FAILED(result))
-	{
-		return false;
-	}
-	//////////////////////////////////////////////////////////////////////////
-	// This time we  CreateDevice inside the DIEnumJoyStickCallback here or in this case DIEnumJoyCallback LPDIENUMDEVICESCALLBACKW
-	                  
-
-//	LPDIENUMDEVICESCALLBACKW 
-	/////////////////////////
-
+	if (FAILED( rst = m_joystick->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE) )) { return false; }
 	
-//	gm_directInput = this->m_directInput;
-//	gm_joystick = this->m_joystick;
-	result = m_directInput->EnumDevices(DI8DEVCLASS_GAMECTRL, (LPDIENUMDEVICESCALLBACKW) &DIEnumJoyCallback, &JoystickGuid, DIEDFL_ATTACHEDONLY);
-//	this->m_directInput = gm_directInput;
-//	this->m_joystick = gm_joystick;
+	if (FAILED( rst = m_joystick->SetDataFormat(&c_dfDIJoystick) )) { return false; }
 
-                                  
+	GetJoyCapabilities();
 
-
-		// Initialize the direct input interface for the mouse.
-//	  result = m_directInput->CreateDevice(GUID_Joystick, &m_joystick, NULL);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	
-
-	// Set the cooperative level of the joystick to share with other programs.
-	result = m_joystick->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-// Set the data format for the mouse using the pre-defined mouse data format.
-	result = m_joystick->SetDataFormat(&c_dfDIJoystick);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	this->GetJoyCapabilities();
-
-
-	// Acquire the joystick
-	result = m_joystick->Acquire();
-	if (FAILED(result))
-	{
-		return false;
-	}
+	if (FAILED(rst = m_joystick->Acquire() )) { if (FAILED(rst = m_joystick->Poll() )) { return false; } }
 
 	return true;
 }
+
+
 
 void InputClass::Shutdown()
 {
@@ -347,7 +269,6 @@ bool InputClass::SetupJoyParameters()
 	directInputPropertyRange.lMax = +10;
 
 	directInputPropertyRange.diph.dwObj = DIJOFS_X;
-	//this->
 	m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
 
@@ -356,15 +277,13 @@ bool InputClass::SetupJoyParameters()
 	directInputPropertyRange.lMax = +100;
 
 	directInputPropertyRange.diph.dwObj = DIJOFS_Y;
-	//this->
-		m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
+	m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
 
 	directInputPropertyRange.lMin = -1000;
 	directInputPropertyRange.lMax = +1000;
 	directInputPropertyRange.diph.dwObj = DIJOFS_Z;
-	//this->
-		m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
+	m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
 
 	//note Supports 3 then Z
@@ -494,7 +413,6 @@ BOOL CALLBACK DIEnumKbdCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
 	}
 	return DIENUM_CONTINUE;
 }
-
          
 BOOL  CALLBACK DIEnumJoyCallback(  LPCDIDEVICEINSTANCE  lpddi, LPVOID pvRef)
 {

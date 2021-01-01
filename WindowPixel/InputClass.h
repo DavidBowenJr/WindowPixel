@@ -13,13 +13,13 @@
 #include <dinput.h>
 
 static	BOOL hasEnhanced;
-static	inline BOOL CALLBACK DIEnumKbdCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
+static inline BOOL CALLBACK DIEnumKbdCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
 
 static inline  BOOL CALLBACK DIEnumJoyCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
 
 class InputClass
 {
-
+	
 	std::vector<unsigned int> nAxes;
 public:
 	LONG jlx = 0;
