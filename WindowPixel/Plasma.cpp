@@ -334,8 +334,8 @@ void Plasma::FxFireEffect(HWND& rHwnd, win32_offscreen_buffer& surfdata, CustomR
 {
 
 
-	const uint32 sW = 640;
-	const uint32 sH = 128;
+static	const uint32 sW = 640;
+static	const uint32 sH = 128;
 	int h = sH;
 	int w = sW;
 
@@ -349,6 +349,7 @@ void Plasma::FxFireEffect(HWND& rHwnd, win32_offscreen_buffer& surfdata, CustomR
 
 	static uint32  buffer[sW][sH];
 	static uint32    fire[sW][sH];
+
 
 
 	//this->olvedBuffer.Width = this->olvedBuffer.Width;
