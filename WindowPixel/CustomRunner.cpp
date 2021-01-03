@@ -77,7 +77,33 @@
 			{
 				OutputDebugStringW(std::to_wstring(TextureBuffer[0].Width).c_str());
 			}
+			////////////////////////////////////////////////////////////////////////
+
+			bitmapData = LoadBitmapFile((char*)("photo3.bmp"), &bitmapInfoHeader);
+			bitmapInfoHeader.biBitCount = 32;
+			memcpy(&TextureBuffer[1].Info, &bitmapInfoHeader, sizeof(BITMAPINFO));
+			TextureBuffer[1].Memory = new uint32[bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight];
+
+			memcpy(TextureBuffer[1].Memory, bitmapData, sizeof(uint32) * (bitmapInfoHeader.biWidth * bitmapInfoHeader.biHeight));
+			SAFE_DELETE(bitmapData);
+
+			TextureBuffer[1].Width = bitmapInfoHeader.biWidth;
+			TextureBuffer[1].Height = bitmapInfoHeader.biHeight;
+			TextureBuffer[1].BytesPerPixel = bitmapInfoHeader.biBitCount / 8;
+			TextureBuffer[1].Pitch = bitmapInfoHeader.biWidth * (bitmapInfoHeader.biBitCount / 8);
+			TextureBuffer[1].Pitch = TextureBuffer[0].Pitch;
+			ZeroMemory(&bitmapInfoHeader, sizeof(BITMAPINFOHEADER));
+			if (TextureBuffer[1].Width > 0)
+			{
+				OutputDebugStringW(std::to_wstring(TextureBuffer[1].Width).c_str());
+			}
+
+			// NOT USING AS OF NOW just null out.
+			TextureBuffer[2].Memory = NULL;
+			TextureBuffer[3].Memory = NULL;
+
 		}
+		
 	}
 
 
@@ -92,16 +118,17 @@
 		DeleteDC(this->memBackSurface);
 
 
-
-
-
 		SafeReleaseDC();
 
 		SAFE_DELETE(pplasma);
 		SAFE_DELETE(scratch);
 
 		//free(TextureBuffer[0].Memory);
+		SAFE_DELETE(TextureBuffer[3].Memory);
+		SAFE_DELETE(TextureBuffer[2].Memory);
+		SAFE_DELETE(TextureBuffer[1].Memory);
 		SAFE_DELETE(TextureBuffer[0].Memory);
+
 
 		if (Buffer.Memory != NULL)
 			if (VirtualFree(
@@ -1038,5 +1065,10 @@ for (size_t y = 0; y < h; y++)
 #endif
 
 	// Just a test
-	void CustomRunner::PlasmaXXXX() { this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this); }
+	void CustomRunner::PlasmaXXXX() { 
+	//	this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this);
+		this->pplasma->FxFireEffect(this->hWnd, this->Buffer, *this);
+
+	}
+
 

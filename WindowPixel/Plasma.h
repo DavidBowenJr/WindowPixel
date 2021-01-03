@@ -23,6 +23,10 @@ public:
 	void SomeFunction5(HWND hwnd, win32_offscreen_buffer& surfdata);
 #endif
 	
+	void FxFireEffect(HWND& rHwnd, win32_offscreen_buffer& surfdata, CustomRunner& rDraw);
+
+
+
 	void Foo();
 	
 

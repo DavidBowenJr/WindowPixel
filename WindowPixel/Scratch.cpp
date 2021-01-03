@@ -29,7 +29,7 @@ void Scratch::APP(CustomRunner& customRunner) {
 	
 
 
-	            customRunner.Funn();
+	       //     customRunner.Funn();
 
 
 
@@ -63,7 +63,7 @@ void Scratch::APP(CustomRunner& customRunner) {
 	 //////////////////////////////////////////    customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
 	
 		 // This one is wraped in customRunner.
-		customRunner.PlasmaXXXX();
+		
 
 		OutputDebugStringW(L"After  SCRATCH WORKING \n");
 		OutputDebugStringW(std::to_wstring(customRunner.inputclass->jlx).c_str());
@@ -80,7 +80,10 @@ void Scratch::APP(CustomRunner& customRunner) {
 
 		customRunner.Line(0, 0, 300, 300, RGB(0, 255, 0));
 		
-	
+		
+		customRunner.PlasmaXXXX();
+
+
 
 
 	//	customRunner.Foo();
