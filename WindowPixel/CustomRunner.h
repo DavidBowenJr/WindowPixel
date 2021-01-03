@@ -31,9 +31,6 @@ class Scratch;
 		HDC memBackSurface = NULL;
 		HBITMAP	hBitmapBackBuffer = NULL;
 
-
-
-
 		int rfCntHdc;
 
 		int wmId;
@@ -139,6 +136,9 @@ class Scratch;
 
 	
 		void Funn();
+
+		void PlasmaXXXX();
+
 
 #if 0
 		COLORREF getColorAtCursor();

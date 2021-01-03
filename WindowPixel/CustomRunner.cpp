@@ -1038,5 +1038,5 @@ for (size_t y = 0; y < h; y++)
 #endif
 
 	// Just a test
-	//void CustomRunner::PlasmaXXXX() { this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this); }
+	void CustomRunner::PlasmaXXXX() { this->pplasma->SomeFunction5(this->hWnd, this->Buffer, *this); }
 

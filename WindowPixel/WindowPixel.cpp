@@ -413,7 +413,7 @@ LRESULT
 
         // Inject into class
         customRunner->pplasma = new Plasma(plasmaBuffer);
-        plasmaBuffer = customRunner->pplasma->olvedBuffer; // ?
+      //  plasmaBuffer = customRunner->pplasma->olvedBuffer; // ?
         customRunner->scratch = new Scratch();
 
 

@@ -29,7 +29,7 @@ void Scratch::APP(CustomRunner& customRunner) {
 	
 
 
-	//            customRunner.Funn();
+	            customRunner.Funn();
 
 
 
@@ -63,21 +63,19 @@ void Scratch::APP(CustomRunner& customRunner) {
 	 //////////////////////////////////////////    customRunner.pplasma->SomeFunction5(customRunner.hWnd, customRunner.Buffer, customRunner);
 	
 		 // This one is wraped in customRunner.
-	//	customRunner.PlasmaXXXX();
-		OutputDebugStringW(L" SCRATCH WORKING \n");
+		customRunner.PlasmaXXXX();
+
+		OutputDebugStringW(L"After  SCRATCH WORKING \n");
 		OutputDebugStringW(std::to_wstring(customRunner.inputclass->jlx).c_str());
-	OutputDebugStringW(L"\t SCRATCH FIN \n");
+		OutputDebugStringW(L"\t SCRATCH FIN \n");
 
 	
-
+		// for a test if user pressed the zero button then request shut down of windows.
 		if (customRunner.inputclass->m_joyState.rgbButtons[0] & 0x80)
 		{
 			DestroyWindow(customRunner.hWnd);
 			return;
 		}
-
-
-
 
 
 		customRunner.Line(0, 0, 300, 300, RGB(0, 255, 0));
