@@ -1,7 +1,7 @@
 #pragma once
 #include "framework.h"
   #include "share.h"
-
+#include "InputClass.h"
 
 #pragma comment(lib, "WinMM.lib")
 
@@ -9,14 +9,9 @@
 
 
 
-class RawInputApi;
+class InputClass;
 class Plasma;
 class Scratch;
-
-
-
-
-
 
 
 
@@ -54,8 +49,14 @@ class Scratch;
 		win32_offscreen_buffer TextureBuffer[4];
 		WCHAR wbuff[BUF_SIZE];
 
-		
+		// NOTE! For now we are letting Core or CustomRunner spine  host InputClass
+		// We are letting Windows tear Down InputClass. When we exit the program.
+		// Windows will pump Aquire and such
+		// we will pass inputclass up to Scratch  though a ref of CustomRunner
+		// Thus we have the now data.....
+		// We can improve our class to store the prev states ext variables from our Variants. if we wanted to.
 
+		InputClass* inputclass;
 
 		
 		Plasma*  pplasma;

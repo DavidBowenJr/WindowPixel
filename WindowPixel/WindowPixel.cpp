@@ -147,7 +147,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 #endif
         
-        
+
         if (hWnd) { if (MessageAndGameLoop(&msg, hWnd)) {}; } 
 
 #if _USE_INPUT_CLASS_ONE
@@ -215,7 +215,7 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
             SendNotifyMessage(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
             return pMsg->wParam;
         }
-
+/*
         if (input->jlx != 0)
         {
             OutputDebugStringW(L"Ax: ");
@@ -274,7 +274,12 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
                 }
             }
 
-        }  
+
+
+        } 
+        */
+
+
 #endif
 
 
@@ -402,6 +407,9 @@ LRESULT
             OutputDebugString(TEXT("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"));
         }
 #endif
+
+        // We will allow the outer here ... to destroy input we just wan't  customRunner to host it somewhat
+        customRunner->inputclass = input;
 
         // Inject into class
         customRunner->pplasma = new Plasma(plasmaBuffer);

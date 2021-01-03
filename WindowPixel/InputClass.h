@@ -56,19 +56,11 @@ private:
 public:
 
 
-
-
 	IDirectInput8W* m_directInput;
  	IDirectInputDevice8W* m_joystick;
 
-
-
 	IDirectInputDevice8W* m_keyboard;
 	IDirectInputDevice8W* m_mouse;
-
-
-
-
 
 	unsigned char m_keyboardState[256];
 	DIMOUSESTATE m_mouseState;

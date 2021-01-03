@@ -64,9 +64,25 @@ void Scratch::APP(CustomRunner& customRunner) {
 	
 		 // This one is wraped in customRunner.
 	//	customRunner.PlasmaXXXX();
+		OutputDebugStringW(L" SCRATCH WORKING \n");
+		OutputDebugStringW(std::to_wstring(customRunner.inputclass->jlx).c_str());
+	OutputDebugStringW(L"\t SCRATCH FIN \n");
+
+	
+
+		if (customRunner.inputclass->m_joyState.rgbButtons[0] & 0x80)
+		{
+			DestroyWindow(customRunner.hWnd);
+			return;
+		}
+
+
+
+
 
 		customRunner.Line(0, 0, 300, 300, RGB(0, 255, 0));
-
+		
+	
 
 
 	//	customRunner.Foo();

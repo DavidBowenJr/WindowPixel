@@ -103,8 +103,6 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	return true;
 }
 
-
-
 void InputClass::Shutdown()
 {
 	// Release the joystick
@@ -204,10 +202,14 @@ bool InputClass::IsJoyEtc()
 	//OutputDebugString(L"\n");
 
 	//OutputDebugString(std::to_wstring(m_joyState.rgbButtons[0]).c_str() );
+	
+	
+	/*
 	if (m_joyState.rgbButtons[0] & 0x80)
 	{
 		return true;
 	}
+	*/
 
 	if (m_joyCapabilities.dwAxes == 2)
 	{
