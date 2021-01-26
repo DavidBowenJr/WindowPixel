@@ -83,9 +83,8 @@ void Scratch::APP(CustomRunner& customRunner) {
 		
 		customRunner.PlasmaXXXX();
 
-
-
-
+	//	customRunner.BowCurve2D( customRunner.Buffer);
+	
 	//	customRunner.Foo();
 
 

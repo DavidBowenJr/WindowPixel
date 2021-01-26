@@ -336,8 +336,8 @@ void Plasma::FxFireEffect(HWND& rHwnd, win32_offscreen_buffer& surfdata, CustomR
 
 static	const uint32 sW = 640;
 static	const uint32 sH = 128;
-	int h = sH;
-	int w = sW;
+	uint32 h = sH;
+	uint32 w = sW;
 
 	//uint32* palette = new uint32[256];
 	static uint32 palette[256];
@@ -367,8 +367,8 @@ static	const uint32 sH = 128;
 	{
 		doPart1 = !doPart1;
 	// fire buffer
-	for (uint32 y = 0; y < h; y++)
-		for (uint32 x = 0; x < w; x++)
+	for (uint32 y = 0; y < uint32(h); y++)
+		for (uint32 x = 0; x < uint32(w); x++)
 			fire[y][x] = uint32(0);
 
 	// generate the palette

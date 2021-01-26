@@ -147,7 +147,9 @@ class Scratch;
 
 		POINT getLocalCursor(HDC hdc);
 #endif
-	
+
+		void BowCurve2D(win32_offscreen_buffer& sourceBuffer);
+		
 
 	};
 

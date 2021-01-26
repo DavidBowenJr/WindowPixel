@@ -16,6 +16,9 @@
 
 #include "framework.h"
 
+#include <thread>
+
+
 #include <WinUser.h>
 
 #include <system_error>
@@ -30,13 +33,47 @@
 #include <Stringapiset.h> // MultiByteToWideChar
 #include "ErrorExit.h"
 
+
+#include "Location.h"
+
+/*
+*  https ://github.com/milliet/DDReader/tree/master/c/sdk-directx9/Lib
+Disabling option "Image has Safe Exception Handlers" 
+in Project properties->Configuration Properties->Linker->Advanced tab helped me.
+*/
+
+//   #include "DirectSoundAudio.h"
+
+
+#define IS_MIXED_AUDIO  true
+
+//#define _YALDEX_AUDIO_
+#ifdef _YALDEX_AUDIO_
+#include "YaldexAudio.h"
+#endif
+
+
+#if(IS_MIXED_AUDIO)
+#include "CDXAudio.h"
+#include "C3DSound.h"
+#endif
+
 #if _USE_INPUT_CLASS_ONE
 #include "InputClass.h"
+
 #endif
+//#include "DirectSoundAudio.h"
 
 
 #include "Plasma.h"
 #include "Scratch.h"
+
+
+#ifdef _YALDEX_AUDIO_
+
+
+#endif
+
 
 
  static olved__buffer plasmaBuffer;
@@ -69,10 +106,26 @@ WCHAR szTitle[MAX_LOADSTRING];
 WCHAR szWindowClass[MAX_LOADSTRING];    
 
 // Forward declarations of functions included in this code module:
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-//BOOL                InitInstance(HINSTANCE, int);
+  // ATOM                MyRegisterClass(HINSTANCE hInstance);
+
   LRESULT  CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+
+//////////////////////////////
+//CHECK CHECK ONE TWO THRE
+
+#if(IS_MIXED_AUDIO)
+ CDXAudio Audio;
+static C3DSound SoundEffect[4];
+
+void foo(C3DSound* c3d);
+#endif
+
+//
+
+
+
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -87,21 +140,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     WNDCLASSEXW wc = {};
     ZeroMemory(&wc, sizeof(WNDCLASSEXW));
 
-   
+     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
-    wc.lpszClassName =  TEXT( L"WindowPixel");
+    wc.lpszClassName =  TEXT( "WindowPixel");
 
+    
     wc.cbSize = sizeof(WNDCLASSEXW);
 
+
+#ifndef _DEMO_OUT_
+
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = WndProc;
-    wc.hInstance = hInstance;
+  
+   
+
  //   wc.lpszClassName = szWindowClass;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.hIconSm = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    
 
-#ifndef _DEMO_OUT_
+
+//#ifdef _DEMO_OUT_
     #define    _DEMO_OUT_
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
@@ -147,12 +207,106 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
 #endif
         
+        /////////////////////////////////////
+
+     //   DirectSoundAudio dsa;
+    //    dsa.Initialize(hInstance, hWnd, 48000, 48000 * sizeof(int16)* 2 );
+
+#ifdef _YALDEX_AUDIO_     
+   static  YaldexAudio yda;              
+        if (yda.Game_Init(hWnd)) { }
+#endif
+
+
+
+        // CHECK CHECK ONE TWO THREE CHECK CHECK
+         // setup DirectX Audio
+        //https://documentation.help/DirectMusic/step2retrievethebuffer.htm
+#if(IS_MIXED_AUDIO)
+        if (FAILED(Audio.Setup(hWnd)))
+            return false;  // FatalError("Couldn't setup DirectX Audio");
+
+            if (FAILED(SoundEffect[0].Setup((WCHAR*)L"drumpad-speech.wav", Audio.getPerformance(), Audio.getLoader())))
+                return false; // FatalError("Couldn't load 3d sound effect.");
+            if (FAILED(SoundEffect[1].Setup((WCHAR*)L"drumpad-voc_female_ec.wav", Audio.getPerformance(), Audio.getLoader())))
+                return false; // FatalError("Couldn't load 3d sound effect.");
+            if (FAILED(SoundEffect[2].Setup((WCHAR*)L"sound1.wav", Audio.getPerformance(), Audio.getLoader())))
+                return false; // FatalError("Couldn't load 3d sound effect.");
+            if (FAILED(SoundEffect[3].Setup((WCHAR*)L"sound2.wav", Audio.getPerformance(), Audio.getLoader())))
+                return false; // FatalError("Couldn't load 3d sound effect.");
+
+
+
+        Sleep(200);
+       // D3DVALUE
+
+         
+        std::thread thread_obj (foo, SoundEffect);
+        
+        thread_obj.joinable();
+ Sleep(4000);
+        thread_obj;
+      //  thread_obj.join();
+
+        thread_obj.joinable();
+       
+
+        thread_obj;
+
+        thread_obj.joinable();
+
+
+            SoundEffect[0].setPos(5.0f, 0.0f, 0.0f, DS3D_DEFERRED);
+        SoundEffect[0].Play();
+      
+     //   MessageBoxA(NULL, "The sound effect just played to your right.", "3D Sound Tutorial", MB_OK);
+
+        SoundEffect[1].setPos(0.0f, 5.0f, 0.0f, DS3D_DEFERRED);
+        SoundEffect[1].Play();
+    //    MessageBoxA(NULL, "The sound effect just played in front of you.", "3D Sound Tutorial", MB_OK);
+  
+        SoundEffect[2].setPos(-0.1f, 0.0f, 0.0f, DS3D_DEFERRED);
+        SoundEffect[2].Play();
+    //    MessageBoxA(NULL, "The sound effect just played to your left.", "3D Sound Tutorial", MB_OK);
+      
+        SoundEffect[3].setPos(0.0f, -5.0f, 0.0f, DS3D_DEFERRED);
+        SoundEffect[3].Play();
+   //     MessageBoxA(NULL, "The sound effect just played behind you.", "3D Sound Tutorial", MB_OK);
+
+#endif
+        //////////////////////////////////////
+
+
+
 
         if (hWnd) { if (MessageAndGameLoop(&msg, hWnd)) {}; } 
+
+#if( IS_MIXED_AUDIO)
+        thread_obj.join();
+#endif
+
+
 
 #if _USE_INPUT_CLASS_ONE
         input->Shutdown();
 #endif
+
+#ifdef _YALDEX_AUDIO_
+
+#endif
+
+
+#if(IS_MIXED_AUDIO)
+        // kill the sound
+        SoundEffect[3].Kill();
+        SoundEffect[2].Kill();
+        SoundEffect[1].Kill();
+        SoundEffect[0].Kill();
+
+        // kill directX Audio
+        Audio.Kill();
+#endif
+
 
         GetMessage(&msg, hWnd,0,0);
 
@@ -282,9 +436,6 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 
 #endif
 
-
-
-
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
             SendNotifyMessageW(hWnd, WM_CLOSE, pMsg->wParam, pMsg->lParam);
             return pMsg->wParam;
@@ -300,7 +451,7 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
                 ErrorExit((LPTSTR)errorcheck.c_str());
             }
         }
-        
+
         if(customRunner)
         {         
             customRunner->Render();
@@ -310,11 +461,6 @@ WPARAM MessageAndGameLoop(PMSG pMsg, HWND hWnd)
 
     return pMsg->wParam;
 }
-
-
-
-
-
 
 LRESULT 
  CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -382,10 +528,15 @@ LRESULT
 
     case WM_CREATE:
     {
-
-
-
-
+#if(0)
+        {
+            Location loc;
+            loc.m_GetCurrentDirectory();
+            OutputDebugStringA(loc.searchPath);
+            loc.m_MultiByteToWideChar();
+            OutputDebugStringW(loc.wSearchPath);
+        }
+#endif
         // Time 2:37 PM
         // 12/12/2020 Now it will scale 
         
@@ -404,7 +555,6 @@ LRESULT
         input = new InputClass;
         if (!input)
         {
-            OutputDebugString(TEXT("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"));
         }
 #endif
 
@@ -494,3 +644,25 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (INT_PTR)FALSE;
 }
+
+
+#if(IS_MIXED_AUDIO)
+void foo(C3DSound* c3d)
+{
+    c3d[2].setPos(5.0f, 0.0f, 0.0f, DS3D_DEFERRED);
+    c3d[2].Play();
+
+    c3d[2].setPos(5.0f, 0.0f, 0.0f, DS3D_DEFERRED);
+    c3d[2].Play();
+
+    Sleep(40);
+    c3d[2].setPos(5.0f, 0.0f, 0.0f, DS3D_DEFERRED);
+    c3d[2].Play();
+    Sleep(8000);
+
+    c3d[2].setPos(5.0f, 0.0f, 0.0f, DS3D_DEFERRED);
+    c3d[2].Play();
+  
+}
+#endif
+

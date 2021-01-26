@@ -4,8 +4,11 @@
 
 //  http://www.rastertek.com/dx11tut13.html
 
+static int enum_index = 0;
+static	BOOL hasEnhanced;
+static inline BOOL CALLBACK DIEnumKbdCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
 
-
+static inline  BOOL CALLBACK DIEnumJoyCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
 
 //static IDirectInput8W* gm_directInput;
 //static IDirectInputDevice8W* gm_joystick;
@@ -16,19 +19,25 @@
 // But lets not lets take advantage of a pointer holding another pointers address....
 // We will let the class do clean up we should our pp_gm_ as if they where private......
 
-
 // These are some of the globals im using to help Create a device in an emulator 
 // Treating as if Pointer To Pointer to store the local address  m_directInput and m_joystick  so to make a little simpler
 static LPDIRECTINPUT8W* pp_gm_directInput;
+static  GUID* pp_KeyboardGuid[4] ;
+
+static LPDIRECTINPUTDEVICE8W* pp_gm_keyboard[2];
 static LPDIRECTINPUTDEVICE8W* pp_gm_joystick;
 
+// g_didiKeyboard;
+static DIDEVICEINSTANCE g_didiKeyboard[2];
 
+static DIDEVICEINSTANCE g_joyInstance; // strings
 
 InputClass::InputClass()
 {
 	m_directInput = 0;
 	m_joystick = 0;
-	m_keyboard = 0;
+	m_keyboard[0] = 0;
+	m_keyboard[1] = 0;
 	m_mouse = 0;
 }
 
@@ -54,28 +63,111 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 
 
 	// Alias with pointer to pointer relay communication.
-	pp_gm_directInput =  &m_directInput;
+	pp_gm_directInput = &m_directInput;
 	pp_gm_joystick = &m_joystick;
 
+	//pp_KeyboardGuid = &KeyboardGuid;
+	pp_KeyboardGuid[0] = &KeyboardGuid[0];
+	pp_KeyboardGuid[1] = &KeyboardGuid[1];
 
 
-	if (FAILED( rst = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL) )) { return false; }
+	//g_didiKeyboard[0] = this->m_didiKeyboard[0];
+	//g_didiKeyboard[1] = this->m_didiKeyboard[1];
 
-	
+
+
+
+	pp_gm_keyboard[0] = &m_keyboard[0];
+	pp_gm_keyboard[1] = &m_keyboard[1];
+
+
+	if (FAILED(rst = DirectInput8Create(hinstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL))) { return false; }
+
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+	//LPCDIDEVICEINSTANCE g_joyInstance = NULL;
+	if (FAILED(rst = m_directInput->EnumDevices(DI8DEVTYPE_KEYBOARD, (LPDIENUMDEVICESCALLBACKW)&DIEnumKbdCallback, (void**)&KeyboardGuid[0], DIEDFL_ATTACHEDONLY))) { return false; }
+
+	this->m_didiKeyboard[0] = InputClass::FillDirectInputDeviceInstance(m_didiKeyboard[0], &g_didiKeyboard[0]);
+
+
+
+
+
+
+	//if (FAILED(rst = m_directInput->CreateDevice(g_didiKeyboard.guidInstance, &m_keyboard[0], NULL))) { return false; }
+
+	//  if (FAILED( rst = m_directInput->CreateDevice( KeyboardGuid[0], &m_keyboard[0], NULL) )) { return false; }
+
 	
-	if (FAILED( rst = m_directInput->EnumDevices(DI8DEVTYPE_KEYBOARD,(LPDIENUMDEVICESCALLBACKW) &DIEnumKbdCallback ,(void**) &KeyboardGuid, DIEDFL_ATTACHEDONLY) )) { return false; }
-
-	if (FAILED( rst = m_directInput->CreateDevice( KeyboardGuid, &m_keyboard, NULL) )) { return false; }
 	
-	if (FAILED(	rst = m_keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE) )) { return false; }
+	if (FAILED(	rst = m_keyboard[0]->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE) )) { return false; }
 
-	if (FAILED( rst = m_keyboard->SetDataFormat(&c_dfDIKeyboard) )) { return false; }
+	if (FAILED( rst = m_keyboard[0]->SetDataFormat(&c_dfDIKeyboard) )) { return false; }
 
-	if (FAILED( rst = m_keyboard->Acquire() )) { if (FAILED(rst = m_keyboard->Poll())) { return false; } }
+	if (FAILED( rst = m_keyboard[0]->Acquire() )) { if (FAILED(rst = m_keyboard[0]->Poll())) { return false; } }
+	
+	{
+		CHAR czstr[260];
+		wsprintfA(czstr, "\n First Instance Name %s ", m_didiKeyboard[0].tszInstanceName);
+		std::string wstr; wstr.append(czstr);
+		
+		wsprintfA(czstr, "\t First guid Product  %d \n", m_didiKeyboard[0].guidProduct);
+		wstr.append(czstr);
+		OutputDebugStringA(wstr.c_str());
+	}
+
+
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+	if (FAILED(rst = m_directInput->EnumDevices(DI8DEVTYPE_KEYBOARD, (LPDIENUMDEVICESCALLBACKW)&DIEnumKbdCallback, (void**)&KeyboardGuid[1], DIEDFL_ATTACHEDONLY))) { return false; }
+
+	//m_didiKeyboard[1] = InputClass::FillDirectInputDeviceInstance(m_didiKeyboard[1], &g_didiKeyboard[1]);
+
+//	if (FAILED(rst = m_directInput->CreateDevice(KeyboardGuid[1], &m_keyboard[1], NULL))) { return false; }
+	// 
+	
+	m_didiKeyboard[1] = FillDirectInputDeviceInstance(m_didiKeyboard[1], &g_didiKeyboard[1]);
+
+	if (FAILED(rst = m_keyboard[1]->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE))) { return false; }
+
+	if (FAILED(rst = m_keyboard[1]->SetDataFormat(&c_dfDIKeyboard))) { return false; }
+
+	if (FAILED(rst = m_keyboard[1]->Acquire())) { if (FAILED(rst = m_keyboard[1]->Poll())) { return false; } }
+
+//	m_didiKeyboard[1] = FillDirectInputDeviceInstance(m_didiKeyboard[1], &g_didiKeyboard[1]);
+
+	{
+		CHAR czstr[260];
+		wsprintfA(czstr, "\n Second Instance Name %s ", m_didiKeyboard[1].tszInstanceName);
+		std::string wstr; wstr.append(czstr);
+
+		wsprintfA(czstr, "\t Second guid Product  %d \n\n", m_didiKeyboard[1].guidProduct);
+		wstr.append(czstr);
+		OutputDebugStringA(wstr.c_str());
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	
+	
+	
+
+
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -122,12 +214,20 @@ void InputClass::Shutdown()
 	}
 
 	// Release the keyboard.
-	if (m_keyboard)
+	if (m_keyboard[0])
 	{
-		m_keyboard->Unacquire();
-		m_keyboard->Release();
-		m_keyboard = 0;
+		m_keyboard[0]->Unacquire();
+		m_keyboard[0]->Release();
+		m_keyboard[0] = 0;
 	}
+	if (m_keyboard[1])
+	{
+		m_keyboard[1]->Unacquire();
+		m_keyboard[1]->Release();
+		m_keyboard[1] = 0;
+	}
+
+
 
 	// Release the main interface to direct input.
 	if (m_directInput)
@@ -142,7 +242,6 @@ void InputClass::Shutdown()
 bool InputClass::Frame()
 {
 	bool result;
-
 
 	// Read the current state of the keyboard.
 	result = ReadKeyboard();
@@ -175,6 +274,11 @@ bool InputClass::IsEscapePressed()
 {
 	// Do a bitwise and on the keyboard state to check if the escape key is currently being pressed.
 	if (m_keyboardState[DIK_H] & 0x80)
+	{
+		return true;
+	}
+
+	if (m_keyboardState2[DIK_H] & 0x80)
 	{
 		return true;
 	}
@@ -258,7 +362,6 @@ bool InputClass::GetJoyCapabilities()
 
 bool InputClass::SetupJoyParameters()
 {
-	//this->
 		m_joystick->Unacquire();
 	// Set the range of the joystick axes tp[-1000, + 1000]
 	DIPROPRANGE directInputPropertyRange;
@@ -281,15 +384,12 @@ bool InputClass::SetupJoyParameters()
 	directInputPropertyRange.diph.dwObj = DIJOFS_Y;
 	m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
-
 	directInputPropertyRange.lMin = -1000;
 	directInputPropertyRange.lMax = +1000;
 	directInputPropertyRange.diph.dwObj = DIJOFS_Z;
 	m_joystick->SetProperty(DIPROP_RANGE, &directInputPropertyRange.diph);
 
-
 	//note Supports 3 then Z
-
 	// Set the dead zone for the joystick axes (because many joysticks are not perfectly calibrated to be zero when centered).
 
 #if 1
@@ -327,19 +427,70 @@ bool InputClass::ReadKeyboard()
 	HRESULT result;
 
 	// Read the keyboard device.
-	result = m_keyboard->GetDeviceState(sizeof(m_keyboardState), (LPVOID)&m_keyboardState);
+	result = m_keyboard[0]->GetDeviceState(sizeof(m_keyboardState), (LPVOID)&m_keyboardState);
+	{
+		CHAR czstr[260];
+		wsprintfA(czstr, "\n  Instance Name %s ", m_didiKeyboard[0].tszInstanceName);
+		std::string wstr; wstr.append(czstr);
+
+		wsprintfA(czstr, "\t  guid Product  %d \n\n", m_didiKeyboard[0].guidProduct);
+		wstr.append(czstr);
+
+		wsprintfA(czstr, "\t  guid Instance  %d \n\n", m_didiKeyboard[0].guidInstance);
+		wstr.append(czstr);
+
+		OutputDebugStringA(wstr.c_str());
+	}
 	if (FAILED(result))
 	{
 		// If the keyboard lost focus or was not acquired then try to get control back.
 		if ((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
 		{
-			m_keyboard->Acquire();
+			if (!m_keyboard[0]->Acquire()) { m_keyboard[0]->Poll(); }
 		}
 		else
 		{
 			return false;
+		}	
+	}
+	
+
+	////////////////////////////////////////////////
+#if 0
+	result = m_keyboard[1]->GetDeviceState(sizeof(m_keyboardState2), (LPVOID)&m_keyboardState2);
+	
+
+//result =	m_keyboard[1]->GetDeviceInfo((LPDIDEVICEINSTANCEW) &m_didiKeyboard[1]);
+		//	OutputDebugString(TEXT(m_didiKeyboard[1].tszInstanceName));
+
+			{
+				CHAR czstr[260];
+				wsprintf(czstr, "\n Second Instance Name %s ", m_didiKeyboard[1].tszInstanceName);
+				std::string wstr; wstr.append(czstr);
+
+				wsprintf(czstr, "\t Second guid Product  %d \n\n", m_didiKeyboard[1].guidProduct);
+				wstr.append(czstr);
+				
+				wsprintf(czstr, "\t Second guid Instance  %d \n\n", m_didiKeyboard[0].guidInstance);
+				wstr.append(czstr);
+
+				OutputDebugString(wstr.c_str());
+			}
+
+	if (FAILED(result))
+	{
+		// If the keyboard lost focus or was not acquired then try to get control back.
+		if ((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
+		{
+			m_keyboard[1]->Acquire();
+		}
+		else
+		{		
+			return false;
 		}
 	}
+	OutputDebugString(TEXT(m_didiKeyboard[1].tszInstanceName));
+#endif
 
 	return true;
 }
@@ -403,27 +554,59 @@ void InputClass::ProcessInput()
 	return;
 }
 
+DIDEVICEINSTANCE InputClass::FillDirectInputDeviceInstance(DIDEVICEINSTANCE& didiKeyboard, LPCDIDEVICEINSTANCE lpddi)
+{
+	ZeroMemory(&didiKeyboard, sizeof(DIDEVICEINSTANCE));
+	memcpy(&didiKeyboard, lpddi, sizeof(DIDEVICEINSTANCE));         ///lpddi));
+	memcpy(&didiKeyboard.dwDevType, &lpddi->dwDevType, sizeof(DWORD));
+	memcpy(&didiKeyboard.dwSize, &lpddi->dwSize, sizeof(DWORD));
+	memcpy(&didiKeyboard.guidFFDriver, &lpddi->guidFFDriver, sizeof(GUID));
+	memcpy(&didiKeyboard.guidInstance, &lpddi->guidInstance, sizeof(GUID));
+	memcpy(&didiKeyboard.guidProduct, &lpddi->guidProduct, sizeof(GUID));
+	memcpy(&didiKeyboard.tszProductName, lpddi->tszProductName, sizeof(CHAR) * MAX_PATH);
+	memcpy(&didiKeyboard.tszInstanceName, lpddi->tszInstanceName, sizeof(CHAR) * MAX_PATH);
+	memcpy(&didiKeyboard.wUsage, &lpddi->wUsage, sizeof(WORD));
+	memcpy(&didiKeyboard.wUsagePage, &lpddi->wUsagePage, sizeof(WORD));
+
+	return didiKeyboard;
+}
+
 BOOL CALLBACK DIEnumKbdCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
 {
- 
 	*(GUID*)pvRef =  lpddi->guidInstance;
-	hasEnhanced = FALSE;
+	//hasEnhanced = FALSE;
 	if (GET_DIDEVICE_SUBTYPE(lpddi->dwDevType) == DI8DEVTYPEKEYBOARD_PCENH)
 	{
-		hasEnhanced = TRUE;
-		return DIENUM_STOP;
+		g_didiKeyboard[enum_index] = InputClass::FillDirectInputDeviceInstance(g_didiKeyboard[enum_index], lpddi);
+
+		/*
+		ZeroMemory(&g_didiKeyboard[enum_index], sizeof(DIDEVICEINSTANCE));     //   g_didiKeyboard[enum_index]));
+		memcpy(&g_didiKeyboard[enum_index], lpddi, sizeof(DIDEVICEINSTANCE)); //              lpddi));
+		memcpy(&g_didiKeyboard[enum_index].dwDevType, &lpddi->dwDevType, sizeof(DWORD));
+		memcpy(&g_didiKeyboard[enum_index].dwSize, &lpddi->dwSize, sizeof(DWORD));
+		memcpy(&g_didiKeyboard[enum_index].guidFFDriver, &lpddi->guidFFDriver, sizeof(GUID));
+		memcpy(&g_didiKeyboard[enum_index].guidInstance, &lpddi->guidInstance, sizeof(GUID));
+		memcpy(&g_didiKeyboard[enum_index].guidProduct, &lpddi->guidProduct, sizeof(GUID));
+		memcpy(&g_didiKeyboard[enum_index].tszProductName, lpddi->tszProductName, sizeof(WCHAR) * MAX_PATH);
+		memcpy(&g_didiKeyboard[enum_index].tszInstanceName, lpddi->tszInstanceName, sizeof(WCHAR)* MAX_PATH);
+		memcpy(&g_didiKeyboard[enum_index].wUsage, &lpddi->wUsage, sizeof(WORD));
+		memcpy(&g_didiKeyboard[enum_index].wUsagePage, &lpddi->wUsagePage, sizeof(WORD));
+		*/
+		
+		 (*pp_gm_directInput)->CreateDevice( lpddi->guidInstance , &*pp_gm_keyboard[enum_index], NULL);
+		 enum_index++;
+	//	hasEnhanced = TRUE;
+		return  DIENUM_STOP;
 	}
-	return DIENUM_CONTINUE;
+	return  DIENUM_STOP; // DIENUM_CONTINUE;
 }
          
 BOOL  CALLBACK DIEnumJoyCallback(  LPCDIDEVICEINSTANCE  lpddi, LPVOID pvRef)
 {
 	HRESULT hr = S_OK;
-	
 	(*pp_gm_directInput)->CreateDevice(lpddi->guidInstance, &*pp_gm_joystick, NULL);
 
 	// this->m_directInput->CreateDevice(lpddi->guidInstance, &this->m_joystick, NULL); // Similar but we can't access unless global so we op for pointer to pointer from our global to Address our InputClass.... 
-
 	if (FAILED(hr))
 		return DIENUM_CONTINUE;
 

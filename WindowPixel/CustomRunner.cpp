@@ -14,10 +14,6 @@
 #include <limits.h>
 #include "SaveBitmap.h"
 
-
-
-
-
 	CustomRunner::CustomRunner()
 	{
 		this->rfCntHdc = 0;
@@ -101,23 +97,17 @@
 			// NOT USING AS OF NOW just null out.
 			TextureBuffer[2].Memory = NULL;
 			TextureBuffer[3].Memory = NULL;
-
 		}
-		
 	}
 
 
 	CustomRunner::~CustomRunner()
 	{
-
 		DeleteObject(hfont);
-
 		// Our BackBuffer for say maybe.
 		// better name but for now bfn.
 		DeleteObject( hBitmapBackBuffer   );
 		DeleteDC(this->memBackSurface);
-
-
 		SafeReleaseDC();
 
 		SAFE_DELETE(pplasma);
@@ -128,7 +118,6 @@
 		SAFE_DELETE(TextureBuffer[2].Memory);
 		SAFE_DELETE(TextureBuffer[1].Memory);
 		SAFE_DELETE(TextureBuffer[0].Memory);
-
 
 		if (Buffer.Memory != NULL)
 			if (VirtualFree(
@@ -188,7 +177,7 @@
 		Buffer.Info.bmiHeader.biCompression = BI_RGB;
 
 		SIZE_T BitmapMemorySize = (Buffer.Width * Buffer.Height) * Buffer.BytesPerPixel;
-		Buffer.Memory = VirtualAlloc(0, BitmapMemorySize, MEM_COMMIT, PAGE_READWRITE);
+		Buffer.Memory = VirtualAlloc(0, BitmapMemorySize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 		Buffer.Pitch = Width * Buffer.BytesPerPixel;
 	}
 
@@ -273,8 +262,6 @@
 
 	}
 
-
-
 	void CustomRunner::TestSomeGDIProcedureTwo(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
 	{
 		COLORREF old_fcolor, old_bcolor; // old foreground text color, old background text color
@@ -307,7 +294,6 @@
 		SetBkMode    (hdc_param,    old_tmode);
 		//hdc_param = memBackSurface;
 	}
-
 	// PROTO CODE
 	void CustomRunner::TestSomeGDIProcedure(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
 	{
@@ -528,7 +514,6 @@
 
 	}
 
-	
 	void CustomRunner::Win32UpdateWindow(HDC& hdc_param, uint32& WindowWidth, uint32& WindowHeight)
 	{
 		
@@ -541,7 +526,6 @@
 			StretchDIBits(hdc_param, 0, 0, WindowWidth, WindowHeight, 0, 0, Buffer.Width, Buffer.Height, Buffer.Memory, (const BITMAPINFO*)&Buffer.Info, (UINT)DIB_RGB_COLORS,(DWORD)SRCCOPY);
 		}
 	}
-
 
 	void CustomRunner::Win32UpdateWindow()
 	{
@@ -663,6 +647,9 @@
 
 	void CustomRunner::AnotherWrap(CustomRunner& custRun)
 	{
+
+		
+
 		/*
 		win32_offscreen_buffer* Bf = &custRun.Buffer;
 		win32_offscreen_buffer* Gd = &custRun.TextureBuffer[0];
@@ -676,6 +663,7 @@
 
 		 RenderWeirdGradient(0, 0, Bf, Gd);
 		 */
+		//this->PutPixel(custRun.Buffer, 1, 1, RGB(0, 0, 0));
 
 #ifdef STRANGE_RENDER
 		RenderWeirdGradient(0, 0, custRun.Buffer, custRun.TextureBuffer[0]);
@@ -751,7 +739,6 @@
 			}
 		}
 	}
-
 
 	void CustomRunner::Funn()
 	{
@@ -830,8 +817,8 @@
 			std::swap(y1, y2);
 		}
 
-		const float dx = x2 - x1;
-		const float dy = fabs(y2 - y1);
+		const float dx = float( x2 - x1 );
+		const float dy = (float) fabs( float( y2 - y1   ) );
 
 		float error = dx / 2.0f;
 		const int ystep = (y1 < y2) ? 1 : -1;
@@ -1070,5 +1057,62 @@ for (size_t y = 0; y < h; y++)
 		this->pplasma->FxFireEffect(this->hWnd, this->Buffer, *this);
 
 	}
+
+	void CustomRunner::BowCurve2D(win32_offscreen_buffer& sourceBuffer)
+	{
+		bool bInitial = false;
+		int centerx = 640 / 2;
+		int centery = 480 / 2;
+
+		int radius = 10;
+		float two_pi = 6.283f;
+		float angle_inc = 1.0f / radius;
+
+		bool even = true;
+		int prevX = 0;
+		int prevY = 0;
+
+		for (float angle = 0.00001f; angle <= two_pi; angle += angle_inc)
+		{
+			float t = angle;
+
+
+		//	if( cosf(t) != 0) 
+			{
+			//	float ftanf = tanf(t);
+			//	ftanf *= ftanf;
+		//	int x = (int) float(centerx + radius) * ((1.f - ( ftanf )) * cosf(t));
+		//	int y = (int) float(centery + radius) * ((1.f - ( ftanf )) * sinf(t));
+				// log? sqrt
+
+				float fx = ((cosf(t) * cosf(t)) / sinf(t));
+				float fy = cosf(t);
+
+
+
+
+				int x = (int) (float(centerx + radius) * fx);     //* 1.f * tan(t);            //* cosf(t) +  exp2f(tanf(t / 2));
+				int y = -(int) (float(centery + radius) * fy);          //* 1.f * (cosf(t) * cosf(t));           // * sinf(t);
+
+
+			x += centerx;
+			x += centerx;
+
+			y += centery;
+			y += centery;
+			if (bInitial)
+			{
+				if (even) { this->Line( float(prevX) , float(prevY), float( x ), float( y ), RGB(0, 255, 255)); }
+				else { this->Line( float( prevX ), float( prevY ), float( x ),float( y ), RGB(0, 255, 255)); }
+				even = !even;
+			}
+			bInitial = true;
+			prevX = x; prevY = y;
+		}
+
+		}
+
+	}
+
 
 

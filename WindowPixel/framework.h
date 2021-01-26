@@ -9,6 +9,7 @@
 
 #define __FIND_A_RESOLUTION
 #define SAFE_DELETE(p) if ((p) != NULL) { delete (p); (p) = NULL; }
+#define SAFE_RELEASE(p) { if (p) { (p)->Release(); (p) = NULL; }}
 
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
@@ -34,6 +35,25 @@
 #include <utility>
 
 #include <wtypes.h>
+
+
+
+#define DIRECTSOUND_VERSION  0x0800
+
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "dsound.lib")
+
+
+//#include <dsound.h>
+#include <dmusics.h>
+#if(0)
+#include "dmusici.h"
+#include <cguid.h>
+#endif
+
+
+
 
 
 

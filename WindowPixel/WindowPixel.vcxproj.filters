@@ -31,6 +31,21 @@
     <Filter Include="Source Files\DirectInput">
       <UniqueIdentifier>{8189df69-6ab1-4dd0-b1a0-5dd81cfd55e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{404bddb5-2744-4723-9691-24ee4b23c5d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utill">
+      <UniqueIdentifier>{c618af26-e413-4219-87e0-f1a5ad760be1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sdk9">
+      <UniqueIdentifier>{01cda5e4-88eb-4181-84d1-228e7e31a32a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NewFilter1">
+      <UniqueIdentifier>{5668a5b1-6ebf-4db9-a3c1-d0fcfc9222cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sdk9\lib">
+      <UniqueIdentifier>{31e9b12a-40f8-4094-ba62-707c975ece4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -90,6 +105,27 @@
     <ClInclude Include="InputClass.h">
       <Filter>Source Files\DirectInput</Filter>
     </ClInclude>
+    <ClInclude Include="Location.h">
+      <Filter>Source Files\Utill</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectSoundAudio.h">
+      <Filter>Source Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="dmusici.h">
+      <Filter>Source Files\sdk9</Filter>
+    </ClInclude>
+    <ClInclude Include="dmplugin.h">
+      <Filter>Source Files\sdk9</Filter>
+    </ClInclude>
+    <ClInclude Include="C3DSound.h">
+      <Filter>Source Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="CDXAudio.h">
+      <Filter>Source Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="YaldexAudio.h">
+      <Filter>Source Files\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WindowPixel.cpp">
@@ -134,6 +170,21 @@
     <ClCompile Include="InputClass.cpp">
       <Filter>Source Files\DirectInput</Filter>
     </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Source Files\Utill</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectSoundAudio.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="C3DSound.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="CDXAudio.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="YaldexAudio.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WindowPixel.rc">
@@ -152,5 +203,13 @@
     <Text Include="..\..\..\Users\David\Desktop\New folder (3)\CameFrom.txt">
       <Filter>Source Files\Mouse</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="dsound.lib">
+      <Filter>Source Files\sdk9\lib</Filter>
+    </Library>
+    <Library Include="dxguid.lib">
+      <Filter>Source Files\sdk9\lib</Filter>
+    </Library>
   </ItemGroup>
 </Project>

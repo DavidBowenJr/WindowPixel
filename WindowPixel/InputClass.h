@@ -10,17 +10,20 @@
 #define DIRECTINPUT_VERSION 0X0800
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
+#include <vector>
 #include <dinput.h>
-
+/*
 static	BOOL hasEnhanced;
 static inline BOOL CALLBACK DIEnumKbdCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
 
 static inline  BOOL CALLBACK DIEnumJoyCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef);
+*/
+
 
 class InputClass
 {
-	
 	std::vector<unsigned int> nAxes;
+	std::vector<LPCDIDEVICEINSTANCE> g_keyboardInstances;
 public:
 	LONG jlx = 0;
 	LONG jly = 0;
@@ -37,16 +40,11 @@ public:
 	bool Initialize(HINSTANCE, HWND, int, int);
 	void Shutdown();
 	bool Frame();
-
 	bool IsEscapePressed();
 	bool IsJoyEtc(); // etcetera  so on.
-
 	bool GetJoyCapabilities(); // singlar for now.
 	bool SetupJoyParameters();
-
-
 	void GetMouseLocation(int&, int&);
-
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();
@@ -55,14 +53,21 @@ private:
 
 public:
 
+ static DIDEVICEINSTANCE FillDirectInputDeviceInstance(DIDEVICEINSTANCE& didiKeyboard, LPCDIDEVICEINSTANCE lpddi);
+
 
 	IDirectInput8W* m_directInput;
  	IDirectInputDevice8W* m_joystick;
 
-	IDirectInputDevice8W* m_keyboard;
+    IDirectInputDevice8W*  m_keyboard[2];
 	IDirectInputDevice8W* m_mouse;
 
 	unsigned char m_keyboardState[256];
+	unsigned char m_keyboardState2[256];
+	DIDEVICEINSTANCE m_didiKeyboard[2];
+
+
+
 	DIMOUSESTATE m_mouseState;
 	DIJOYSTATE  m_joyState;
 
@@ -73,7 +78,7 @@ public:
 	int m_mouseX, m_mouseY;
 
 public:
-	GUID KeyboardGuid;
+	GUID KeyboardGuid[4] ;
 	GUID JoystickGuid;
 
 
