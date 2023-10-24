@@ -1,3 +1,5 @@
 #pragma once
 #include "framework.h"
-uint8_t* LoadBitmapFile(char* filename, BITMAPINFOHEADER* bitmapInfoHeader);
+#include <memory>
+//uint8_t* LoadBitmapFile(const char* filename, BITMAPINFOHEADER* bitmapInfoHeader);
+std::shared_ptr<std::uint8_t> LoadBitmapFile(const char* filename, BITMAPINFOHEADER* bitmapInfoHeader);
